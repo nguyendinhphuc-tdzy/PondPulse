@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0A2A3D">
-<title>PondPulse — Trạm Đa Năng Đáy Hồ</title>
+<title>DeltaV — Trạm Đa Năng Đáy Hồ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
+    --font-ui:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     --deep:#0A2A3D;
     --navy:#123B54;
     --teal:#1E5A72;
@@ -27,7 +28,11 @@
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    font-family:'Be Vietnam Pro',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    font-family:var(--font-ui);
+    font-size:14px;
+    line-height:1.5;
+    letter-spacing:-0.01em;
+    -webkit-font-smoothing:antialiased;
     background:linear-gradient(180deg,#E4E9DC,#D6DECE);
     color:var(--ink);
     min-height:100vh;
@@ -38,6 +43,15 @@
   }
   button, input{ font-family:inherit; }
   button:focus-visible, input:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+
+  /* số liệu — cùng font UI, không dùng monospace kiểu tài liệu */
+  .gauge-value,.mini-badge b,.buoy,.battery-row b,.freq-row b,
+  .alert-time,.log-time,.calc-row input[type=number],.calc-result b{
+    font-family:inherit;
+    font-variant-numeric:tabular-nums;
+    font-weight:700;
+    letter-spacing:-0.02em;
+  }
 
   .app-shell{
     width:100%;
@@ -76,8 +90,8 @@
   }
   .brand-row{ display:flex; align-items:center; gap:8px; position:relative; z-index:1; }
   .brand-logo{ font-size:20px; }
-  .brand-name{ font-size:17px; font-weight:800; letter-spacing:.01em; }
-  .eyebrow{ font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--sky); font-weight:700; opacity:.85; }
+  .brand-name{ font-size:17px; font-weight:700; letter-spacing:-0.02em; }
+  .eyebrow{ font-size:11px; letter-spacing:.02em; color:var(--sky); font-weight:600; opacity:.9; }
   .conn-status{ display:flex; align-items:center; gap:6px; font-size:11px; color:#DCEAF5; margin-top:6px; position:relative; z-index:1;}
   .conn-dot{ width:7px;height:7px;border-radius:50%; background:#57D68D; animation:pulse 2s infinite; }
   @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(87,214,141,.5);} 70%{box-shadow:0 0 0 6px rgba(87,214,141,0);} 100%{box-shadow:0 0 0 0 rgba(87,214,141,0);} }
@@ -88,12 +102,12 @@
   .tab-panel{ display:none; }
   .tab-panel.active{ display:block; animation:fadeIn .25s ease; }
   @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
-  .panel-eyebrow{ font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--brand-dark); font-weight:700; margin-bottom:2px;}
-  .panel-title{ font-size:19px; font-weight:800; margin:0 0 4px; }
-  .panel-subtitle{ font-size:12.5px; color:var(--ink-soft); margin:0 0 14px; line-height:1.55; }
+  .panel-eyebrow{ font-size:12px; letter-spacing:.01em; color:var(--brand-dark); font-weight:600; margin-bottom:2px;}
+  .panel-title{ font-size:20px; font-weight:700; letter-spacing:-0.03em; margin:0 0 4px; }
+  .panel-subtitle{ font-size:13px; color:var(--ink-soft); margin:0 0 14px; line-height:1.55; }
 
   /* ---------- buttons ---------- */
-  .btn{ border:none; border-radius:12px; padding:12px 16px; font-weight:700; font-size:13.5px; cursor:pointer; }
+  .btn{ border:none; border-radius:12px; padding:12px 16px; font-weight:600; font-size:14px; cursor:pointer; letter-spacing:-0.01em; }
   .btn-primary{ background:var(--brand); color:#fff; width:100%;}
   .btn-amber{ background:var(--amber); color:#402A08; width:100%;}
   .btn-outline{ background:#fff; border:1px solid var(--card-border); color:var(--ink); width:100%; }
@@ -111,27 +125,29 @@
   .pond-card-info span{ font-size:11.5px; color:var(--ink-soft); }
   .pond-mini-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
   .mini-badge{ font-size:10.5px; background:var(--page-bg); border:1px solid var(--card-border); border-radius:8px; padding:4px 7px; display:flex; gap:4px; align-items:center; color:var(--ink-soft);}
-  .mini-badge b{ color:var(--ink); font-family:'JetBrains Mono',monospace; font-weight:700; }
+  .mini-badge b{ color:var(--ink); }
   .pond-card-footer{ display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--ink-soft); border-top:1px solid var(--card-border); padding-top:9px; }
   .add-pond-btn{ border:1.5px dashed var(--card-border); background:transparent; border-radius:16px; padding:16px; text-align:center; color:var(--ink-soft); font-weight:700; font-size:13px; cursor:pointer; width:100%; }
   .add-pond-btn:hover{ border-color:var(--brand); color:var(--brand-dark); }
 
-  /* ---------- pond detail ---------- */
+  /* ---------- pond list / detail (full-screen swap) ---------- */
+  .pond-list-view{ display:none; }
+  .pond-list-view.active{ display:block; animation:fadeIn .25s ease; }
   .pond-detail-view{ display:none; }
-  .pond-detail-view.active{ display:block; }
+  .pond-detail-view.active{ display:block; animation:fadeIn .25s ease; }
   .detail-header{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
   .back-btn{ width:34px;height:34px;border-radius:50%; border:1px solid var(--card-border); background:#fff; display:flex;align-items:center;justify-content:center; font-size:16px; cursor:pointer; flex:0 0 auto; color:var(--ink);}
-  .detail-header-info h2{ margin:0; font-size:17px; font-weight:800; }
+  .detail-header-info h2{ margin:0; font-size:18px; font-weight:700; letter-spacing:-0.02em; }
   .detail-header-info span{ font-size:12px; color:var(--ink-soft); }
   .segmented{ display:flex; background:#EAE7DB; border-radius:12px; padding:4px; gap:4px; margin-bottom:16px; }
-  .segmented button{ flex:1; border:none; background:transparent; padding:9px 4px; border-radius:9px; font-size:12.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; }
+  .segmented button{ flex:1; border:none; background:transparent; padding:9px 4px; border-radius:9px; font-size:13px; font-weight:600; color:var(--ink-soft); cursor:pointer; }
   .segmented button.active{ background:#fff; color:var(--brand-dark); box-shadow:0 1px 4px rgba(0,0,0,.1); }
   .pond-subpanel{ display:none; }
   .pond-subpanel.active{ display:block; animation:fadeIn .2s ease; }
 
   /* ---------- pond visual (signature element) ---------- */
   .pond-visual{
-    position:relative; height:200px; border-radius:20px; overflow:hidden;
+    position:relative; height:280px; border-radius:20px; overflow:hidden;
     background:linear-gradient(180deg, var(--teal) 0%, var(--deep) 85%);
     box-shadow:inset 0 0 30px rgba(0,0,0,.25);
     transition:box-shadow .3s;
@@ -139,48 +155,111 @@
   .pond-visual.on-battery{ box-shadow:inset 0 0 0 2px var(--amber), inset 0 0 30px rgba(0,0,0,.25); }
   .pond-visual.aeration-off .bubble{ animation-play-state:paused; opacity:.12; }
   .surface-line{ position:absolute; top:28px; left:0; right:0; border-top:1px dashed rgba(255,255,255,.35); }
+  .pond-links{
+    position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none;
+  }
+  .pond-links line{ stroke:rgba(255,255,255,.22); stroke-width:.6; stroke-dasharray:2.5 2.5; }
   .buoy{
     position:absolute; top:14px; left:50%; transform:translateX(-50%);
-    background:var(--page-bg); color:var(--ink); font-family:'JetBrains Mono',monospace; font-size:12px;
+    background:var(--page-bg); color:var(--ink); font-size:12px;
     padding:5px 10px; border-radius:20px; display:flex; align-items:center; gap:5px;
-    box-shadow:0 4px 10px rgba(0,0,0,.3); z-index:2;
+    box-shadow:0 4px 10px rgba(0,0,0,.3); z-index:4;
   }
   .buoy::after{ content:''; position:absolute; top:-9px; left:50%; transform:translateX(-50%); width:1px; height:8px; background:rgba(255,255,255,.5); }
-  .tether{ position:absolute; top:40px; bottom:54px; left:50%; width:0; border-left:2px dashed rgba(255,255,255,.3); }
-  .device-block{
-    position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
-    width:84px; height:34px; border-radius:10px; background:linear-gradient(180deg,#1c5b70,#0d3745);
-    border:1px solid rgba(255,255,255,.25); display:flex; align-items:center; justify-content:center; gap:6px;
-    box-shadow:0 6px 16px rgba(0,0,0,.4); z-index:2;
+  .tether{ position:absolute; top:40px; bottom:68px; left:50%; width:0; border-left:2px dashed rgba(255,255,255,.28); z-index:1; }
+  .pond-station{
+    position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+    min-width:72px; padding:6px 10px; border-radius:10px; z-index:2;
+    background:linear-gradient(180deg,#1c5b70,#0d3745);
+    border:1px solid rgba(255,255,255,.28);
+    box-shadow:0 6px 16px rgba(0,0,0,.4);
+    font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:rgba(255,255,255,.88); text-align:center;
   }
-  .device-block .dot{ width:7px;height:7px;border-radius:50%; background:var(--amber); animation:blink 2.4s infinite; }
-  .device-block .dot:nth-child(2){ animation-delay:.3s; background:#57D68D;}
-  .device-block .dot:nth-child(3){ animation-delay:.6s; background:#8FC1D9;}
-  .device-block .dot:nth-child(4){ animation-delay:.9s; background:var(--sky);}
-  @keyframes blink{ 0%,100%{opacity:.35;} 50%{opacity:1;} }
-  .bubble{ position:absolute; bottom:48px; width:5px;height:5px;border-radius:50%; background:rgba(255,255,255,.5); animation:rise 3s linear infinite; }
-  .bubble:nth-child(4){ left:44%; animation-delay:0s;}
-  .bubble:nth-child(5){ left:50%; animation-delay:.7s;}
-  .bubble:nth-child(6){ left:56%; animation-delay:1.4s;}
-  .bubble:nth-child(7){ left:47%; animation-delay:2.1s;}
-  @keyframes rise{ 0%{ transform:translateY(0); opacity:0;} 15%{opacity:.7;} 100%{ transform:translateY(-140px); opacity:0;} }
-  .pond-caption{ font-size:10.5px; color:var(--ink-soft); text-align:center; margin-top:8px; line-height:1.6; }
+  .pond-modules{ position:absolute; inset:0; z-index:3; }
+  .pond-module{
+    position:absolute; transform:translate(-50%,-50%);
+    text-align:center; width:54px;
+  }
+  .pond-module-pin{
+    width:38px; height:38px; border-radius:12px; margin:0 auto 4px;
+    background:rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.38);
+    display:flex; align-items:center; justify-content:center; position:relative;
+    backdrop-filter:blur(4px); transition:opacity .25s, border-color .25s;
+  }
+  .pond-module.off .pond-module-pin{ opacity:.5; border-color:rgba(255,255,255,.18); }
+  .pond-module-icon{ font-size:16px; line-height:1; }
+  .pond-module-status{
+    position:absolute; bottom:-3px; right:-3px;
+    width:10px; height:10px; border-radius:50%; border:1.5px solid var(--deep);
+  }
+  .pond-module-status.on{ background:#57D68D; }
+  .pond-module-status.off{ background:#8A9AA3; }
+  .pond-module-status.warn{ background:var(--amber); animation:blink 1.4s infinite; }
+  .pond-module-status.run{ background:#57D68D; box-shadow:0 0 0 0 rgba(87,214,141,.55); animation:pulse 2s infinite; }
+  @keyframes blink{ 0%,100%{opacity:.45;} 50%{opacity:1;} }
+  .pond-module-label{
+    display:block; font-size:8.5px; font-weight:600; color:rgba(255,255,255,.9);
+    line-height:1.25; text-shadow:0 1px 3px rgba(0,0,0,.45);
+  }
+  .pond-module-state{
+    display:block; font-size:7.5px; font-weight:600; color:rgba(191,220,242,.85); margin-top:1px;
+  }
+  .bubble{ position:absolute; bottom:52%; width:5px;height:5px;border-radius:50%; background:rgba(255,255,255,.5); animation:rise 3s linear infinite; z-index:2; }
+  .bubble:nth-child(1){ left:31%; animation-delay:0s;}
+  .bubble:nth-child(2){ left:34%; animation-delay:.7s;}
+  .bubble:nth-child(3){ left:37%; animation-delay:1.4s;}
+  .bubble:nth-child(4){ left:33%; animation-delay:2.1s;}
+  @keyframes rise{ 0%{ transform:translateY(0); opacity:0;} 15%{opacity:.7;} 100%{ transform:translateY(-120px); opacity:0;} }
+  .pond-caption{ font-size:11px; color:var(--ink-soft); text-align:center; margin-top:8px; line-height:1.5; }
 
   /* ---------- gauges ---------- */
   .gauge-row{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
   .gauge-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:12px 4px; text-align:center; }
   .gauge-label{ font-size:11px; color:var(--ink-soft); font-weight:600;}
-  .gauge-value{ font-family:'JetBrains Mono',monospace; font-size:21px; font-weight:700; margin:4px 0 6px; }
+  .gauge-value{ font-size:22px; margin:4px 0 6px; }
   .gauge-unit{ font-size:10px; color:var(--ink-soft); margin-left:2px;}
   .pill{ display:inline-block; font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; }
   .pill-safe{ background:var(--brand-light); color:var(--brand-dark); }
   .pill-warn{ background:rgba(232,162,61,.2); color:#8A5A11; }
   .pill-danger{ background:rgba(216,86,62,.16); color:var(--coral); }
-  .gauge-note{ font-size:10.5px; color:var(--ink-soft); margin-top:10px; line-height:1.6; }
 
-  .chart-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:14px; margin-top:14px; }
-  .chart-card h3{ font-size:13px; margin:0 0 4px; }
-  .chart-card p.hint{ font-size:11px; color:var(--ink-soft); margin:0 0 10px; }
+  .chart-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:14px; margin-top:14px; position:relative; }
+  .chart-card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .chart-card h3{ font-size:13px; margin:0; flex:1; }
+  .info-btn{
+    flex:0 0 auto; width:22px; height:22px; border-radius:50%;
+    border:1.5px solid var(--card-border); background:var(--page-bg);
+    color:var(--ink-soft); font-size:12px; font-weight:700; line-height:1;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:background .15s, border-color .15s, color .15s;
+  }
+  .info-btn:hover,.info-btn:focus-visible{ background:#fff; border-color:var(--brand); color:var(--brand-dark); }
+
+  /* ---------- info popup ---------- */
+  .info-overlay{
+    position:absolute; inset:0; background:rgba(10,42,61,.45);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px 16px; z-index:60; opacity:0; pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .info-overlay.show{ opacity:1; pointer-events:auto; }
+  .info-popup{
+    width:100%; max-width:340px; background:#fff; border-radius:18px;
+    padding:18px 16px 14px; box-shadow:0 16px 40px rgba(10,42,61,.22);
+    transform:translateY(8px) scale(.98); transition:transform .2s ease;
+  }
+  .info-overlay.show .info-popup{ transform:translateY(0) scale(1); }
+  .info-popup-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .info-popup-head h4{ margin:0; font-size:15px; font-weight:700; letter-spacing:-0.02em; }
+  .info-close{
+    flex:0 0 auto; width:28px; height:28px; border:none; border-radius:50%;
+    background:var(--page-bg); color:var(--ink-soft); font-size:18px; line-height:1;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .info-close:hover,.info-close:focus-visible{ background:#EAE7DB; color:var(--ink); }
+  .info-popup p{ margin:0 0 10px; font-size:13px; color:var(--ink-soft); line-height:1.6; }
+  .info-popup p:last-of-type{ margin-bottom:0; }
   svg#sparkline{ width:100%; height:70px; display:block; }
   svg#sparkline polyline{ fill:none; stroke:var(--brand); stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
 
@@ -196,7 +275,7 @@
   .battery-fill.warn{ background:var(--amber); }
   .battery-fill.crit{ background:var(--coral); }
   .battery-row{ display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); }
-  .battery-row b{ font-family:'JetBrains Mono',monospace; color:var(--ink); }
+  .battery-row b{ color:var(--ink); }
   .outage-warning{ display:none; margin-top:14px; padding:12px; border-radius:12px; background:rgba(232,162,61,.12); border:1px solid rgba(232,162,61,.4); font-size:12px; line-height:1.65;}
   .outage-warning b{ color:#8A5A11; }
   .switch-row{ display:flex; align-items:center; justify-content:space-between; gap:10px;}
@@ -209,7 +288,7 @@
   input[type=range]:disabled{ opacity:.4; }
   .field-hint{ font-size:10.5px; color:var(--ink-soft); margin-top:8px; line-height:1.55; }
   .freq-row{ display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); margin-top:10px; }
-  .freq-row b{ font-family:'JetBrains Mono',monospace; color:var(--ink); }
+  .freq-row b{ color:var(--ink); }
   .eco-hint{ display:none; margin-top:10px; font-size:11.5px; color:var(--brand-dark); background:var(--brand-light); border:1px solid rgba(44,140,90,.35); border-radius:10px; padding:9px 10px; line-height:1.6; }
 
   /* ---------- control ---------- */
@@ -224,13 +303,13 @@
   .alert-item.alert-warn{ border-left-color:var(--amber); }
   .alert-item.alert-info{ border-left-color:var(--sky); }
   .alert-top{ display:flex; justify-content:space-between; gap:8px; font-weight:700; font-size:12.5px; }
-  .alert-time{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--ink-soft); font-weight:400; white-space:nowrap;}
+  .alert-time{ font-size:11px; color:var(--ink-soft); font-weight:500; white-space:nowrap;}
   .alert-msg{ font-size:12px; color:var(--ink-soft); margin-top:4px; line-height:1.5;}
   .alert-pond-tag{ display:inline-block; margin-top:7px; font-size:10px; font-weight:700; color:var(--brand-dark); background:var(--brand-light); padding:2px 8px; border-radius:10px; }
   .log-pond-tag{ font-size:9.5px; font-weight:700; color:var(--brand-dark); background:var(--brand-light); padding:1px 6px; border-radius:8px; margin-left:4px; }
   .empty-state{ text-align:center; padding:44px 10px; color:var(--ink-soft); font-size:13px; }
   .log-item{ display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--card-border); font-size:12px; }
-  .log-time{ font-family:'JetBrains Mono',monospace; color:var(--ink-soft); flex:0 0 58px; }
+  .log-time{ color:var(--ink-soft); flex:0 0 58px; font-weight:500; }
   .log-icon{ flex:0 0 18px; }
   .log-text{ flex:1; line-height:1.5;}
 
@@ -246,10 +325,9 @@
   .compare-table th{ color:var(--ink-soft); font-weight:700; }
   .calc-row{ display:flex; flex-direction:column; gap:6px; margin-top:12px;}
   .calc-row label{ font-size:12px; font-weight:600; color:var(--ink-soft);}
-  .calc-row input[type=number]{ padding:10px; border-radius:10px; border:1px solid var(--card-border); font-family:'JetBrains Mono',monospace; font-size:14px; width:100%;}
+  .calc-row input[type=number]{ padding:10px; border-radius:10px; border:1px solid var(--card-border); font-size:15px; width:100%;}
   input[type=range]{ width:100%; accent-color:var(--brand); }
   .calc-result{ display:flex; justify-content:space-between; padding:9px 0; border-top:1px dashed var(--card-border); font-size:12.5px;}
-  .calc-result b{ font-family:'JetBrains Mono',monospace; }
   .limit-card{ background:#FFF7ED; border:1px solid #F3D9AE; border-radius:14px; padding:14px; margin-top:14px; font-size:12px; line-height:1.7; }
   .limit-card h3{ margin:0 0 6px; font-size:13px; }
   .limit-card ul{ margin:0; padding-left:18px; }
@@ -260,10 +338,195 @@
 
   /* ---------- bottom nav ---------- */
   .bottom-nav{ flex:0 0 auto; display:flex; background:#fff; border-top:1px solid var(--card-border); padding:6px 4px calc(6px + env(safe-area-inset-bottom)); position:relative; z-index:5; }
-  .nav-btn{ flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 2px; color:var(--ink-soft); font-size:10px; font-weight:600; cursor:pointer; position:relative; }
+  .nav-btn{ flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 2px; color:var(--ink-soft); font-size:11px; font-weight:600; cursor:pointer; position:relative; letter-spacing:-0.01em; }
   .nav-btn .nav-icon{ font-size:19px; }
   .nav-btn.active{ color:var(--brand-dark); }
   .nav-badge{ display:none; position:absolute; top:0; right:20%; background:var(--coral); color:#fff; font-size:9px; font-weight:800; min-width:15px; height:15px; border-radius:8px; align-items:center; justify-content:center; padding:0 3px; }
+
+  /* ========== ENHANCED POND VISUAL ========== */
+
+  /* Depth gradient override */
+  .pond-visual{
+    background:linear-gradient(180deg,
+      #1a6b85 0%, #156878 12%, #0e4a5e 35%, #0a3a4d 65%, #072d3d 100%
+    );
+  }
+
+  /* Wave animation */
+  .pond-wave{
+    position:absolute; top:16px; left:0; width:200%; height:34px; z-index:2;
+    animation: waveSlide 6s linear infinite;
+  }
+  .pond-wave-fill{ fill:var(--page-bg); opacity:.07; }
+  .pond-wave-stroke{ fill:none; stroke:rgba(191,220,242,.22); stroke-width:1.2; }
+  @keyframes waveSlide{ 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* Enhanced bubbles */
+  .bubble-enhanced{
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.65), rgba(255,255,255,.15));
+    z-index:2; opacity:0;
+    animation: riseEnhanced var(--dur, 3s) var(--delay, 0s) linear infinite;
+  }
+  @keyframes riseEnhanced{
+    0%{ transform:translateY(0) scale(0.5); opacity:0; }
+    12%{ opacity:var(--max-op, 0.55); transform:translateY(-8px) scale(0.75); }
+    75%{ opacity:calc(var(--max-op, 0.55) * 0.35); }
+    100%{ transform:translateY(var(--rise-h, -130px)) scale(1.1); opacity:0; }
+  }
+
+  /* Fish */
+  .pond-fish{
+    position:absolute; z-index:3; transition:top 1.8s ease-in-out;
+    pointer-events:none;
+  }
+  .fish-body{ fill:rgba(255,255,255,.16); }
+  .fish-detail{ fill:rgba(255,255,255,.28); }
+  .pond-fish.swim-right{ animation:swimRight var(--swim-dur,8s) linear infinite; }
+  .pond-fish.swim-left{ animation:swimLeft var(--swim-dur,8s) linear infinite; }
+  @keyframes swimRight{ 0%{left:-10%;} 100%{left:108%;} }
+  @keyframes swimLeft{ 0%{left:108%;} 100%{left:-10%;} }
+  .fish-tail-anim{ animation:tailWag .55s ease-in-out infinite alternate; transform-origin:right center; }
+  @keyframes tailWag{ 0%{transform:rotate(-9deg);} 100%{transform:rotate(9deg);} }
+
+  /* Module enhancements */
+  .pond-module{ cursor:pointer; transition:transform .15s ease; }
+  .pond-module:hover{ transform:translate(-50%,-50%) scale(1.14); z-index:10; }
+  .pond-module-pin{ transition:opacity .25s, border-color .25s, box-shadow .25s; }
+  .pond-module.on .pond-module-pin,
+  .pond-module.run .pond-module-pin{ box-shadow:0 0 10px rgba(87,214,141,.3); }
+  .pond-module.warn .pond-module-pin{
+    box-shadow:0 0 10px rgba(232,162,61,.35);
+    animation:modWarnPulse 2s ease-in-out infinite;
+  }
+  @keyframes modWarnPulse{
+    0%,100%{box-shadow:0 0 6px rgba(232,162,61,.25);}
+    50%{box-shadow:0 0 14px rgba(232,162,61,.5);}
+  }
+
+  /* Aeration pulse ring */
+  .mod-aeration-ring{
+    position:absolute; inset:-5px; border-radius:16px;
+    border:1.5px solid rgba(87,214,141,.4);
+    animation:aerRing 2s ease-out infinite; pointer-events:none;
+  }
+  @keyframes aerRing{ 0%{transform:scale(1);opacity:.55;} 100%{transform:scale(1.6);opacity:0;} }
+
+  /* Sensor scan line */
+  .mod-sensor-scan{
+    position:absolute; inset:0; border-radius:12px; overflow:hidden; pointer-events:none;
+  }
+  .mod-sensor-scan::after{
+    content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(87,214,141,.22),transparent);
+    animation:senScan 2.5s ease-in-out infinite;
+  }
+  @keyframes senScan{ 0%{left:-100%;} 100%{left:200%;} }
+
+  /* Module tooltip */
+  .module-tooltip{
+    position:absolute; bottom:calc(100% + 10px); left:50%; transform:translateX(-50%) translateY(5px);
+    background:rgba(10,42,61,.92); color:#fff; padding:8px 11px; border-radius:10px;
+    font-size:10.5px; line-height:1.55; white-space:nowrap; pointer-events:none;
+    opacity:0; transition:opacity .2s, transform .2s; z-index:20;
+    backdrop-filter:blur(8px); box-shadow:0 6px 16px rgba(0,0,0,.4);
+  }
+  .module-tooltip::after{
+    content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+    border:5px solid transparent; border-top-color:rgba(10,42,61,.92);
+  }
+  .pond-module.tooltip-active .module-tooltip{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* Sensor mini overlay */
+  .sensor-mini-overlay{
+    position:absolute; z-index:5; display:flex; gap:4px;
+    top:40px; right:8px;
+  }
+  .sensor-mini-tag{
+    background:rgba(0,0,0,.38); backdrop-filter:blur(6px);
+    color:#fff; padding:3px 7px; border-radius:6px;
+    font-size:8.5px; font-weight:600; display:flex; align-items:center; gap:3px;
+    border:1px solid rgba(255,255,255,.12);
+    letter-spacing:-.01em;
+  }
+  .sensor-mini-dot{
+    width:5px; height:5px; border-radius:50%; flex:0 0 auto;
+  }
+  .sensor-mini-dot.safe{ background:#57D68D; }
+  .sensor-mini-dot.warn{ background:var(--amber); }
+  .sensor-mini-dot.danger{ background:var(--coral); animation:blink 1s infinite; }
+
+  /* Data flow lines */
+  .pond-links .flow-line{
+    stroke:rgba(87,214,141,.35); stroke-width:.9;
+    stroke-dasharray:2 8;
+    animation:dashFlow 1.8s linear infinite;
+  }
+  @keyframes dashFlow{ 0%{stroke-dashoffset:10;} 100%{stroke-dashoffset:0;} }
+  .pond-visual.data-dead .flow-line{ stroke:rgba(216,86,62,.3); animation:none; stroke-dasharray:2 4; }
+
+  /* DeltaV station enhanced */
+  .pond-station{
+    min-width:94px; padding:7px 12px; border-radius:12px; z-index:4;
+    background:linear-gradient(135deg,#1c6b80,#0d4755);
+    border:1.5px solid rgba(255,255,255,.3);
+    box-shadow:0 6px 20px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.1);
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    font-size:inherit; text-align:center;
+  }
+  .station-chip{
+    width:14px; height:14px; border-radius:3px;
+    background:linear-gradient(135deg,#2a7a8f,#1a5a6f);
+    border:1px solid rgba(255,255,255,.25);
+    display:flex; align-items:center; justify-content:center;
+    font-size:7px; color:rgba(255,255,255,.75); line-height:1;
+  }
+  .station-label{
+    font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:rgba(255,255,255,.9);
+  }
+  .station-led{
+    width:5px; height:5px; border-radius:50%; background:#57D68D;
+    animation:ledBlink 1.5s ease-in-out infinite; flex:0 0 auto;
+  }
+  @keyframes ledBlink{ 0%,100%{opacity:.35;} 50%{opacity:1;} }
+  .station-led.dead{ background:var(--coral); animation:none; opacity:.6; }
+  .station-conn{
+    font-size:8px; color:rgba(191,220,242,.8); line-height:1;
+  }
+  .station-conn.dead{ opacity:.35; }
+
+  /* Sediment layer */
+  .sediment-layer{
+    position:absolute; bottom:0; left:0; right:0; z-index:1;
+    background:linear-gradient(0deg,
+      rgba(101,78,42,.55) 0%,
+      rgba(101,78,42,.25) 55%,
+      transparent 100%
+    );
+    transition:height .9s ease;
+    border-radius:0 0 20px 20px;
+  }
+
+  /* Status glow border */
+  .pond-visual.glow-safe{
+    box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 10px rgba(87,214,141,.12);
+  }
+  .pond-visual.glow-warn{
+    box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 14px rgba(232,162,61,.22);
+    outline:1.5px solid rgba(232,162,61,.35);
+    outline-offset:-1.5px;
+  }
+  .pond-visual.glow-danger{
+    box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 18px rgba(216,86,62,.28);
+    outline:1.5px solid rgba(216,86,62,.45);
+    outline-offset:-1.5px;
+    animation:dangerGlow 2s ease-in-out infinite;
+  }
+  @keyframes dangerGlow{
+    0%,100%{box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 10px rgba(216,86,62,.18);}
+    50%{box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 24px rgba(216,86,62,.38);}
+  }
 </style>
 </head>
 <body>
@@ -272,7 +535,7 @@
 
   <header class="app-header">
     <div>
-      <div class="brand-row"><span class="brand-logo">🐟</span><span class="brand-name">PondPulse</span></div>
+      <div class="brand-row"><span class="brand-logo">🐟</span><span class="brand-name">DeltaV</span></div>
       <span class="eyebrow">Trạm Đa Năng Đáy Hồ — demo mô phỏng</span>
       <div class="conn-status"><span class="conn-dot"></span> Đã kết nối qua WiFi</div>
     </div>
@@ -312,13 +575,61 @@
         <!-- Overview -->
         <div class="pond-subpanel active" id="pondPanel-overview">
           <div class="pond-visual" id="pondVisual">
-            <div class="surface-line"></div>
+            <!-- Wave SVG -->
+            <svg class="pond-wave" viewBox="0 0 600 34" preserveAspectRatio="none" aria-hidden="true">
+              <path class="pond-wave-fill" d="M0,17 C50,9 100,25 150,17 C200,9 250,25 300,17 C350,9 400,25 450,17 C500,9 550,25 600,17 L600,0 L0,0 Z"/>
+              <path class="pond-wave-stroke" d="M0,21 C60,11 120,31 180,21 C240,11 300,31 360,21 C420,11 480,31 540,21 C600,11 660,31 720,21"/>
+            </svg>
+
+            <!-- Connection lines SVG with data flow -->
+            <svg class="pond-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <line x1="50" y1="22" x2="50" y2="84"/>
+              <line x1="50" y1="84" x2="34" y2="52"/>
+              <line x1="50" y1="84" x2="66" y2="58"/>
+              <line x1="50" y1="84" x2="22" y2="72"/>
+              <line x1="50" y1="84" x2="78" y2="72"/>
+              <line class="flow-line" x1="34" y1="52" x2="50" y2="84"/>
+              <line class="flow-line" x1="66" y1="58" x2="50" y2="84"/>
+              <line class="flow-line" x1="22" y1="72" x2="50" y2="84"/>
+              <line class="flow-line" x1="78" y1="72" x2="50" y2="84"/>
+            </svg>
+
+            <!-- Sensor mini overlay -->
+            <div class="sensor-mini-overlay" id="sensorMiniOverlay"></div>
+
+            <!-- Buoy -->
             <div class="buoy"><span id="buoyIcon">🔌</span><span id="buoyBattery">96%</span></div>
             <div class="tether"></div>
-            <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
-            <div class="device-block"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+
+            <!-- Fish -->
+            <div class="pond-fish swim-right" id="fish1" style="--swim-dur:9s;top:48%;">
+              <svg width="28" height="14" viewBox="0 0 28 14"><path class="fish-body" d="M2,7 Q7,1 14,2 Q21,3 26,7 Q21,11 14,12 Q7,13 2,7Z"/><path class="fish-tail-anim" d="M1,7 L-4,2 L-4,12Z" fill="rgba(255,255,255,.14)"/><circle class="fish-detail" cx="21" cy="5.5" r="1.2"/></svg>
+            </div>
+            <div class="pond-fish swim-left" id="fish2" style="--swim-dur:13s;top:60%;">
+              <svg width="22" height="11" viewBox="0 0 22 11" style="transform:scaleX(-1)"><path class="fish-body" d="M2,5.5 Q5,1 11,1.5 Q17,2 20,5.5 Q17,9 11,9.5 Q5,10 2,5.5Z"/><path class="fish-tail-anim" d="M1,5.5 L-3,1.5 L-3,9.5Z" fill="rgba(255,255,255,.12)"/><circle class="fish-detail" cx="16" cy="4" r="1"/></svg>
+            </div>
+            <div class="pond-fish swim-right" id="fish3" style="--swim-dur:16s;top:40%;animation-delay:-6s;">
+              <svg width="18" height="9" viewBox="0 0 18 9"><path class="fish-body" d="M1,4.5 Q4,0.5 9,1 Q14,1.5 17,4.5 Q14,7.5 9,8 Q4,8.5 1,4.5Z"/><path class="fish-tail-anim" d="M0.5,4.5 L-2,1 L-2,8Z" fill="rgba(255,255,255,.11)"/><circle class="fish-detail" cx="13" cy="3.2" r="0.8"/></svg>
+            </div>
+
+            <!-- Enhanced bubbles container -->
+            <div id="bubbleContainer"></div>
+
+            <!-- Sediment layer -->
+            <div class="sediment-layer" id="sedimentLayer" style="height:8%"></div>
+
+            <!-- DeltaV Station enhanced -->
+            <div class="pond-station" id="pondStation">
+              <div class="station-chip">⬡</div>
+              <span class="station-label">DeltaV</span>
+              <span class="station-led" id="stationLed"></span>
+              <span class="station-conn" id="stationConn">📶</span>
+            </div>
+
+            <!-- Modules -->
+            <div class="pond-modules" id="pondModules"></div>
           </div>
-          <p class="pond-caption">Phao nổi (nguồn &amp; kết nối) — dây tín hiệu — khối chìm gộp 4 chức năng: sục khí vi bọt • lọc sinh học • xi‑phông tự động • cảm biến DO/pH/nhiệt độ</p>
+          <p class="pond-caption">Mặt cắt ao — vị trí 4 module trong khối DeltaV dưới đáy</p>
 
           <div class="gauge-row">
             <div class="gauge-card">
@@ -342,11 +653,12 @@
               <span class="pill pill-safe" id="nh3Pill">An toàn</span>
             </div>
           </div>
-          <p class="gauge-note">📍 Cảm biến DO đặt tại điểm oxy thấp nhất của ao, cách xa dòng sủi bọt trực tiếp — tránh đo nhầm oxy cục bộ tăng cao do chính máy tạo ra. NH₃ do lõi lọc sinh học xử lý liên tục; H₂S không đo trực tiếp mà suy ra qua mức bùn tích tụ đáy (xem tab Điều khiển).</p>
 
           <div class="chart-card">
-            <h3>Xu hướng DO — 1 phút gần nhất</h3>
-            <p class="hint">DO là chỉ số sống còn nhất: chỉ cần tụt nhanh trong vài phút là nguy hiểm cho cá.</p>
+            <div class="chart-card-head">
+              <h3>Xu hướng DO — 1 phút gần nhất</h3>
+              <button class="info-btn" id="doInfoBtn" type="button" aria-label="Thông tin về cảm biến DO">i</button>
+            </div>
             <svg id="sparkline" viewBox="0 0 300 70" preserveAspectRatio="none"><polyline points=""></polyline></svg>
           </div>
         </div>
@@ -442,7 +754,7 @@
 
     <!-- ===== SYSTEM ===== -->
     <section class="tab-panel" id="tab-system">
-      <div class="panel-eyebrow">PondPulse</div>
+      <div class="panel-eyebrow">DeltaV</div>
       <h2 class="panel-title">Hệ thống &amp; công cụ</h2>
 
       <div class="power-card">
@@ -465,7 +777,7 @@
         </div>
         <div class="pipeline-arrow">↓</div>
         <div class="pipeline-step">
-          <div class="pipeline-step-top"><span class="step-num">4</span><h4>App di động PondPulse</h4></div>
+          <div class="pipeline-step-top"><span class="step-num">4</span><h4>App di động DeltaV</h4></div>
           <span>Gateway gửi qua WiFi để đồng bộ dữ liệu, hiển thị và điều khiển từ xa</span>
         </div>
 
@@ -511,7 +823,7 @@
         <div class="calc-row">
           <label for="capexNumPonds">Số ao áp dụng</label>
           <input type="number" id="capexNumPonds" value="3" min="1" step="1">
-          <p class="field-hint">*Mặc định lấy theo số ao bạn đang quản lý trong PondPulse.</p>
+          <p class="field-hint">*Mặc định lấy theo số ao bạn đang quản lý trong DeltaV.</p>
         </div>
         <div class="calc-row">
           <label for="capexAreaPerUnit">Diện tích 1 khối xử lý được (m²/khối)</label>
@@ -546,6 +858,18 @@
 
   <div class="toast" id="toast"></div>
 
+  <div class="info-overlay" id="doInfoOverlay" aria-hidden="true">
+    <div class="info-popup" role="dialog" aria-labelledby="doInfoTitle" aria-modal="true">
+      <div class="info-popup-head">
+        <h4 id="doInfoTitle">Về cảm biến DO</h4>
+        <button class="info-close" id="doInfoCloseBtn" type="button" aria-label="Đóng">×</button>
+      </div>
+      <p><b>DO (oxy hòa tan)</b> là chỉ số sống còn nhất: chỉ cần tụt nhanh trong vài phút là nguy hiểm cho cá.</p>
+      <p>Cảm biến DO đặt tại điểm oxy thấp nhất của ao, cách xa dòng sủi bọt trực tiếp — tránh đo nhầm oxy cục bộ tăng cao do chính máy tạo ra.</p>
+      <p>NH₃ do lõi lọc sinh học xử lý liên tục; H₂S không đo trực tiếp mà suy ra qua mức bùn tích tụ đáy (xem tab Điều khiển).</p>
+    </div>
+  </div>
+
   <nav class="bottom-nav">
     <button class="nav-btn active" id="nav-ponds" data-tab="ponds"><span class="nav-icon">🏞️</span>Quản lý ao</button>
     <button class="nav-btn" id="nav-alerts" data-tab="alerts"><span class="nav-icon">🚨</span>Cảnh báo<span class="nav-badge" id="alertBadge">0</span></button>
@@ -558,7 +882,7 @@
 <script>
 (function(){
   "use strict";
-  var STORAGE_KEY = 'pondpulse_state_v1';
+  var STORAGE_KEY = 'deltav_state_v1';
   var MAX_HOURS = 4;
   var HISTORY_LEN = 30;
 
@@ -782,13 +1106,18 @@
     state = defaultState();
     save(); render();
   }
-  function selectPond(id){ state.selectedPondId = id; state.pondTab = 'overview'; save(); render(); }
-  function backToList(){ state.selectedPondId = null; save(); render(); }
+  function scrollTabToTop(){
+    var el = document.getElementById('tabContent');
+    if(el) el.scrollTop = 0;
+  }
+  function selectPond(id){ state.selectedPondId = id; state.pondTab = 'overview'; save(); render(); scrollTabToTop(); }
+  function backToList(){ state.selectedPondId = null; save(); render(); scrollTabToTop(); }
   function setPondTab(tab){ state.pondTab = tab; save(); render(); }
   function setActiveTab(tab){
     state.activeTab = tab;
     if(tab === 'ponds'){ state.selectedPondId = null; }
     save(); render();
+    scrollTabToTop();
   }
   function showToast(msg){
     var t = document.getElementById('toast');
@@ -796,6 +1125,16 @@
     t.classList.add('show');
     clearTimeout(window.__toastTimer);
     window.__toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  }
+  function openDoInfo(){
+    var overlay = document.getElementById('doInfoOverlay');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden', 'false');
+  }
+  function closeDoInfo(){
+    var overlay = document.getElementById('doInfoOverlay');
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden', 'true');
   }
 
   /* ---------- render: ponds list ---------- */
@@ -857,6 +1196,71 @@
     poly.setAttribute('points', points);
   }
 
+  var POND_MODULES = [
+    { id:'aeration', icon:'💨', label:'Sục khí', pos:{ left:'34%', top:'52%' } },
+    { id:'sensors', icon:'📡', label:'Cảm biến', pos:{ left:'66%', top:'58%' } },
+    { id:'filter', icon:'🌿', label:'Lọc SH', pos:{ left:'22%', top:'72%' } },
+    { id:'siphon', icon:'🧹', label:'Xi-phông', pos:{ left:'78%', top:'72%' } }
+  ];
+
+  function moduleStatuses(pond){
+    var dead = pond.power.source === 'battery' && pond.power.battery <= 0;
+    var nh3St = statusNH3(pond.sensors.nh3);
+    var siphonPaused = pond.ecoMode && pond.sludge >= 92;
+    return {
+      aeration: !pond.aeration.on
+        ? { state:'off', text:'Tắt' }
+        : { state: pond.aeration.power < 35 ? 'warn' : 'on', text: pond.aeration.power + '%' },
+      sensors: dead
+        ? { state:'off', text:'Mất nguồn' }
+        : { state:'on', text:'Đo liên tục' },
+      filter: dead
+        ? { state:'off', text:'Ngừng xử lý' }
+        : (nh3St !== 'safe' ? { state:'warn', text:'Tải cao' } : { state:'on', text:'Ổn định' }),
+      siphon: siphonPaused
+        ? { state:'warn', text:'Tạm dừng' }
+        : (pond.sludge >= 85 ? { state:'run', text:'Sắp chạy' } : { state:'on', text:'Chờ' })
+    };
+  }
+
+  function getModuleTooltip(pond, id){
+    switch(id){
+      case 'aeration': return 'Sục khí vi bọt<br>Công suất: '+pond.aeration.power+'%<br>'+(pond.aeration.on?'⚡ Đang chạy':'⏸ Đã tắt');
+      case 'sensors': return 'Cảm biến RS485 Modbus<br>DO: '+pond.sensors.do_.toFixed(1)+' mg/L<br>pH: '+pond.sensors.ph.toFixed(1)+'<br>T°: '+pond.sensors.temp.toFixed(1)+'°C';
+      case 'filter': return 'Lọc sinh học MBBR<br>NH₃: '+pond.sensors.nh3.toFixed(2)+' mg/L<br>Giá thể Hel-X Bio Chip';
+      case 'siphon': return 'Xi-phông tự động<br>Bùn: '+Math.round(pond.sludge)+'%<br>'+(pond.ecoMode?'⏸ Tạm dừng (eco)':'Kích hoạt khi ≥92%');
+      default: return '';
+    }
+  }
+
+  function renderPondModules(pond){
+    var wrap = document.getElementById('pondModules');
+    if(!wrap) return;
+    var st = moduleStatuses(pond);
+    wrap.innerHTML = POND_MODULES.map(function(m){
+      var s = st[m.id];
+      var extra = '';
+      if(m.id === 'aeration' && s.state !== 'off') extra = '<div class="mod-aeration-ring"></div>';
+      else if(m.id === 'sensors' && s.state !== 'off') extra = '<div class="mod-sensor-scan"></div>';
+      var tip = getModuleTooltip(pond, m.id);
+      return '<div class="pond-module ' + s.state + '" style="left:' + m.pos.left + ';top:' + m.pos.top + '" data-module="' + m.id + '">'
+        + '<div class="pond-module-pin">' + extra + '<span class="pond-module-icon">' + m.icon + '</span>'
+        + '<span class="pond-module-status ' + s.state + '"></span></div>'
+        + '<span class="pond-module-label">' + m.label + '</span>'
+        + '<span class="pond-module-state">' + s.text + '</span>'
+        + '<div class="module-tooltip">' + tip + '</div>'
+        + '</div>';
+    }).join('');
+    wrap.querySelectorAll('.pond-module').forEach(function(mod){
+      mod.addEventListener('click', function(e){
+        e.stopPropagation();
+        var active = mod.classList.contains('tooltip-active');
+        wrap.querySelectorAll('.pond-module').forEach(function(m){ m.classList.remove('tooltip-active'); });
+        if(!active) mod.classList.add('tooltip-active');
+      });
+    });
+  }
+
   function renderPondOverview(pond){
     var s = pond.sensors;
     document.getElementById('doValue').innerHTML = s.do_.toFixed(1) + '<span class="gauge-unit">mg/L</span>';
@@ -874,7 +1278,74 @@
     visual.classList.toggle('on-battery', pond.power.source === 'battery');
     visual.classList.toggle('aeration-off', !pond.aeration.on);
 
+    /* --- Enhanced visuals --- */
+    var doSt = statusDO(s.do_);
+    // Fish react to DO level
+    var f1 = document.getElementById('fish1');
+    var f2 = document.getElementById('fish2');
+    var f3 = document.getElementById('fish3');
+    if(f1 && f2 && f3){
+      var tops = doSt==='danger' ? ['24%','30%','22%'] : doSt==='warn' ? ['36%','46%','32%'] : ['48%','60%','40%'];
+      f1.style.top = tops[0]; f2.style.top = tops[1]; f3.style.top = tops[2];
+    }
+
+    // Bubbles
+    renderBubbles(pond);
+
+    // Sediment layer
+    var sediment = document.getElementById('sedimentLayer');
+    if(sediment) sediment.style.height = (4 + (pond.sludge/100)*26) + '%';
+
+    // Sensor mini overlay
+    renderSensorOverlay(pond);
+
+    // Status glow
+    visual.classList.remove('glow-safe','glow-warn','glow-danger');
+    var sts = [doSt, statusPH(s.ph), statusTemp(s.temp), statusNH3(s.nh3)];
+    var overall = sts.indexOf('danger')>=0 ? 'danger' : (sts.indexOf('warn')>=0 ? 'warn' : 'safe');
+    visual.classList.add('glow-'+overall);
+
+    // DeltaV station state
+    var isDead = pond.power.source==='battery' && pond.power.battery<=0;
+    visual.classList.toggle('data-dead', isDead);
+    var led = document.getElementById('stationLed');
+    var conn = document.getElementById('stationConn');
+    if(led){ led.classList.toggle('dead', isDead); }
+    if(conn){ conn.classList.toggle('dead', isDead); conn.textContent = isDead ? '📵' : '📶'; }
+
+    renderPondModules(pond);
     renderSparkline(pond);
+  }
+
+  function renderBubbles(pond){
+    var c = document.getElementById('bubbleContainer');
+    if(!c) return;
+    var key = (pond.aeration.on?'1':'0')+'-'+Math.floor(pond.aeration.power/15);
+    if(c.getAttribute('data-bk') === key) return;
+    c.setAttribute('data-bk', key);
+    if(!pond.aeration.on){ c.innerHTML=''; return; }
+    var count = Math.max(4, Math.floor(pond.aeration.power/8));
+    var h = '';
+    for(var i=0;i<count;i++){
+      var left = 24+Math.random()*18;
+      var sz = 2.5+Math.random()*5;
+      var dur = 2.2+Math.random()*2.5;
+      var del = Math.random()*dur;
+      var mop = 0.25+Math.random()*0.4;
+      var rh = -(70+Math.random()*80);
+      h += '<div class="bubble-enhanced" style="left:'+left+'%;bottom:32%;width:'+sz+'px;height:'+sz+'px;--dur:'+dur+'s;--delay:'+del+'s;--max-op:'+mop+';--rise-h:'+rh+'px;"></div>';
+    }
+    c.innerHTML = h;
+  }
+
+  function renderSensorOverlay(pond){
+    var o = document.getElementById('sensorMiniOverlay');
+    if(!o) return;
+    var s = pond.sensors;
+    o.innerHTML =
+      '<div class="sensor-mini-tag"><span class="sensor-mini-dot '+statusDO(s.do_)+'"></span>DO '+s.do_.toFixed(1)+'</div>'
+      +'<div class="sensor-mini-tag"><span class="sensor-mini-dot '+statusPH(s.ph)+'"></span>pH '+s.ph.toFixed(1)+'</div>'
+      +'<div class="sensor-mini-tag"><span class="sensor-mini-dot '+statusTemp(s.temp)+'"></span>'+s.temp.toFixed(1)+'°</div>';
   }
 
   function renderPondPower(pond){
@@ -1025,7 +1496,6 @@
     document.querySelectorAll('.nav-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
         setActiveTab(btn.getAttribute('data-tab'));
-        document.getElementById('tabContent').scrollTop = 0;
       });
     });
     document.querySelectorAll('.segmented button').forEach(function(btn){
@@ -1044,6 +1514,19 @@
     document.getElementById('resetDemoBtn').addEventListener('click', resetDemo);
     document.getElementById('addPondBtn').addEventListener('click', function(){
       showToast('Bản demo: liên hệ đội kỹ thuật để lắp thêm ao mới.');
+    });
+    document.getElementById('doInfoBtn').addEventListener('click', openDoInfo);
+    document.getElementById('doInfoCloseBtn').addEventListener('click', closeDoInfo);
+    document.getElementById('doInfoOverlay').addEventListener('click', function(e){
+      if(e.target === e.currentTarget) closeDoInfo();
+    });
+    document.addEventListener('click', function(e){
+      if(!e.target.closest('.pond-module')){
+        document.querySelectorAll('.pond-module.tooltip-active').forEach(function(m){ m.classList.remove('tooltip-active'); });
+      }
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeDoInfo();
     });
     document.getElementById('calcCurrentCost').addEventListener('input', updateCalculator);
     document.getElementById('calcSavingsPercent').addEventListener('input', updateCalculator);

@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A2A3D">
+<title>PondPulse — Trạm Đa Năng Đáy Hồ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --deep:#0A2A3D;
+    --navy:#123B54;
+    --teal:#1E5A72;
+    --brand:#2C8C5A;
+    --brand-dark:#1F6B43;
+    --brand-light:rgba(44,140,90,.13);
+    --sky:#BFDCF2;
+    --page-bg:#F6F4EC;
+    --card-bg:#FFFFFF;
+    --card-border:#E4E1D6;
+    --ink:#12262F;
+    --ink-soft:#5C6E76;
+    --amber:#E8A23D;
+    --coral:#D8563E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Be Vietnam Pro',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#E4E9DC,#D6DECE);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:24px 12px;
+  }
+  button, input{ font-family:inherit; }
+  button:focus-visible, input:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+
+  .app-shell{
+    width:100%;
+    max-width:428px;
+    background:var(--page-bg);
+    border-radius:34px;
+    box-shadow:0 24px 60px -20px rgba(10,42,61,.5), 0 0 0 8px #0A2A3D;
+    overflow:hidden;
+    min-height:860px;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+  @media (max-width:480px){
+    body{ padding:0; background:var(--page-bg); }
+    .app-shell{ max-width:100%; border-radius:0; box-shadow:none; min-height:100vh; }
+  }
+
+  /* ---------- header ---------- */
+  .app-header{
+    flex:0 0 auto;
+    position:relative;
+    padding:18px 18px 22px;
+    background:linear-gradient(135deg,var(--deep) 0%,var(--navy) 55%,var(--teal) 100%);
+    color:#fff;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    overflow:hidden;
+  }
+  .app-header::after{
+    content:''; position:absolute; left:-10%; right:-10%; bottom:-1px; height:20px;
+    background:var(--page-bg); clip-path:ellipse(58% 100% at 50% 100%);
+  }
+  .app-header::before{
+    content:''; position:absolute; top:-40px; right:-30px; width:140px; height:140px; border-radius:50%;
+    background:radial-gradient(circle, rgba(191,220,242,.18), transparent 70%);
+  }
+  .brand-row{ display:flex; align-items:center; gap:8px; position:relative; z-index:1; }
+  .brand-logo{ font-size:20px; }
+  .brand-name{ font-size:17px; font-weight:800; letter-spacing:.01em; }
+  .eyebrow{ font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--sky); font-weight:700; opacity:.85; }
+  .conn-status{ display:flex; align-items:center; gap:6px; font-size:11px; color:#DCEAF5; margin-top:6px; position:relative; z-index:1;}
+  .conn-dot{ width:7px;height:7px;border-radius:50%; background:#57D68D; animation:pulse 2s infinite; }
+  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(87,214,141,.5);} 70%{box-shadow:0 0 0 6px rgba(87,214,141,0);} 100%{box-shadow:0 0 0 0 rgba(87,214,141,0);} }
+  .header-actions{ position:relative; z-index:1; }
+
+  /* ---------- tab content ---------- */
+  .tab-content{ flex:1 1 auto; overflow-y:auto; padding:14px 16px 108px; -webkit-overflow-scrolling:touch; }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; animation:fadeIn .25s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+  .panel-eyebrow{ font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--brand-dark); font-weight:700; margin-bottom:2px;}
+  .panel-title{ font-size:19px; font-weight:800; margin:0 0 4px; }
+  .panel-subtitle{ font-size:12.5px; color:var(--ink-soft); margin:0 0 14px; line-height:1.55; }
+
+  /* ---------- buttons ---------- */
+  .btn{ border:none; border-radius:12px; padding:12px 16px; font-weight:700; font-size:13.5px; cursor:pointer; }
+  .btn-primary{ background:var(--brand); color:#fff; width:100%;}
+  .btn-amber{ background:var(--amber); color:#402A08; width:100%;}
+  .btn-outline{ background:#fff; border:1px solid var(--card-border); color:var(--ink); width:100%; }
+  .btn-danger-outline{ background:#fff; border:1px solid var(--coral); color:var(--coral); width:100%; }
+  .btn-small{ padding:8px 12px; font-size:12px; width:auto; }
+
+  /* ---------- pond list ---------- */
+  .pond-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:12px; cursor:pointer; transition:transform .12s, box-shadow .12s; }
+  .pond-card:active{ transform:scale(.98); }
+  .pond-card:hover{ box-shadow:0 4px 16px rgba(10,42,61,.08); }
+  .pond-card-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .pond-avatar{ width:40px;height:40px;border-radius:50%; background:var(--brand-light); display:flex;align-items:center;justify-content:center; font-size:19px; flex:0 0 auto; }
+  .pond-card-info{ flex:1; min-width:0; }
+  .pond-card-info h4{ margin:0; font-size:15px; font-weight:700; }
+  .pond-card-info span{ font-size:11.5px; color:var(--ink-soft); }
+  .pond-mini-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .mini-badge{ font-size:10.5px; background:var(--page-bg); border:1px solid var(--card-border); border-radius:8px; padding:4px 7px; display:flex; gap:4px; align-items:center; color:var(--ink-soft);}
+  .mini-badge b{ color:var(--ink); font-family:'JetBrains Mono',monospace; font-weight:700; }
+  .pond-card-footer{ display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--ink-soft); border-top:1px solid var(--card-border); padding-top:9px; }
+  .add-pond-btn{ border:1.5px dashed var(--card-border); background:transparent; border-radius:16px; padding:16px; text-align:center; color:var(--ink-soft); font-weight:700; font-size:13px; cursor:pointer; width:100%; }
+  .add-pond-btn:hover{ border-color:var(--brand); color:var(--brand-dark); }
+
+  /* ---------- pond detail ---------- */
+  .pond-detail-view{ display:none; }
+  .pond-detail-view.active{ display:block; }
+  .detail-header{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .back-btn{ width:34px;height:34px;border-radius:50%; border:1px solid var(--card-border); background:#fff; display:flex;align-items:center;justify-content:center; font-size:16px; cursor:pointer; flex:0 0 auto; color:var(--ink);}
+  .detail-header-info h2{ margin:0; font-size:17px; font-weight:800; }
+  .detail-header-info span{ font-size:12px; color:var(--ink-soft); }
+  .segmented{ display:flex; background:#EAE7DB; border-radius:12px; padding:4px; gap:4px; margin-bottom:16px; }
+  .segmented button{ flex:1; border:none; background:transparent; padding:9px 4px; border-radius:9px; font-size:12.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; }
+  .segmented button.active{ background:#fff; color:var(--brand-dark); box-shadow:0 1px 4px rgba(0,0,0,.1); }
+  .pond-subpanel{ display:none; }
+  .pond-subpanel.active{ display:block; animation:fadeIn .2s ease; }
+
+  /* ---------- pond visual (signature element) ---------- */
+  .pond-visual{
+    position:relative; height:200px; border-radius:20px; overflow:hidden;
+    background:linear-gradient(180deg, var(--teal) 0%, var(--deep) 85%);
+    box-shadow:inset 0 0 30px rgba(0,0,0,.25);
+    transition:box-shadow .3s;
+  }
+  .pond-visual.on-battery{ box-shadow:inset 0 0 0 2px var(--amber), inset 0 0 30px rgba(0,0,0,.25); }
+  .pond-visual.aeration-off .bubble{ animation-play-state:paused; opacity:.12; }
+  .surface-line{ position:absolute; top:28px; left:0; right:0; border-top:1px dashed rgba(255,255,255,.35); }
+  .buoy{
+    position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    background:var(--page-bg); color:var(--ink); font-family:'JetBrains Mono',monospace; font-size:12px;
+    padding:5px 10px; border-radius:20px; display:flex; align-items:center; gap:5px;
+    box-shadow:0 4px 10px rgba(0,0,0,.3); z-index:2;
+  }
+  .buoy::after{ content:''; position:absolute; top:-9px; left:50%; transform:translateX(-50%); width:1px; height:8px; background:rgba(255,255,255,.5); }
+  .tether{ position:absolute; top:40px; bottom:54px; left:50%; width:0; border-left:2px dashed rgba(255,255,255,.3); }
+  .device-block{
+    position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+    width:84px; height:34px; border-radius:10px; background:linear-gradient(180deg,#1c5b70,#0d3745);
+    border:1px solid rgba(255,255,255,.25); display:flex; align-items:center; justify-content:center; gap:6px;
+    box-shadow:0 6px 16px rgba(0,0,0,.4); z-index:2;
+  }
+  .device-block .dot{ width:7px;height:7px;border-radius:50%; background:var(--amber); animation:blink 2.4s infinite; }
+  .device-block .dot:nth-child(2){ animation-delay:.3s; background:#57D68D;}
+  .device-block .dot:nth-child(3){ animation-delay:.6s; background:#8FC1D9;}
+  .device-block .dot:nth-child(4){ animation-delay:.9s; background:var(--sky);}
+  @keyframes blink{ 0%,100%{opacity:.35;} 50%{opacity:1;} }
+  .bubble{ position:absolute; bottom:48px; width:5px;height:5px;border-radius:50%; background:rgba(255,255,255,.5); animation:rise 3s linear infinite; }
+  .bubble:nth-child(4){ left:44%; animation-delay:0s;}
+  .bubble:nth-child(5){ left:50%; animation-delay:.7s;}
+  .bubble:nth-child(6){ left:56%; animation-delay:1.4s;}
+  .bubble:nth-child(7){ left:47%; animation-delay:2.1s;}
+  @keyframes rise{ 0%{ transform:translateY(0); opacity:0;} 15%{opacity:.7;} 100%{ transform:translateY(-140px); opacity:0;} }
+  .pond-caption{ font-size:10.5px; color:var(--ink-soft); text-align:center; margin-top:8px; line-height:1.6; }
+
+  /* ---------- gauges ---------- */
+  .gauge-row{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
+  .gauge-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:12px 4px; text-align:center; }
+  .gauge-label{ font-size:11px; color:var(--ink-soft); font-weight:600;}
+  .gauge-value{ font-family:'JetBrains Mono',monospace; font-size:21px; font-weight:700; margin:4px 0 6px; }
+  .gauge-unit{ font-size:10px; color:var(--ink-soft); margin-left:2px;}
+  .pill{ display:inline-block; font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; }
+  .pill-safe{ background:var(--brand-light); color:var(--brand-dark); }
+  .pill-warn{ background:rgba(232,162,61,.2); color:#8A5A11; }
+  .pill-danger{ background:rgba(216,86,62,.16); color:var(--coral); }
+  .gauge-note{ font-size:10.5px; color:var(--ink-soft); margin-top:10px; line-height:1.6; }
+
+  .chart-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:14px; margin-top:14px; }
+  .chart-card h3{ font-size:13px; margin:0 0 4px; }
+  .chart-card p.hint{ font-size:11px; color:var(--ink-soft); margin:0 0 10px; }
+  svg#sparkline{ width:100%; height:70px; display:block; }
+  svg#sparkline polyline{ fill:none; stroke:var(--brand); stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* ---------- power / eco ---------- */
+  .power-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:16px; margin-bottom:14px; }
+  .power-source{ display:flex; align-items:center; gap:10px; }
+  .power-source .icon{ font-size:26px; }
+  .power-source .info h4{ margin:0; font-size:14px;}
+  .power-source .info span{ font-size:12px; color:var(--ink-soft);}
+  .battery-track{ height:10px; border-radius:6px; background:#EAF1EF; margin:14px 0 8px; overflow:hidden;}
+  .battery-fill{ height:100%; border-radius:6px; transition:width .4s; }
+  .battery-fill.ok{ background:var(--brand); }
+  .battery-fill.warn{ background:var(--amber); }
+  .battery-fill.crit{ background:var(--coral); }
+  .battery-row{ display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); }
+  .battery-row b{ font-family:'JetBrains Mono',monospace; color:var(--ink); }
+  .outage-warning{ display:none; margin-top:14px; padding:12px; border-radius:12px; background:rgba(232,162,61,.12); border:1px solid rgba(232,162,61,.4); font-size:12px; line-height:1.65;}
+  .outage-warning b{ color:#8A5A11; }
+  .switch-row{ display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .switch{ position:relative; width:44px; height:26px; flex:0 0 auto;}
+  .switch input{ opacity:0; width:0; height:0; }
+  .slider-toggle{ position:absolute; inset:0; background:#DCE4E2; border-radius:20px; cursor:pointer; transition:.3s; }
+  .slider-toggle:before{ content:''; position:absolute; width:20px; height:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.3s; box-shadow:0 1px 3px rgba(0,0,0,.3);}
+  input:checked + .slider-toggle{ background:var(--brand); }
+  input:checked + .slider-toggle:before{ transform:translateX(18px); }
+  input[type=range]:disabled{ opacity:.4; }
+  .field-hint{ font-size:10.5px; color:var(--ink-soft); margin-top:8px; line-height:1.55; }
+  .freq-row{ display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); margin-top:10px; }
+  .freq-row b{ font-family:'JetBrains Mono',monospace; color:var(--ink); }
+  .eco-hint{ display:none; margin-top:10px; font-size:11.5px; color:var(--brand-dark); background:var(--brand-light); border:1px solid rgba(44,140,90,.35); border-radius:10px; padding:9px 10px; line-height:1.6; }
+
+  /* ---------- control ---------- */
+  .control-card{ background:#fff; border:1px solid var(--card-border); border-radius:16px; padding:16px; margin-bottom:14px;}
+  .sludge-track{ height:10px; border-radius:6px; background:#EAF1EF; overflow:hidden; margin-top:10px;}
+  .sludge-fill{ height:100%; background:var(--brand); transition:width .4s;}
+  .sludge-fill.crit{ background:var(--coral); }
+
+  /* ---------- alerts / history ---------- */
+  .alert-item{ border-radius:12px; padding:12px; margin-bottom:10px; border-left:4px solid; background:#fff; border:1px solid var(--card-border); }
+  .alert-item.alert-danger{ border-left-color:var(--coral); }
+  .alert-item.alert-warn{ border-left-color:var(--amber); }
+  .alert-item.alert-info{ border-left-color:var(--sky); }
+  .alert-top{ display:flex; justify-content:space-between; gap:8px; font-weight:700; font-size:12.5px; }
+  .alert-time{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--ink-soft); font-weight:400; white-space:nowrap;}
+  .alert-msg{ font-size:12px; color:var(--ink-soft); margin-top:4px; line-height:1.5;}
+  .alert-pond-tag{ display:inline-block; margin-top:7px; font-size:10px; font-weight:700; color:var(--brand-dark); background:var(--brand-light); padding:2px 8px; border-radius:10px; }
+  .log-pond-tag{ font-size:9.5px; font-weight:700; color:var(--brand-dark); background:var(--brand-light); padding:1px 6px; border-radius:8px; margin-left:4px; }
+  .empty-state{ text-align:center; padding:44px 10px; color:var(--ink-soft); font-size:13px; }
+  .log-item{ display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--card-border); font-size:12px; }
+  .log-time{ font-family:'JetBrains Mono',monospace; color:var(--ink-soft); flex:0 0 58px; }
+  .log-icon{ flex:0 0 18px; }
+  .log-text{ flex:1; line-height:1.5;}
+
+  /* ---------- system tab ---------- */
+  .pipeline-step{ display:flex; flex-direction:column; gap:2px; }
+  .pipeline-step-top{ display:flex; align-items:center; gap:8px; }
+  .step-num{ display:inline-flex; width:20px;height:20px;border-radius:50%; background:var(--brand-light); color:var(--brand-dark); font-size:11px; font-weight:800; align-items:center; justify-content:center; flex:0 0 auto; }
+  .pipeline-step h4{ margin:0; font-size:13.5px; }
+  .pipeline-step span{ font-size:11px; color:var(--ink-soft); padding-left:28px; line-height:1.5; }
+  .pipeline-arrow{ text-align:center; color:var(--brand); font-size:15px; padding:2px 0; }
+  .compare-table{ width:100%; border-collapse:collapse; font-size:11.5px; margin-top:10px; }
+  .compare-table th,.compare-table td{ text-align:left; padding:8px 5px; border-bottom:1px solid var(--card-border); vertical-align:top; }
+  .compare-table th{ color:var(--ink-soft); font-weight:700; }
+  .calc-row{ display:flex; flex-direction:column; gap:6px; margin-top:12px;}
+  .calc-row label{ font-size:12px; font-weight:600; color:var(--ink-soft);}
+  .calc-row input[type=number]{ padding:10px; border-radius:10px; border:1px solid var(--card-border); font-family:'JetBrains Mono',monospace; font-size:14px; width:100%;}
+  input[type=range]{ width:100%; accent-color:var(--brand); }
+  .calc-result{ display:flex; justify-content:space-between; padding:9px 0; border-top:1px dashed var(--card-border); font-size:12.5px;}
+  .calc-result b{ font-family:'JetBrains Mono',monospace; }
+  .limit-card{ background:#FFF7ED; border:1px solid #F3D9AE; border-radius:14px; padding:14px; margin-top:14px; font-size:12px; line-height:1.7; }
+  .limit-card h3{ margin:0 0 6px; font-size:13px; }
+  .limit-card ul{ margin:0; padding-left:18px; }
+
+  /* ---------- toast ---------- */
+  .toast{ position:absolute; left:50%; bottom:78px; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:10px 16px; border-radius:20px; font-size:12.5px; opacity:0; pointer-events:none; transition:all .25s; z-index:50; max-width:82%; text-align:center; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ---------- bottom nav ---------- */
+  .bottom-nav{ flex:0 0 auto; display:flex; background:#fff; border-top:1px solid var(--card-border); padding:6px 4px calc(6px + env(safe-area-inset-bottom)); position:relative; z-index:5; }
+  .nav-btn{ flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 2px; color:var(--ink-soft); font-size:10px; font-weight:600; cursor:pointer; position:relative; }
+  .nav-btn .nav-icon{ font-size:19px; }
+  .nav-btn.active{ color:var(--brand-dark); }
+  .nav-badge{ display:none; position:absolute; top:0; right:20%; background:var(--coral); color:#fff; font-size:9px; font-weight:800; min-width:15px; height:15px; border-radius:8px; align-items:center; justify-content:center; padding:0 3px; }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="app-header">
+    <div>
+      <div class="brand-row"><span class="brand-logo">🐟</span><span class="brand-name">PondPulse</span></div>
+      <span class="eyebrow">Trạm Đa Năng Đáy Hồ — demo mô phỏng</span>
+      <div class="conn-status"><span class="conn-dot"></span> Đã kết nối qua WiFi</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline btn-small" id="pauseBtn" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff;">⏸️ Tạm dừng</button>
+    </div>
+  </header>
+
+  <main class="tab-content" id="tabContent">
+
+    <!-- ===== PONDS (list + detail) ===== -->
+    <section class="tab-panel active" id="tab-ponds">
+
+      <div class="pond-list-view active" id="pondListView">
+        <div class="panel-eyebrow">Quản lý đa ao</div>
+        <h2 class="panel-title">Ao nuôi của tôi</h2>
+        <p class="panel-subtitle">Theo dõi nhiều ao cùng lúc chỉ trên 1 màn hình — phù hợp hộ nuôi quy mô lớn hoặc chủ trang trại nhiều ao.</p>
+        <div id="pondListCards"></div>
+        <button class="add-pond-btn" id="addPondBtn">+ Thêm ao mới</button>
+      </div>
+
+      <div class="pond-detail-view" id="pondDetailView">
+        <div class="detail-header">
+          <button class="back-btn" id="backToListBtn" aria-label="Quay lại danh sách ao">←</button>
+          <div class="detail-header-info">
+            <h2 id="pondDetailName">Ao 1</h2>
+            <span id="pondDetailMeta">Vị Thanh, Hậu Giang • 500 m²</span>
+          </div>
+        </div>
+
+        <div class="segmented">
+          <button id="pondTabBtn-overview" data-pondtab="overview" class="active">Tổng quan</button>
+          <button id="pondTabBtn-power" data-pondtab="power">Nguồn điện</button>
+          <button id="pondTabBtn-control" data-pondtab="control">Điều khiển</button>
+        </div>
+
+        <!-- Overview -->
+        <div class="pond-subpanel active" id="pondPanel-overview">
+          <div class="pond-visual" id="pondVisual">
+            <div class="surface-line"></div>
+            <div class="buoy"><span id="buoyIcon">🔌</span><span id="buoyBattery">96%</span></div>
+            <div class="tether"></div>
+            <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            <div class="device-block"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          </div>
+          <p class="pond-caption">Phao nổi (nguồn &amp; kết nối) — dây tín hiệu — khối chìm gộp 4 chức năng: sục khí vi bọt • lọc sinh học • xi‑phông tự động • cảm biến DO/pH/nhiệt độ</p>
+
+          <div class="gauge-row">
+            <div class="gauge-card">
+              <div class="gauge-label">DO</div>
+              <div class="gauge-value" id="doValue">5.8<span class="gauge-unit">mg/L</span></div>
+              <span class="pill pill-safe" id="doPill">An toàn</span>
+            </div>
+            <div class="gauge-card">
+              <div class="gauge-label">pH</div>
+              <div class="gauge-value" id="phValue">7.2</div>
+              <span class="pill pill-safe" id="phPill">An toàn</span>
+            </div>
+            <div class="gauge-card">
+              <div class="gauge-label">Nhiệt độ</div>
+              <div class="gauge-value" id="tempValue">28.4<span class="gauge-unit">°C</span></div>
+              <span class="pill pill-safe" id="tempPill">An toàn</span>
+            </div>
+            <div class="gauge-card">
+              <div class="gauge-label">NH₃ (khí độc)</div>
+              <div class="gauge-value" id="nh3Value">0.08<span class="gauge-unit">mg/L</span></div>
+              <span class="pill pill-safe" id="nh3Pill">An toàn</span>
+            </div>
+          </div>
+          <p class="gauge-note">📍 Cảm biến DO đặt tại điểm oxy thấp nhất của ao, cách xa dòng sủi bọt trực tiếp — tránh đo nhầm oxy cục bộ tăng cao do chính máy tạo ra. NH₃ do lõi lọc sinh học xử lý liên tục; H₂S không đo trực tiếp mà suy ra qua mức bùn tích tụ đáy (xem tab Điều khiển).</p>
+
+          <div class="chart-card">
+            <h3>Xu hướng DO — 1 phút gần nhất</h3>
+            <p class="hint">DO là chỉ số sống còn nhất: chỉ cần tụt nhanh trong vài phút là nguy hiểm cho cá.</p>
+            <svg id="sparkline" viewBox="0 0 300 70" preserveAspectRatio="none"><polyline points=""></polyline></svg>
+          </div>
+        </div>
+
+        <!-- Power -->
+        <div class="pond-subpanel" id="pondPanel-power">
+          <div class="power-card">
+            <div class="power-source">
+              <span class="icon" id="powerSourceIcon">🔌</span>
+              <div class="info">
+                <h4 id="powerSourceLabel">Điện lưới</h4>
+                <span>Mạch chuyển nguồn tự động (ATS)</span>
+              </div>
+            </div>
+            <div class="battery-track"><div class="battery-fill ok" id="batteryFillBar" style="width:96%"></div></div>
+            <div class="battery-row"><span>Pin dự phòng</span><b id="batteryPercentText">96%</b></div>
+
+            <div class="outage-warning" id="outageWarning">
+              <b>⚡ Đang chạy bằng pin dự phòng.</b><br>
+              Thời gian pin còn lại ước tính: <b id="batteryTimeLeft">—</b>.<br>
+              So sánh: hệ thống rời truyền thống chỉ có <b>20–40 phút</b> trước khi cá bắt đầu chết hàng loạt vì thiếu oxy.
+            </div>
+
+            <button class="btn btn-amber" id="outageBtn" style="margin-top:14px;">⚡ Giả lập mất điện lưới</button>
+          </div>
+
+          <div class="power-card">
+            <div class="switch-row">
+              <div>
+                <h4 style="margin:0;font-size:14px;">🌙 Chế độ tiết kiệm điện</h4>
+                <span style="font-size:12px;color:var(--ink-soft);">Ưu tiên tải quan trọng khi chạy bằng pin</span>
+              </div>
+              <label class="switch"><input type="checkbox" id="ecoModeToggle"><span class="slider-toggle"></span></label>
+            </div>
+            <p class="field-hint">Tự động bật khi mất điện lưới, có thể bật/tắt thủ công. Khi bật: xi‑phông tự động tạm dừng + tần suất gửi dữ liệu giảm — để dồn điện năng cho <b>sục khí</b>, tải quan trọng nhất (cá cần oxy để sống), nên <b>không bao giờ</b> bị giảm công suất.</p>
+            <div class="freq-row"><span>Tần suất gửi dữ liệu</span><b id="dataFreqText">mỗi 5 phút</b></div>
+            <div class="eco-hint" id="ecoHint">✅ Đang tiết kiệm điện — thời gian pin dự phòng được kéo dài hơn.</div>
+          </div>
+        </div>
+
+        <!-- Control -->
+        <div class="pond-subpanel" id="pondPanel-control">
+          <div class="control-card">
+            <div class="switch-row">
+              <div>
+                <h4 style="margin:0;font-size:14px;">Sục khí vi bọt</h4>
+                <span style="font-size:12px;color:var(--ink-soft);">Đĩa khí bọt mịn &lt;3mm + bơm DC</span>
+              </div>
+              <label class="switch"><input type="checkbox" id="aerationToggle" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div style="margin-top:14px;">
+              <label style="font-size:12px;font-weight:600;color:var(--ink-soft);">Công suất: <span id="aerationPowerText">70%</span></label>
+              <input type="range" id="aerationPowerRange" min="0" max="100" value="70">
+            </div>
+          </div>
+
+          <div class="control-card">
+            <div class="switch-row" style="align-items:flex-start;">
+              <h4 style="margin:0;font-size:14px;">Xi‑phông tự động</h4>
+              <span class="pill pill-safe" id="h2sPill">Nguy cơ H₂S: Thấp</span>
+            </div>
+            <span style="font-size:12px;color:var(--ink-soft);" id="sludgeText">14% — tự động kích hoạt khi đạt 92%</span>
+            <div class="sludge-track"><div class="sludge-fill" id="sludgeBarFill" style="width:14%"></div></div>
+            <p class="field-hint">H₂S không có cảm biến riêng — bùn tích tụ càng nhiều, nguy cơ H₂S càng cao. Xi‑phông kịp thời là cách kiểm soát H₂S gián tiếp.</p>
+            <button class="btn btn-outline" id="manualSiphonBtn" style="margin-top:12px;">🧹 Kích hoạt xi‑phông thủ công</button>
+          </div>
+
+          <div class="control-card">
+            <h4 style="margin:0 0 6px;font-size:14px;">Demo tình huống</h4>
+            <button class="btn btn-danger-outline" id="simLowDOBtn">🧪 Giả lập sự cố DO tụt thấp</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ALERTS (toàn bộ ao) ===== -->
+    <section class="tab-panel" id="tab-alerts">
+      <div class="panel-eyebrow">Tất cả các ao</div>
+      <h2 class="panel-title">Cảnh báo tự động</h2>
+      <p class="panel-subtitle">Tổng hợp cảnh báo từ toàn bộ ao đang quản lý, mới nhất trước.</p>
+      <div id="alertsList"></div>
+      <div class="empty-state" id="alertsEmpty">Chưa có cảnh báo nào. Tất cả các ao đang hoạt động ổn định.</div>
+      <button class="btn btn-outline btn-small" id="clearAlertsBtn" style="margin-top:8px;">Xóa tất cả cảnh báo</button>
+    </section>
+
+    <!-- ===== HISTORY (toàn bộ ao) ===== -->
+    <section class="tab-panel" id="tab-history">
+      <div class="panel-eyebrow">Tất cả các ao</div>
+      <h2 class="panel-title">Nhật ký vận hành</h2>
+      <p class="panel-subtitle">Log xi‑phông, sự cố mất điện, thao tác điều khiển của mọi ao.</p>
+      <div id="logList"></div>
+    </section>
+
+    <!-- ===== SYSTEM ===== -->
+    <section class="tab-panel" id="tab-system">
+      <div class="panel-eyebrow">PondPulse</div>
+      <h2 class="panel-title">Hệ thống &amp; công cụ</h2>
+
+      <div class="power-card">
+        <h3 style="margin:0 0 4px;font-size:14px;">Kiến trúc kết nối dữ liệu</h3>
+        <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Đường đi thật của 1 chỉ số đo được, từ đáy ao lên màn hình điện thoại.</p>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-top"><span class="step-num">1</span><h4>4 thiết bị dưới đáy ao</h4></div>
+          <span>Cảm biến DO/pH/nhiệt độ · sục khí vi bọt · xi‑phông tự động · lọc sinh học</span>
+        </div>
+        <div class="pipeline-arrow">↓</div>
+        <div class="pipeline-step">
+          <div class="pipeline-step-top"><span class="step-num">2</span><h4>Module ESP32 (Arduino)</h4></div>
+          <span>Nhận toàn bộ dữ liệu từ 3 thiết bị điện tử qua bus RS485 Modbus RTU</span>
+        </div>
+        <div class="pipeline-arrow">↓</div>
+        <div class="pipeline-step">
+          <div class="pipeline-step-top"><span class="step-num">3</span><h4>Gateway</h4></div>
+          <span>Chuẩn hóa dữ liệu thành định dạng JSON phù hợp</span>
+        </div>
+        <div class="pipeline-arrow">↓</div>
+        <div class="pipeline-step">
+          <div class="pipeline-step-top"><span class="step-num">4</span><h4>App di động PondPulse</h4></div>
+          <span>Gateway gửi qua WiFi để đồng bộ dữ liệu, hiển thị và điều khiển từ xa</span>
+        </div>
+
+        <p class="field-hint" style="margin-top:12px;">*Lọc sinh học là vật liệu thụ động (giá thể vi sinh), không có điện tử nên không nằm trên bus — chỉ 3/4 thiết bị thật sự kết nối vào module ESP32.</p>
+      </div>
+
+      <div class="power-card">
+        <h3 style="margin:0 0 4px;font-size:14px;">So sánh hệ thống</h3>
+        <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0;">Trạm Đa Năng gộp 4 thiết bị rời thành 1 khối, giảm điểm hỏng và chi phí lắp đặt.</p>
+        <table class="compare-table">
+          <tr><th></th><th>Hệ thống rời</th><th>Trạm Đa Năng</th></tr>
+          <tr><td>Điểm hỏng độc lập</td><td>4 thiết bị riêng</td><td>1 khối tích hợp</td></tr>
+          <tr><td>Dự phòng mất điện</td><td>Không có / máy phát riêng</td><td>Pin sạc‑lưới tự động</td></tr>
+          <tr><td>Thời gian phản ứng</td><td>~20–40 phút</td><td>Vài giờ (pin dự phòng)</td></tr>
+          <tr><td>Giám sát</td><td>Đo thủ công</td><td>Tự động, cảnh báo qua app</td></tr>
+        </table>
+      </div>
+
+      <div class="power-card">
+        <h3 style="margin:0 0 4px;font-size:14px;">Máy tính tiết kiệm điện</h3>
+        <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0;">Ước tính minh họa dựa trên mức giảm chi phí vận hành 40–50% khi chuyển từ quạt nước sang sục khí vi bọt (nguồn: nextfarm.vn).</p>
+        <div class="calc-row">
+          <label for="calcCurrentCost">Chi phí điện hiện tại / tháng (VNĐ)</label>
+          <input type="number" id="calcCurrentCost" value="3000000" min="0" step="100000">
+        </div>
+        <div class="calc-row">
+          <label for="calcSavingsPercent">Mức giảm kỳ vọng: <span id="calcSavingsPercentText">45%</span></label>
+          <input type="range" id="calcSavingsPercent" min="40" max="50" value="45">
+        </div>
+        <div class="calc-result"><span>Chi phí điện mới / tháng</span><b id="calcNewCost">—</b></div>
+        <div class="calc-result"><span>Tiết kiệm / tháng</span><b id="calcSavingsAmount">—</b></div>
+        <div class="calc-result"><span>Tiết kiệm / năm</span><b id="calcSavingsYear">—</b></div>
+        <p class="field-hint">🧮 Công cụ ước tính tài chính — kéo thanh trượt không ảnh hưởng đến các ao đang mô phỏng.</p>
+      </div>
+
+      <div class="power-card">
+        <h3 style="margin:0 0 4px;font-size:14px;">Ước tính chi phí đầu tư (CAPEX)</h3>
+        <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0;">Áp dụng cho 1 ao hoặc nhiều ao (mỗi ao lắp riêng số khối cần thiết).</p>
+        <div class="calc-row">
+          <label for="capexPondArea">Diện tích mỗi ao (m²)</label>
+          <input type="number" id="capexPondArea" value="500" min="1" step="50">
+        </div>
+        <div class="calc-row">
+          <label for="capexNumPonds">Số ao áp dụng</label>
+          <input type="number" id="capexNumPonds" value="3" min="1" step="1">
+          <p class="field-hint">*Mặc định lấy theo số ao bạn đang quản lý trong PondPulse.</p>
+        </div>
+        <div class="calc-row">
+          <label for="capexAreaPerUnit">Diện tích 1 khối xử lý được (m²/khối)</label>
+          <input type="number" id="capexAreaPerUnit" value="500" min="1" step="50">
+          <p class="field-hint">*Giả định minh họa, cần xác định qua thử nghiệm thực địa.</p>
+        </div>
+        <div class="calc-row">
+          <label for="capexUnitPrice">Đơn giá ước tính 1 khối (VNĐ)</label>
+          <input type="number" id="capexUnitPrice" value="8000000" min="0" step="500000">
+          <p class="field-hint">*Chưa có báo giá chính thức — nhập số liệu thực tế khi có.</p>
+        </div>
+        <div class="calc-result"><span>Số khối cần / ao</span><b id="capexUnitsPerPond">—</b></div>
+        <div class="calc-result"><span>Tổng số khối cần</span><b id="capexTotalUnits">—</b></div>
+        <div class="calc-result"><span>Tổng chi phí đầu tư</span><b id="capexTotalCost">—</b></div>
+        <div class="calc-result"><span>Chi phí trung bình / ao</span><b id="capexAvgPerPond">—</b></div>
+      </div>
+
+      <div class="limit-card">
+        <h3>⚠️ Giới hạn cần lưu ý</h3>
+        <ul>
+          <li>Ao lớn (&gt;1.000–2.000m²) có thể cần lắp nhiều khối thay vì một khối duy nhất.</li>
+          <li>Xi‑phông tự động là phần cơ khí dễ hỏng nhất nếu bùn quá đặc gây tắc nghẽn.</li>
+          <li>Pin dự phòng sạc‑lưới chỉ đủ vài giờ — không giải quyết mất điện kéo dài nhiều ngày (ví dụ bão). Cần phương án máy phát điện dùng chung cấp cụm hộ.</li>
+          <li>Cần thử nghiệm thực địa ít nhất 1–2 vụ nuôi trước khi khẳng định hiệu quả kinh tế thực tế.</li>
+        </ul>
+      </div>
+
+      <button class="btn btn-outline btn-small" id="resetDemoBtn" style="margin-top:16px;">↺ Đặt lại dữ liệu demo</button>
+    </section>
+
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-ponds" data-tab="ponds"><span class="nav-icon">🏞️</span>Quản lý ao</button>
+    <button class="nav-btn" id="nav-alerts" data-tab="alerts"><span class="nav-icon">🚨</span>Cảnh báo<span class="nav-badge" id="alertBadge">0</span></button>
+    <button class="nav-btn" id="nav-history" data-tab="history"><span class="nav-icon">📜</span>Nhật ký</button>
+    <button class="nav-btn" id="nav-system" data-tab="system"><span class="nav-icon">⚙️</span>Hệ thống</button>
+  </nav>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var STORAGE_KEY = 'pondpulse_state_v1';
+  var MAX_HOURS = 4;
+  var HISTORY_LEN = 30;
+
+  var PONDS_SEED = [
+    { id:'ao1', name:'Ao 1', location:'Vị Thanh, Hậu Giang', area:500 },
+    { id:'ao2', name:'Ao 2', location:'Vị Thanh, Hậu Giang', area:800 },
+    { id:'ao3', name:'Ao 3', location:'Long Mỹ, Hậu Giang', area:350 }
+  ];
+
+  function nowStr(){
+    var d = new Date();
+    return d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  }
+  function uid(){ return Date.now() + '-' + Math.random().toString(36).slice(2,7); }
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+  function round(v,d){ d = d || 1; var m = Math.pow(10,d); return Math.round(v*m)/m; }
+  function escapeHTML(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function formatVND(n){ return Math.round(n).toLocaleString('vi-VN') + ' đ'; }
+
+  function makePond(seed){
+    return {
+      id: seed.id, name: seed.name, location: seed.location, area: seed.area,
+      sensors: {
+        do_: round(5.6 + Math.random()*0.6,2),
+        ph: round(7.0 + Math.random()*0.4,2),
+        temp: round(27.8 + Math.random()*1.2,2),
+        nh3: round(0.06 + Math.random()*0.05,3)
+      },
+      history: [],
+      power: { source:'grid', battery: round(88 + Math.random()*10,1) },
+      aeration: { on:true, power:70 },
+      sludge: round(8 + Math.random()*10,1),
+      sludgeFullAlerted: false,
+      ecoMode: false,
+      lastStatus: { do_:'safe', ph:'safe', temp:'safe', nh3:'safe' }
+    };
+  }
+
+  function defaultState(){
+    return {
+      ponds: PONDS_SEED.map(makePond),
+      alerts: [],
+      log: [{ id:uid(), time:nowStr(), type:'system', text:'Hệ thống khởi động. Đang giám sát '+PONDS_SEED.length+' ao nuôi.', pondName:'Hệ thống' }],
+      selectedPondId: null,
+      activeTab: 'ponds',
+      pondTab: 'overview',
+      paused: false
+    };
+  }
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(e){ return null; }
+  }
+  function save(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  var state = load() || defaultState();
+
+  /* ---------- status logic ---------- */
+  function statusDO(v){ if(v >= 4.5) return 'safe'; if(v >= 3.0) return 'warn'; return 'danger'; }
+  function statusPH(v){
+    if(v >= 6.5 && v <= 8.0) return 'safe';
+    if((v >= 6.0 && v < 6.5) || (v > 8.0 && v <= 8.5)) return 'warn';
+    return 'danger';
+  }
+  function statusTemp(v){
+    if(v >= 26 && v <= 32) return 'safe';
+    if((v >= 24 && v < 26) || (v > 32 && v <= 34)) return 'warn';
+    return 'danger';
+  }
+  function statusNH3(v){ if(v < 0.1) return 'safe'; if(v < 0.25) return 'warn'; return 'danger'; }
+  function statusH2SRisk(sludge){ if(sludge < 50) return 'safe'; if(sludge < 80) return 'warn'; return 'danger'; }
+  var h2sLabel = { safe:'Thấp', warn:'Trung bình', danger:'Cao' };
+  var statusLabel = { safe:'An toàn', warn:'Cảnh báo', danger:'Nguy hiểm' };
+  var statusRank = { safe:0, warn:1, danger:2 };
+
+  function pushAlert(pond, level, title, msg){
+    state.alerts.unshift({ id: uid(), time: nowStr(), level: level, title: title, msg: msg, pondId: pond.id, pondName: pond.name });
+    if(state.alerts.length > 60) state.alerts.length = 60;
+  }
+  function pushLog(pond, type, text){
+    state.log.unshift({ id: uid(), time: nowStr(), type: type, text: text, pondId: pond ? pond.id : null, pondName: pond ? pond.name : 'Hệ thống' });
+    if(state.log.length > 80) state.log.length = 80;
+  }
+  function checkStatus(pond, key, current, label, valueDisplay){
+    var prev = pond.lastStatus[key];
+    if(statusRank[current] > statusRank[prev]){
+      var level = current === 'danger' ? 'danger' : 'warn';
+      pushAlert(pond, level, label + ' — ' + statusLabel[current], 'Giá trị hiện tại: ' + valueDisplay + '. Cần kiểm tra và xử lý.');
+    } else if(current === 'safe' && prev === 'danger'){
+      pushAlert(pond, 'info', label + ' đã trở lại an toàn', 'Giá trị hiện tại: ' + valueDisplay + '.');
+    }
+    pond.lastStatus[key] = current;
+  }
+
+  function getPond(id){
+    for(var i=0;i<state.ponds.length;i++){ if(state.ponds[i].id===id) return state.ponds[i]; }
+    return null;
+  }
+  function currentPond(){ return getPond(state.selectedPondId); }
+
+  /* ---------- simulation ---------- */
+  function simulatePond(pond){
+    var doTarget = pond.aeration.on ? (5.8 + (pond.aeration.power - 70) / 100) : 1.6;
+    var doNoise = (Math.random() - 0.5) * (pond.aeration.on ? 0.5 : 0.3);
+    var doDelta = (doTarget - pond.sensors.do_) * (pond.aeration.on ? 0.35 : 0.2);
+    pond.sensors.do_ = clamp(round(pond.sensors.do_ + doDelta + doNoise, 2), 0.2, 9.5);
+
+    var phDelta = (7.2 - pond.sensors.ph) * 0.08 + (Math.random() - 0.5) * 0.18;
+    pond.sensors.ph = clamp(round(pond.sensors.ph + phDelta, 2), 5.5, 9.0);
+
+    var tempDelta = (28.5 - pond.sensors.temp) * 0.06 + (Math.random() - 0.5) * 0.3;
+    pond.sensors.temp = clamp(round(pond.sensors.temp + tempDelta, 2), 22, 36);
+
+    var filterDead = (pond.power.source === 'battery' && pond.power.battery <= 0);
+    var nh3Production = 0.006 + Math.random() * 0.004;
+    var nh3Removal = filterDead ? 0.004 : 0.02;
+    var nh3Delta = nh3Production - nh3Removal + (Math.random() - 0.5) * 0.01;
+    pond.sensors.nh3 = clamp(round(pond.sensors.nh3 + nh3Delta, 3), 0, 1);
+
+    pond.sludge = clamp(round(pond.sludge + 0.7 + Math.random() * 0.4, 1), 0, 100);
+    if(pond.sludge >= 92){
+      if(!pond.ecoMode){
+        pond.sludge = round(6 + Math.random() * 5, 1);
+        pushLog(pond, 'siphon', 'Xi‑phông tự động kích hoạt: bơm bùn đáy hồ ra khoang chứa ngoài hồ.');
+      } else if(!pond.sludgeFullAlerted){
+        pushAlert(pond, 'warn', 'Bùn đáy đã đầy — xi‑phông tạm dừng', 'Đang ở Chế độ tiết kiệm điện nên xi‑phông tự động không kích hoạt. Bấm "Kích hoạt xi‑phông thủ công" nếu cần.');
+        pond.sludgeFullAlerted = true;
+      }
+    } else if(pond.sludge < 70){
+      pond.sludgeFullAlerted = false;
+    }
+
+    if(pond.power.source === 'grid'){
+      pond.power.battery = clamp(round(pond.power.battery + 1.4, 1), 0, 100);
+    } else {
+      var idleLoad = pond.ecoMode ? 0.05 : 0.15;
+      var drain = idleLoad + (pond.aeration.on ? (pond.aeration.power / 100) * 0.55 : 0.15);
+      var prevBattery = pond.power.battery;
+      pond.power.battery = clamp(round(pond.power.battery - drain, 1), 0, 100);
+      if(prevBattery > 0 && pond.power.battery <= 0){
+        pushAlert(pond, 'danger', 'Hết pin dự phòng', 'Pin dự phòng đã cạn — cần phương án máy phát điện dùng chung cấp cụm hộ.');
+        pushLog(pond, 'power', 'Pin dự phòng đã cạn (0%).');
+      }
+    }
+
+    pond.history.push({ t: Date.now(), do_: pond.sensors.do_ });
+    if(pond.history.length > HISTORY_LEN) pond.history.shift();
+
+    checkStatus(pond, 'do_', statusDO(pond.sensors.do_), 'DO (oxy hòa tan)', pond.sensors.do_.toFixed(1) + ' mg/L');
+    checkStatus(pond, 'ph', statusPH(pond.sensors.ph), 'pH nước', pond.sensors.ph.toFixed(1));
+    checkStatus(pond, 'temp', statusTemp(pond.sensors.temp), 'Nhiệt độ nước', pond.sensors.temp.toFixed(1) + '°C');
+    checkStatus(pond, 'nh3', statusNH3(pond.sensors.nh3), 'NH₃ (khí độc)', pond.sensors.nh3.toFixed(2) + ' mg/L');
+  }
+
+  function tick(){
+    if(!state.paused){
+      state.ponds.forEach(simulatePond);
+      save();
+    }
+    render();
+  }
+
+  /* ---------- actions ---------- */
+  function toggleOutage(){
+    var pond = currentPond(); if(!pond) return;
+    if(pond.power.source === 'grid'){
+      pond.power.source = 'battery'; pond.ecoMode = true;
+      pushAlert(pond, 'warn', 'Mất điện lưới', 'Mạch chuyển nguồn tự động (ATS) đã chuyển sang pin dự phòng. Chế độ tiết kiệm điện đã tự động bật.');
+      pushLog(pond, 'power', 'Giả lập mất điện lưới → chuyển sang pin dự phòng.');
+    } else {
+      pond.power.source = 'grid'; pond.ecoMode = false;
+      pushAlert(pond, 'info', 'Điện lưới đã khôi phục', 'Đã chuyển về sạc/dùng điện lưới. Chế độ tiết kiệm điện đã tự động tắt.');
+      pushLog(pond, 'power', 'Điện lưới khôi phục → chuyển về nguồn lưới.');
+    }
+    save(); render();
+  }
+  function toggleEcoMode(){
+    var pond = currentPond(); if(!pond) return;
+    pond.ecoMode = !pond.ecoMode;
+    pushLog(pond, 'control', pond.ecoMode ? 'Bật Chế độ tiết kiệm điện (thủ công).' : 'Tắt Chế độ tiết kiệm điện (thủ công).');
+    save(); render();
+  }
+  function toggleAeration(){
+    var pond = currentPond(); if(!pond) return;
+    pond.aeration.on = !pond.aeration.on;
+    pushLog(pond, 'control', pond.aeration.on ? 'Bật sục khí vi bọt.' : 'Tắt sục khí vi bọt.');
+    save(); render();
+  }
+  function setAerationPower(v){
+    var pond = currentPond(); if(!pond) return;
+    pond.aeration.power = clamp(parseInt(v, 10) || 0, 0, 100);
+    save(); render();
+  }
+  function manualSiphon(){
+    var pond = currentPond(); if(!pond) return;
+    pond.sludge = round(5 + Math.random() * 4, 1);
+    pond.sludgeFullAlerted = false;
+    pushLog(pond, 'siphon', 'Kích hoạt xi‑phông thủ công.');
+    save(); render();
+  }
+  function simulateLowDO(){
+    var pond = currentPond(); if(!pond) return;
+    pond.sensors.do_ = 2.1;
+    pushLog(pond, 'control', '[Demo] Giả lập sự cố DO tụt thấp đột ngột.');
+    save(); render();
+  }
+  function togglePause(){ state.paused = !state.paused; save(); render(); }
+  function clearAlerts(){ state.alerts = []; save(); render(); }
+  function resetDemo(){
+    if(!window.confirm('Đặt lại toàn bộ dữ liệu mô phỏng (tất cả các ao) về mặc định?')) return;
+    state = defaultState();
+    save(); render();
+  }
+  function selectPond(id){ state.selectedPondId = id; state.pondTab = 'overview'; save(); render(); }
+  function backToList(){ state.selectedPondId = null; save(); render(); }
+  function setPondTab(tab){ state.pondTab = tab; save(); render(); }
+  function setActiveTab(tab){
+    state.activeTab = tab;
+    if(tab === 'ponds'){ state.selectedPondId = null; }
+    save(); render();
+  }
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  }
+
+  /* ---------- render: ponds list ---------- */
+  function renderPondList(){
+    var wrap = document.getElementById('pondListCards');
+    wrap.innerHTML = state.ponds.map(function(pond){
+      var s = pond.sensors;
+      var statuses = [statusDO(s.do_), statusPH(s.ph), statusTemp(s.temp), statusNH3(s.nh3)];
+      var overall = statuses.indexOf('danger') >= 0 ? 'danger' : (statuses.indexOf('warn') >= 0 ? 'warn' : 'safe');
+      var alertCount = state.alerts.filter(function(a){ return a.pondId === pond.id; }).length;
+      var powerIcon = pond.power.source === 'grid' ? '🔌' : '🔋';
+      return '<div class="pond-card" data-pondid="' + pond.id + '">'
+        + '<div class="pond-card-top">'
+          + '<div class="pond-avatar">🐟</div>'
+          + '<div class="pond-card-info"><h4>' + escapeHTML(pond.name) + '</h4><span>' + escapeHTML(pond.location) + ' • ' + pond.area + ' m²</span></div>'
+          + '<span class="pill pill-' + overall + '">' + statusLabel[overall] + '</span>'
+        + '</div>'
+        + '<div class="pond-mini-row">'
+          + '<span class="mini-badge">DO <b>' + s.do_.toFixed(1) + '</b></span>'
+          + '<span class="mini-badge">pH <b>' + s.ph.toFixed(1) + '</b></span>'
+          + '<span class="mini-badge">T° <b>' + s.temp.toFixed(1) + '</b></span>'
+          + '<span class="mini-badge">NH₃ <b>' + s.nh3.toFixed(2) + '</b></span>'
+        + '</div>'
+        + '<div class="pond-card-footer">'
+          + '<span>' + powerIcon + ' ' + Math.round(pond.power.battery) + '%' + (pond.power.source === 'battery' ? ' (đang dùng pin)' : '') + '</span>'
+          + (alertCount > 0 ? '<span style="color:var(--coral);font-weight:700;">🔔 ' + alertCount + '</span>' : '<span style="color:var(--brand-dark);font-weight:600;">Ổn định</span>')
+        + '</div>'
+      + '</div>';
+    }).join('');
+    wrap.querySelectorAll('.pond-card').forEach(function(card){
+      card.addEventListener('click', function(){ selectPond(card.getAttribute('data-pondid')); });
+    });
+  }
+
+  /* ---------- render: pond detail ---------- */
+  function setPill(id, status){
+    var el = document.getElementById(id);
+    el.className = 'pill pill-' + status;
+    el.textContent = statusLabel[status];
+  }
+
+  function renderSparkline(pond){
+    var svg = document.getElementById('sparkline');
+    var pts = pond.history;
+    var poly = svg.querySelector('polyline');
+    if(pts.length < 2){ poly.setAttribute('points',''); return; }
+    var w = 300, h = 70, pad = 6;
+    var vals = pts.map(function(p){ return p.do_; });
+    var min = Math.min.apply(null, vals.concat([3]));
+    var max = Math.max.apply(null, vals.concat([7]));
+    var range = (max - min) || 1;
+    var step = (w - 2*pad) / (HISTORY_LEN - 1);
+    var startIndex = HISTORY_LEN - pts.length;
+    var points = pts.map(function(p, i){
+      var x = pad + (startIndex + i) * step;
+      var y = h - pad - ((p.do_ - min) / range) * (h - 2*pad);
+      return round(x,1) + ',' + round(y,1);
+    }).join(' ');
+    poly.setAttribute('points', points);
+  }
+
+  function renderPondOverview(pond){
+    var s = pond.sensors;
+    document.getElementById('doValue').innerHTML = s.do_.toFixed(1) + '<span class="gauge-unit">mg/L</span>';
+    document.getElementById('phValue').textContent = s.ph.toFixed(1);
+    document.getElementById('tempValue').innerHTML = s.temp.toFixed(1) + '<span class="gauge-unit">°C</span>';
+    document.getElementById('nh3Value').innerHTML = s.nh3.toFixed(2) + '<span class="gauge-unit">mg/L</span>';
+    setPill('doPill', statusDO(s.do_));
+    setPill('phPill', statusPH(s.ph));
+    setPill('tempPill', statusTemp(s.temp));
+    setPill('nh3Pill', statusNH3(s.nh3));
+
+    document.getElementById('buoyBattery').textContent = Math.round(pond.power.battery) + '%';
+    document.getElementById('buoyIcon').textContent = pond.power.source === 'grid' ? '🔌' : '🔋';
+    var visual = document.getElementById('pondVisual');
+    visual.classList.toggle('on-battery', pond.power.source === 'battery');
+    visual.classList.toggle('aeration-off', !pond.aeration.on);
+
+    renderSparkline(pond);
+  }
+
+  function renderPondPower(pond){
+    var p = pond.power;
+    document.getElementById('powerSourceLabel').textContent = p.source === 'grid' ? 'Điện lưới' : 'Pin dự phòng';
+    document.getElementById('powerSourceIcon').textContent = p.source === 'grid' ? '🔌' : '🔋';
+    document.getElementById('batteryPercentText').textContent = Math.round(p.battery) + '%';
+    var fill = document.getElementById('batteryFillBar');
+    fill.style.width = clamp(p.battery,0,100) + '%';
+    fill.className = 'battery-fill ' + (p.battery < 20 ? 'crit' : p.battery < 50 ? 'warn' : 'ok');
+
+    var outageWarn = document.getElementById('outageWarning');
+    var outageBtn = document.getElementById('outageBtn');
+    if(p.source === 'battery'){
+      outageWarn.style.display = 'block';
+      var hoursLeft = (p.battery/100) * MAX_HOURS;
+      var hh = Math.floor(hoursLeft);
+      var mm = Math.round((hoursLeft - hh) * 60);
+      document.getElementById('batteryTimeLeft').textContent = hh + ' giờ ' + mm + ' phút';
+      outageBtn.textContent = '🔌 Khôi phục điện lưới (demo)';
+    } else {
+      outageWarn.style.display = 'none';
+      outageBtn.textContent = '⚡ Giả lập mất điện lưới';
+    }
+
+    document.getElementById('ecoModeToggle').checked = pond.ecoMode;
+    document.getElementById('dataFreqText').textContent = pond.ecoMode ? 'mỗi 15 phút (đã giảm)' : 'mỗi 5 phút';
+    document.getElementById('ecoHint').style.display = (pond.ecoMode && p.source === 'battery') ? 'block' : 'none';
+  }
+
+  function renderPondControl(pond){
+    document.getElementById('aerationToggle').checked = pond.aeration.on;
+    var range = document.getElementById('aerationPowerRange');
+    range.value = pond.aeration.power;
+    range.disabled = !pond.aeration.on;
+    document.getElementById('aerationPowerText').textContent = pond.aeration.power + '%';
+    var fill = document.getElementById('sludgeBarFill');
+    fill.style.width = pond.sludge + '%';
+    fill.className = 'sludge-fill' + (pond.sludge >= 80 ? ' crit' : '');
+    document.getElementById('sludgeText').textContent = Math.round(pond.sludge) + '% — tự động kích hoạt khi đạt 92%' + (pond.ecoMode ? ' (đang tạm dừng do Chế độ tiết kiệm điện)' : '');
+    var h2s = statusH2SRisk(pond.sludge);
+    setPill('h2sPill', h2s);
+    document.getElementById('h2sPill').textContent = 'Nguy cơ H₂S: ' + h2sLabel[h2s];
+  }
+
+  function renderPondDetail(){
+    var pond = currentPond();
+    if(!pond) return;
+    document.getElementById('pondDetailName').textContent = pond.name;
+    document.getElementById('pondDetailMeta').textContent = pond.location + ' • ' + pond.area + ' m²';
+    ['overview','power','control'].forEach(function(t){
+      document.getElementById('pondTabBtn-'+t).classList.toggle('active', state.pondTab === t);
+      document.getElementById('pondPanel-'+t).classList.toggle('active', state.pondTab === t);
+    });
+    renderPondOverview(pond);
+    renderPondPower(pond);
+    renderPondControl(pond);
+  }
+
+  /* ---------- render: alerts / history ---------- */
+  function renderAlerts(){
+    var list = document.getElementById('alertsList');
+    var empty = document.getElementById('alertsEmpty');
+    if(state.alerts.length === 0){
+      list.innerHTML = '';
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      list.innerHTML = state.alerts.map(function(a){
+        var icon = a.level === 'danger' ? '🔴' : a.level === 'warn' ? '⚠️' : 'ℹ️';
+        return '<div class="alert-item alert-' + a.level + '">'
+          + '<div class="alert-top"><span>' + icon + ' ' + escapeHTML(a.title) + '</span><span class="alert-time">' + a.time + '</span></div>'
+          + '<div class="alert-msg">' + escapeHTML(a.msg) + '</div>'
+          + '<div class="alert-pond-tag">' + escapeHTML(a.pondName) + '</div>'
+          + '</div>';
+      }).join('');
+    }
+    var badge = document.getElementById('alertBadge');
+    if(state.alerts.length > 0){
+      badge.style.display = 'flex';
+      badge.textContent = state.alerts.length > 9 ? '9+' : String(state.alerts.length);
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  function renderHistory(){
+    var icons = { power:'🔌', siphon:'🧹', control:'🎛️', system:'⚙️' };
+    document.getElementById('logList').innerHTML = state.log.map(function(l){
+      var icon = icons[l.type] || '•';
+      var tag = (l.pondName && l.pondName !== 'Hệ thống') ? ' <span class="log-pond-tag">' + escapeHTML(l.pondName) + '</span>' : '';
+      return '<div class="log-item"><span class="log-time">' + l.time + '</span><span class="log-icon">' + icon + '</span><span class="log-text">' + escapeHTML(l.text) + tag + '</span></div>';
+    }).join('');
+  }
+
+  /* ---------- render: system tab calculators ---------- */
+  function updateCalculator(){
+    var cost = parseFloat(document.getElementById('calcCurrentCost').value) || 0;
+    var pct = parseFloat(document.getElementById('calcSavingsPercent').value) || 0;
+    document.getElementById('calcSavingsPercentText').textContent = pct + '%';
+    var newCost = cost * (1 - pct/100);
+    var savingsMonth = cost - newCost;
+    document.getElementById('calcNewCost').textContent = formatVND(newCost);
+    document.getElementById('calcSavingsAmount').textContent = formatVND(savingsMonth);
+    document.getElementById('calcSavingsYear').textContent = formatVND(savingsMonth * 12);
+  }
+  function updateCapex(){
+    var area = parseFloat(document.getElementById('capexPondArea').value) || 0;
+    var numPonds = parseInt(document.getElementById('capexNumPonds').value, 10) || 0;
+    var areaPerUnit = parseFloat(document.getElementById('capexAreaPerUnit').value) || 1;
+    var unitPrice = parseFloat(document.getElementById('capexUnitPrice').value) || 0;
+    var unitsPerPond = Math.max(1, Math.ceil(area / areaPerUnit));
+    var totalUnits = unitsPerPond * numPonds;
+    var totalCost = totalUnits * unitPrice;
+    var avgPerPond = numPonds > 0 ? totalCost / numPonds : 0;
+    document.getElementById('capexUnitsPerPond').textContent = unitsPerPond + ' khối/ao';
+    document.getElementById('capexTotalUnits').textContent = totalUnits + ' khối';
+    document.getElementById('capexTotalCost').textContent = formatVND(totalCost);
+    document.getElementById('capexAvgPerPond').textContent = formatVND(avgPerPond);
+  }
+
+  /* ---------- main render ---------- */
+  function render(){
+    ['ponds','alerts','history','system'].forEach(function(t){
+      document.getElementById('tab-'+t).classList.toggle('active', state.activeTab === t);
+      document.getElementById('nav-'+t).classList.toggle('active', state.activeTab === t);
+    });
+
+    if(state.selectedPondId){
+      document.getElementById('pondListView').classList.remove('active');
+      document.getElementById('pondDetailView').classList.add('active');
+      renderPondDetail();
+    } else {
+      document.getElementById('pondListView').classList.add('active');
+      document.getElementById('pondDetailView').classList.remove('active');
+      renderPondList();
+    }
+
+    renderAlerts();
+    renderHistory();
+    updateCalculator();
+    updateCapex();
+    document.getElementById('pauseBtn').textContent = state.paused ? '▶️ Tiếp tục' : '⏸️ Tạm dừng';
+  }
+
+  /* ---------- wiring ---------- */
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.nav-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        setActiveTab(btn.getAttribute('data-tab'));
+        document.getElementById('tabContent').scrollTop = 0;
+      });
+    });
+    document.querySelectorAll('.segmented button').forEach(function(btn){
+      btn.addEventListener('click', function(){ setPondTab(btn.getAttribute('data-pondtab')); });
+    });
+
+    document.getElementById('backToListBtn').addEventListener('click', backToList);
+    document.getElementById('pauseBtn').addEventListener('click', togglePause);
+    document.getElementById('outageBtn').addEventListener('click', toggleOutage);
+    document.getElementById('ecoModeToggle').addEventListener('change', toggleEcoMode);
+    document.getElementById('aerationToggle').addEventListener('change', toggleAeration);
+    document.getElementById('aerationPowerRange').addEventListener('input', function(e){ setAerationPower(e.target.value); });
+    document.getElementById('manualSiphonBtn').addEventListener('click', manualSiphon);
+    document.getElementById('simLowDOBtn').addEventListener('click', simulateLowDO);
+    document.getElementById('clearAlertsBtn').addEventListener('click', clearAlerts);
+    document.getElementById('resetDemoBtn').addEventListener('click', resetDemo);
+    document.getElementById('addPondBtn').addEventListener('click', function(){
+      showToast('Bản demo: liên hệ đội kỹ thuật để lắp thêm ao mới.');
+    });
+    document.getElementById('calcCurrentCost').addEventListener('input', updateCalculator);
+    document.getElementById('calcSavingsPercent').addEventListener('input', updateCalculator);
+    ['capexPondArea','capexNumPonds','capexAreaPerUnit','capexUnitPrice'].forEach(function(id){
+      document.getElementById(id).addEventListener('input', updateCapex);
+    });
+    document.getElementById('capexNumPonds').value = state.ponds.length;
+
+    render();
+    setInterval(tick, 2000);
+  });
+})();
+</script>
+</body>
+</html>

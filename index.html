@@ -1,1574 +1,3407 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0A2A3D">
-<title>DeltaV — Trạm Đa Năng Đáy Hồ</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --font-ui:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    --deep:#0A2A3D;
-    --navy:#123B54;
-    --teal:#1E5A72;
-    --brand:#2C8C5A;
-    --brand-dark:#1F6B43;
-    --brand-light:rgba(44,140,90,.13);
-    --sky:#BFDCF2;
-    --page-bg:#F6F4EC;
-    --card-bg:#FFFFFF;
-    --card-border:#E4E1D6;
-    --ink:#12262F;
-    --ink-soft:#5C6E76;
-    --amber:#E8A23D;
-    --coral:#D8563E;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    font-family:var(--font-ui);
-    font-size:14px;
-    line-height:1.5;
-    letter-spacing:-0.01em;
-    -webkit-font-smoothing:antialiased;
-    -webkit-tap-highlight-color: transparent;
-    background:linear-gradient(180deg,#E4E9DC,#D6DECE);
-    color:var(--ink);
-    min-height:100vh;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    padding:24px 12px;
-  }
-  button, input{ font-family:inherit; }
-  button:focus-visible, input:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0A2A3D">
+  <title>DeltaV — Trạm Đa Năng Đáy Hồ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --deep: #0A2A3D;
+      --navy: #123B54;
+      --teal: #1E5A72;
+      --brand: #2C8C5A;
+      --brand-dark: #1F6B43;
+      --brand-light: rgba(44, 140, 90, .13);
+      --sky: #BFDCF2;
+      --page-bg: #F6F4EC;
+      --card-bg: #FFFFFF;
+      --card-border: #E4E1D6;
+      --ink: #12262F;
+      --ink-soft: #5C6E76;
+      --amber: #E8A23D;
+      --coral: #D8563E;
+    }
 
-  /* số liệu — cùng font UI, không dùng monospace kiểu tài liệu */
-  .gauge-value,.mini-badge b,.buoy,.battery-row b,.freq-row b,
-  .alert-time,.log-time,.calc-row input[type=number],.calc-result b{
-    font-family:inherit;
-    font-variant-numeric:tabular-nums;
-    font-weight:700;
-    letter-spacing:-0.02em;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  .app-shell{
-    width:100%;
-    max-width:428px;
-    background:var(--page-bg);
-    border-radius:34px;
-    box-shadow:0 24px 60px -20px rgba(10,42,61,.5), 0 0 0 8px #0A2A3D;
-    overflow:hidden;
-    min-height:860px;
-    display:flex;
-    flex-direction:column;
-    position:relative;
-  }
-  @media (max-width:480px){
-    body{ padding:0; background:var(--page-bg); }
-    .app-shell{ max-width:100%; border-radius:0; box-shadow:none; min-height:100vh; min-height:100dvh; height:-webkit-fill-available; }
-  }
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
 
-  /* ---------- header ---------- */
-  .app-header{
-    flex:0 0 auto;
-    position:relative;
-    padding:calc(18px + env(safe-area-inset-top)) 18px 22px;
-    background:linear-gradient(135deg,var(--deep) 0%,var(--navy) 55%,var(--teal) 100%);
-    color:#fff;
-    display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-    overflow:hidden;
-    user-select:none; -webkit-user-select:none;
-  }
-  .app-header::after{
-    content:''; position:absolute; left:-10%; right:-10%; bottom:-1px; height:20px;
-    background:var(--page-bg); clip-path:ellipse(58% 100% at 50% 100%);
-  }
-  .app-header::before{
-    content:''; position:absolute; top:-40px; right:-30px; width:140px; height:140px; border-radius:50%;
-    background:radial-gradient(circle, rgba(191,220,242,.18), transparent 70%);
-  }
-  .brand-row{ display:flex; align-items:center; gap:8px; position:relative; z-index:1; }
-  .brand-logo{ font-size:20px; }
-  .brand-name{ font-size:17px; font-weight:700; letter-spacing:-0.02em; }
-  .eyebrow{ font-size:11px; letter-spacing:.02em; color:var(--sky); font-weight:600; opacity:.9; }
-  .conn-status{ display:flex; align-items:center; gap:6px; font-size:11px; color:#DCEAF5; margin-top:6px; position:relative; z-index:1;}
-  .conn-dot{ width:7px;height:7px;border-radius:50%; background:#57D68D; animation:pulse 2s infinite; }
-  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(87,214,141,.5);} 70%{box-shadow:0 0 0 6px rgba(87,214,141,0);} 100%{box-shadow:0 0 0 0 rgba(87,214,141,0);} }
-  .header-actions{ position:relative; z-index:1; }
+    body {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      background: linear-gradient(180deg, #E4E9DC, #D6DECE);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px 12px;
+    }
 
-  /* ---------- tab content ---------- */
-  .tab-content{ flex:1 1 auto; overflow-y:auto; padding:14px 16px 108px; -webkit-overflow-scrolling:touch; }
-  .tab-panel{ display:none; }
-  .tab-panel.active{ display:block; animation:fadeIn .25s ease; }
-  @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
-  .panel-eyebrow{ font-size:12px; letter-spacing:.01em; color:var(--brand-dark); font-weight:600; margin-bottom:2px;}
-  .panel-title{ font-size:20px; font-weight:700; letter-spacing:-0.03em; margin:0 0 4px; }
-  .panel-subtitle{ font-size:13px; color:var(--ink-soft); margin:0 0 14px; line-height:1.55; }
+    button,
+    input {
+      font-family: inherit;
+    }
 
-  /* ---------- buttons ---------- */
-  .btn{ border:none; border-radius:12px; padding:12px 16px; font-weight:600; font-size:14px; cursor:pointer; letter-spacing:-0.01em; user-select:none; -webkit-user-select:none; }
-  .btn-primary{ background:var(--brand); color:#fff; width:100%;}
-  .btn-amber{ background:var(--amber); color:#402A08; width:100%;}
-  .btn-outline{ background:#fff; border:1px solid var(--card-border); color:var(--ink); width:100%; }
-  .btn-danger-outline{ background:#fff; border:1px solid var(--coral); color:var(--coral); width:100%; }
-  .btn-small{ padding:8px 12px; font-size:12px; width:auto; min-height:40px; }
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
+    }
 
-  /* ---------- pond list ---------- */
-  .pond-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:12px; cursor:pointer; transition:transform .12s, box-shadow .12s; }
-  .pond-card:active{ transform:scale(.98); }
-  .pond-card:hover{ box-shadow:0 4px 16px rgba(10,42,61,.08); }
-  .pond-card-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .pond-avatar{ width:40px;height:40px;border-radius:50%; background:var(--brand-light); display:flex;align-items:center;justify-content:center; font-size:19px; flex:0 0 auto; }
-  .pond-card-info{ flex:1; min-width:0; }
-  .pond-card-info h4{ margin:0; font-size:15px; font-weight:700; }
-  .pond-card-info span{ font-size:11.5px; color:var(--ink-soft); }
-  .pond-mini-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
-  .mini-badge{ font-size:10.5px; background:var(--page-bg); border:1px solid var(--card-border); border-radius:8px; padding:4px 7px; display:flex; gap:4px; align-items:center; color:var(--ink-soft);}
-  .mini-badge b{ color:var(--ink); }
-  .pond-card-footer{ display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--ink-soft); border-top:1px solid var(--card-border); padding-top:9px; }
-  .add-pond-btn{ border:1.5px dashed var(--card-border); background:transparent; border-radius:16px; padding:16px; text-align:center; color:var(--ink-soft); font-weight:700; font-size:13px; cursor:pointer; width:100%; }
-  .add-pond-btn:hover{ border-color:var(--brand); color:var(--brand-dark); }
+    /* số liệu — cùng font UI, không dùng monospace kiểu tài liệu */
+    .gauge-value,
+    .mini-badge b,
+    .buoy,
+    .battery-row b,
+    .freq-row b,
+    .alert-time,
+    .log-time,
+    .calc-row input[type=number],
+    .calc-result b {
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
 
-  /* ---------- pond list / detail (full-screen swap) ---------- */
-  .pond-list-view{ display:none; }
-  .pond-list-view.active{ display:block; animation:fadeIn .25s ease; }
-  .pond-detail-view{ display:none; }
-  .pond-detail-view.active{ display:block; animation:fadeIn .25s ease; }
-  .detail-header{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
-  .back-btn{ width:34px;height:34px;border-radius:50%; border:1px solid var(--card-border); background:#fff; display:flex;align-items:center;justify-content:center; font-size:16px; cursor:pointer; flex:0 0 auto; color:var(--ink);}
-  .detail-header-info h2{ margin:0; font-size:18px; font-weight:700; letter-spacing:-0.02em; }
-  .detail-header-info span{ font-size:12px; color:var(--ink-soft); }
-  .segmented{ display:flex; background:#EAE7DB; border-radius:12px; padding:4px; gap:4px; margin-bottom:16px; }
-  .segmented button{ flex:1; border:none; background:transparent; padding:9px 4px; border-radius:9px; font-size:13px; font-weight:600; color:var(--ink-soft); cursor:pointer; }
-  .segmented button.active{ background:#fff; color:var(--brand-dark); box-shadow:0 1px 4px rgba(0,0,0,.1); }
-  .pond-subpanel{ display:none; }
-  .pond-subpanel.active{ display:block; animation:fadeIn .2s ease; }
+    .app-shell {
+      width: 100%;
+      max-width: 428px;
+      background: var(--page-bg);
+      border-radius: 34px;
+      box-shadow: 0 24px 60px -20px rgba(10, 42, 61, .5), 0 0 0 8px #0A2A3D;
+      overflow: hidden;
+      min-height: 860px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-  /* ---------- pond visual (signature element) ---------- */
-  .pond-visual{
-    position:relative; height:280px; border-radius:20px; overflow:hidden;
-    background:linear-gradient(180deg, var(--teal) 0%, var(--deep) 85%);
-    box-shadow:inset 0 0 30px rgba(0,0,0,.25);
-    transition:box-shadow .3s;
-  }
-  .pond-visual.on-battery{ box-shadow:inset 0 0 0 2px var(--amber), inset 0 0 30px rgba(0,0,0,.25); }
-  .pond-visual.aeration-off .bubble{ animation-play-state:paused; opacity:.12; }
-  .surface-line{ position:absolute; top:28px; left:0; right:0; border-top:1px dashed rgba(255,255,255,.35); }
-  .pond-links{
-    position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none;
-  }
-  .pond-links line{ stroke:rgba(255,255,255,.22); stroke-width:.6; stroke-dasharray:2.5 2.5; }
-  .buoy{
-    position:absolute; top:14px; left:50%; transform:translateX(-50%);
-    background:var(--page-bg); color:var(--ink); font-size:12px;
-    padding:5px 10px; border-radius:20px; display:flex; align-items:center; gap:5px;
-    box-shadow:0 4px 10px rgba(0,0,0,.3); z-index:4;
-  }
-  .buoy::after{ content:''; position:absolute; top:-9px; left:50%; transform:translateX(-50%); width:1px; height:8px; background:rgba(255,255,255,.5); }
-  .tether{ position:absolute; top:40px; bottom:68px; left:50%; width:0; border-left:2px dashed rgba(255,255,255,.28); z-index:1; }
-  .pond-station{
-    position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
-    min-width:72px; padding:6px 10px; border-radius:10px; z-index:2;
-    background:linear-gradient(180deg,#1c5b70,#0d3745);
-    border:1px solid rgba(255,255,255,.28);
-    box-shadow:0 6px 16px rgba(0,0,0,.4);
-    font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
-    color:rgba(255,255,255,.88); text-align:center;
-  }
-  .pond-modules{ position:absolute; inset:0; z-index:3; }
-  .pond-module{
-    position:absolute; transform:translate(-50%,-50%);
-    text-align:center; width:54px;
-  }
-  .pond-module-pin{
-    width:38px; height:38px; border-radius:12px; margin:0 auto 4px;
-    background:rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.38);
-    display:flex; align-items:center; justify-content:center; position:relative;
-    backdrop-filter:blur(4px); transition:opacity .25s, border-color .25s;
-  }
-  .pond-module.off .pond-module-pin{ opacity:.5; border-color:rgba(255,255,255,.18); }
-  .pond-module-icon{ font-size:16px; line-height:1; }
-  .pond-module-status{
-    position:absolute; bottom:-3px; right:-3px;
-    width:10px; height:10px; border-radius:50%; border:1.5px solid var(--deep);
-  }
-  .pond-module-status.on{ background:#57D68D; }
-  .pond-module-status.off{ background:#8A9AA3; }
-  .pond-module-status.warn{ background:var(--amber); animation:blink 1.4s infinite; }
-  .pond-module-status.run{ background:#57D68D; box-shadow:0 0 0 0 rgba(87,214,141,.55); animation:pulse 2s infinite; }
-  @keyframes blink{ 0%,100%{opacity:.45;} 50%{opacity:1;} }
-  .pond-module-label{
-    display:block; font-size:9.5px; font-weight:700; color:#fff;
-    line-height:1.25; text-shadow:0 1px 4px rgba(0,0,0,.8);
-  }
-  .pond-module-state{
-    display:block; font-size:8.5px; font-weight:600; color:rgba(191,220,242,.95); margin-top:1px;
-    text-shadow:0 1px 2px rgba(0,0,0,.6);
-  }
-  .bubble{ position:absolute; bottom:52%; width:5px;height:5px;border-radius:50%; background:rgba(255,255,255,.5); animation:rise 3s linear infinite; z-index:2; }
-  .bubble:nth-child(1){ left:31%; animation-delay:0s;}
-  .bubble:nth-child(2){ left:34%; animation-delay:.7s;}
-  .bubble:nth-child(3){ left:37%; animation-delay:1.4s;}
-  .bubble:nth-child(4){ left:33%; animation-delay:2.1s;}
-  @keyframes rise{ 0%{ transform:translateY(0); opacity:0;} 15%{opacity:.7;} 100%{ transform:translateY(-120px); opacity:0;} }
-  .pond-caption{ font-size:11px; color:var(--ink-soft); text-align:center; margin-top:8px; line-height:1.5; }
+    @media (max-width:480px) {
+      body {
+        padding: 0;
+        background: var(--page-bg);
+      }
 
-  /* ---------- gauges ---------- */
-  .gauge-row{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
-  .gauge-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:12px 4px; text-align:center; }
-  .gauge-label{ font-size:11px; color:var(--ink-soft); font-weight:600;}
-  .gauge-value{ font-size:22px; margin:4px 0 6px; }
-  .gauge-unit{ font-size:10px; color:var(--ink-soft); margin-left:2px;}
-  .pill{ display:inline-block; font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; }
-  .pill-safe{ background:var(--brand-light); color:var(--brand-dark); }
-  .pill-warn{ background:rgba(232,162,61,.2); color:#8A5A11; }
-  .pill-danger{ background:rgba(216,86,62,.16); color:var(--coral); }
+      .app-shell {
+        max-width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: -webkit-fill-available;
+      }
+    }
 
-  .chart-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:14px; margin-top:14px; position:relative; }
-  .chart-card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px; }
-  .chart-card h3{ font-size:13px; margin:0; flex:1; }
-  .info-btn{
-    flex:0 0 auto; width:26px; height:26px; border-radius:50%; margin:-2px 0;
-    border:1.5px solid var(--card-border); background:var(--page-bg);
-    color:var(--ink-soft); font-size:12px; font-weight:700; line-height:1;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    transition:background .15s, border-color .15s, color .15s; user-select:none; -webkit-user-select:none;
-  }
-  .info-btn:hover,.info-btn:focus-visible{ background:#fff; border-color:var(--brand); color:var(--brand-dark); }
+    /* ---------- header ---------- */
+    .app-header {
+      flex: 0 0 auto;
+      position: relative;
+      padding: calc(18px + env(safe-area-inset-top)) 18px 22px;
+      background: linear-gradient(135deg, var(--deep) 0%, var(--navy) 55%, var(--teal) 100%);
+      color: #fff;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
-  /* ---------- info popup ---------- */
-  .info-overlay{
-    position:absolute; inset:0; background:rgba(10,42,61,.45);
-    display:flex; align-items:center; justify-content:center;
-    padding:20px 16px; z-index:60; opacity:0; pointer-events:none;
-    transition:opacity .2s ease;
-  }
-  .info-overlay.show{ opacity:1; pointer-events:auto; }
-  .info-popup{
-    width:100%; max-width:340px; background:#fff; border-radius:18px;
-    padding:18px 16px 14px; box-shadow:0 16px 40px rgba(10,42,61,.22);
-    transform:translateY(8px) scale(.98); transition:transform .2s ease;
-  }
-  .info-overlay.show .info-popup{ transform:translateY(0) scale(1); }
-  .info-popup-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px; }
-  .info-popup-head h4{ margin:0; font-size:15px; font-weight:700; letter-spacing:-0.02em; }
-  .info-close{
-    flex:0 0 auto; width:28px; height:28px; border:none; border-radius:50%;
-    background:var(--page-bg); color:var(--ink-soft); font-size:18px; line-height:1;
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
-  }
-  .info-close:hover,.info-close:focus-visible{ background:#EAE7DB; color:var(--ink); }
-  .info-popup p{ margin:0 0 10px; font-size:13px; color:var(--ink-soft); line-height:1.6; }
-  .info-popup p:last-of-type{ margin-bottom:0; }
-  svg#sparkline{ width:100%; height:70px; display:block; }
-  svg#sparkline polyline{ fill:none; stroke:var(--brand); stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+    .app-header::after {
+      content: '';
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      bottom: -1px;
+      height: 20px;
+      background: var(--page-bg);
+      clip-path: ellipse(58% 100% at 50% 100%);
+    }
 
-  /* ---------- power / eco ---------- */
-  .power-card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:16px; margin-bottom:14px; }
-  .power-source{ display:flex; align-items:center; gap:10px; }
-  .power-source .icon{ font-size:26px; }
-  .power-source .info h4{ margin:0; font-size:14px;}
-  .power-source .info span{ font-size:12px; color:var(--ink-soft);}
-  .battery-track{ height:10px; border-radius:6px; background:#EAF1EF; margin:14px 0 8px; overflow:hidden;}
-  .battery-fill{ height:100%; border-radius:6px; transition:width .4s; }
-  .battery-fill.ok{ background:var(--brand); }
-  .battery-fill.warn{ background:var(--amber); }
-  .battery-fill.crit{ background:var(--coral); }
-  .battery-row{ display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); }
-  .battery-row b{ color:var(--ink); }
-  .outage-warning{ display:none; margin-top:14px; padding:12px; border-radius:12px; background:rgba(232,162,61,.12); border:1px solid rgba(232,162,61,.4); font-size:12px; line-height:1.65;}
-  .outage-warning b{ color:#8A5A11; }
-  .switch-row{ display:flex; align-items:center; justify-content:space-between; gap:10px;}
-  .switch{ position:relative; width:44px; height:26px; flex:0 0 auto;}
-  .switch input{ opacity:0; width:0; height:0; }
-  .slider-toggle{ position:absolute; inset:0; background:#DCE4E2; border-radius:20px; cursor:pointer; transition:.3s; }
-  .slider-toggle:before{ content:''; position:absolute; width:20px; height:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.3s; box-shadow:0 1px 3px rgba(0,0,0,.3);}
-  input:checked + .slider-toggle{ background:var(--brand); }
-  input:checked + .slider-toggle:before{ transform:translateX(18px); }
-  input[type=range]:disabled{ opacity:.4; }
-  .field-hint{ font-size:10.5px; color:var(--ink-soft); margin-top:8px; line-height:1.55; }
-  .freq-row{ display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); margin-top:10px; }
-  .freq-row b{ color:var(--ink); }
-  .eco-hint{ display:none; margin-top:10px; font-size:11.5px; color:var(--brand-dark); background:var(--brand-light); border:1px solid rgba(44,140,90,.35); border-radius:10px; padding:9px 10px; line-height:1.6; }
+    .app-header::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -30px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(191, 220, 242, .18), transparent 70%);
+    }
 
-  /* ---------- control ---------- */
-  .control-card{ background:#fff; border:1px solid var(--card-border); border-radius:16px; padding:16px; margin-bottom:14px;}
-  .sludge-track{ height:10px; border-radius:6px; background:#EAF1EF; overflow:hidden; margin-top:10px;}
-  .sludge-fill{ height:100%; background:var(--brand); transition:width .4s;}
-  .sludge-fill.crit{ background:var(--coral); }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
 
-  /* ---------- alerts / history ---------- */
-  .alert-item{ border-radius:12px; padding:12px; margin-bottom:10px; border-left:4px solid; background:#fff; border:1px solid var(--card-border); }
-  .alert-item.alert-danger{ border-left-color:var(--coral); }
-  .alert-item.alert-warn{ border-left-color:var(--amber); }
-  .alert-item.alert-info{ border-left-color:var(--sky); }
-  .alert-top{ display:flex; justify-content:space-between; gap:8px; font-weight:700; font-size:12.5px; }
-  .alert-time{ font-size:11px; color:var(--ink-soft); font-weight:500; white-space:nowrap;}
-  .alert-msg{ font-size:12px; color:var(--ink-soft); margin-top:4px; line-height:1.5;}
-  .alert-pond-tag{ display:inline-block; margin-top:7px; font-size:10px; font-weight:700; color:var(--brand-dark); background:var(--brand-light); padding:2px 8px; border-radius:10px; }
-  .log-pond-tag{ font-size:9.5px; font-weight:700; color:var(--brand-dark); background:var(--brand-light); padding:1px 6px; border-radius:8px; margin-left:4px; }
-  .empty-state{ text-align:center; padding:44px 10px; color:var(--ink-soft); font-size:13px; }
-  .log-item{ display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--card-border); font-size:12px; }
-  .log-time{ color:var(--ink-soft); flex:0 0 58px; font-weight:500; }
-  .log-icon{ flex:0 0 18px; }
-  .log-text{ flex:1; line-height:1.5;}
+    .brand-logo {
+      font-size: 20px;
+    }
 
-  /* ---------- system tab ---------- */
-  .pipeline-step{ display:flex; flex-direction:column; gap:2px; }
-  .pipeline-step-top{ display:flex; align-items:center; gap:8px; }
-  .step-num{ display:inline-flex; width:20px;height:20px;border-radius:50%; background:var(--brand-light); color:var(--brand-dark); font-size:11px; font-weight:800; align-items:center; justify-content:center; flex:0 0 auto; }
-  .pipeline-step h4{ margin:0; font-size:13.5px; }
-  .pipeline-step span{ font-size:11px; color:var(--ink-soft); padding-left:28px; line-height:1.5; }
-  .pipeline-arrow{ text-align:center; color:var(--brand); font-size:15px; padding:2px 0; }
-  .compare-table{ width:100%; border-collapse:collapse; font-size:11.5px; margin-top:10px; }
-  .compare-table th,.compare-table td{ text-align:left; padding:8px 5px; border-bottom:1px solid var(--card-border); vertical-align:top; }
-  .compare-table th{ color:var(--ink-soft); font-weight:700; }
-  .calc-row{ display:flex; flex-direction:column; gap:6px; margin-top:12px;}
-  .calc-row label{ font-size:12px; font-weight:600; color:var(--ink-soft);}
-  .calc-row input[type=number]{ padding:10px; border-radius:10px; border:1px solid var(--card-border); font-size:15px; width:100%;}
-  input[type=range]{ width:100%; accent-color:var(--brand); }
-  .calc-result{ display:flex; justify-content:space-between; padding:9px 0; border-top:1px dashed var(--card-border); font-size:12.5px;}
-  .limit-card{ background:#FFF7ED; border:1px solid #F3D9AE; border-radius:14px; padding:14px; margin-top:14px; font-size:12px; line-height:1.7; }
-  .limit-card h3{ margin:0 0 6px; font-size:13px; }
-  .limit-card ul{ margin:0; padding-left:18px; }
+    .brand-name {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
 
-  /* ---------- toast ---------- */
-  .toast{ position:absolute; left:50%; bottom:78px; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:10px 16px; border-radius:20px; font-size:12.5px; opacity:0; pointer-events:none; transition:all .25s; z-index:50; max-width:82%; text-align:center; }
-  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: .02em;
+      color: var(--sky);
+      font-weight: 600;
+      opacity: .9;
+    }
 
-  /* ---------- bottom nav ---------- */
-  .eco-badge{ display:inline-flex; align-items:center; background:var(--brand-light); color:var(--brand-dark); font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px; line-height:1; vertical-align:middle; margin-left:6px; letter-spacing:0.02em; border:1px solid rgba(87,214,141,0.4); }
-  .eco-badge-small{ font-size:8px; padding:2px 4px; border-radius:4px; margin-left:4px; }
-  .bottom-nav{ flex:0 0 auto; display:flex; background:#fff; border-top:1px solid var(--card-border); padding:8px 4px calc(8px + env(safe-area-inset-bottom)); position:relative; z-index:5; user-select:none; -webkit-user-select:none; }
-  .nav-btn{ flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; padding:6px 2px; color:var(--ink-soft); font-size:11px; font-weight:600; cursor:pointer; position:relative; letter-spacing:-0.01em; transition:color .2s; }
-  .nav-btn svg{ width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; transition:stroke .2s, transform .2s; }
-  .nav-btn:active svg{ transform:scale(0.9); }
-  .nav-btn.active{ color:var(--brand-dark); }
-  .nav-badge{ display:none; position:absolute; top:2px; right:18%; background:var(--coral); color:#fff; font-size:9px; font-weight:800; min-width:15px; height:15px; border-radius:8px; align-items:center; justify-content:center; padding:0 3px; }
+    .conn-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #DCEAF5;
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+    }
 
-  /* ========== ENHANCED POND VISUAL ========== */
+    .conn-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #57D68D;
+      animation: pulse 2s infinite;
+    }
 
-  /* Depth gradient override */
-  .pond-visual{
-    background:linear-gradient(180deg,
-      #1a6b85 0%, #156878 12%, #0e4a5e 35%, #0a3a4d 65%, #072d3d 100%
-    );
-  }
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(87, 214, 141, .5);
+      }
 
-  /* Wave animation */
-  .pond-wave{
-    position:absolute; top:16px; left:0; width:200%; height:34px; z-index:2;
-    animation: waveSlide 6s linear infinite;
-  }
-  .pond-wave-fill{ fill:var(--page-bg); opacity:.07; }
-  .pond-wave-stroke{ fill:none; stroke:rgba(191,220,242,.22); stroke-width:1.2; }
-  @keyframes waveSlide{ 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+      70% {
+        box-shadow: 0 0 0 6px rgba(87, 214, 141, 0);
+      }
 
-  /* Enhanced bubbles */
-  .bubble-enhanced{
-    position:absolute; border-radius:50%;
-    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.65), rgba(255,255,255,.15));
-    z-index:2; opacity:0;
-    animation: riseEnhanced var(--dur, 3s) var(--delay, 0s) linear infinite;
-  }
-  @keyframes riseEnhanced{
-    0%{ transform:translateY(0) scale(0.5); opacity:0; }
-    12%{ opacity:var(--max-op, 0.55); transform:translateY(-8px) scale(0.75); }
-    75%{ opacity:calc(var(--max-op, 0.55) * 0.35); }
-    100%{ transform:translateY(var(--rise-h, -130px)) scale(1.1); opacity:0; }
-  }
+      100% {
+        box-shadow: 0 0 0 0 rgba(87, 214, 141, 0);
+      }
+    }
 
-  /* Fish */
-  .pond-fish{
-    position:absolute; z-index:3; transition:top 1.8s ease-in-out;
-    pointer-events:none;
-  }
-  .fish-body{ fill:rgba(255,255,255,.16); }
-  .fish-detail{ fill:rgba(255,255,255,.28); }
-  .pond-fish.swim-right{ animation:swimRight var(--swim-dur,8s) linear infinite; }
-  .pond-fish.swim-left{ animation:swimLeft var(--swim-dur,8s) linear infinite; }
-  @keyframes swimRight{ 0%{left:-10%;} 100%{left:108%;} }
-  @keyframes swimLeft{ 0%{left:108%;} 100%{left:-10%;} }
-  .fish-tail-anim{ animation:tailWag .55s ease-in-out infinite alternate; transform-origin:right center; }
-  @keyframes tailWag{ 0%{transform:rotate(-9deg);} 100%{transform:rotate(9deg);} }
+    .header-actions {
+      position: relative;
+      z-index: 1;
+    }
 
-  /* Module enhancements */
-  .pond-module{ cursor:pointer; transition:transform .15s ease; user-select:none; -webkit-user-select:none; }
-  .pond-module:hover{ transform:translate(-50%,-50%) scale(1.14); z-index:10; }
-  .pond-module-pin{ transition:opacity .25s, border-color .25s, box-shadow .25s; }
-  .pond-module.on .pond-module-pin,
-  .pond-module.run .pond-module-pin{ box-shadow:0 0 10px rgba(87,214,141,.3); }
-  .pond-module.warn .pond-module-pin{
-    box-shadow:0 0 10px rgba(232,162,61,.35);
-    animation:modWarnPulse 2s ease-in-out infinite;
-  }
-  @keyframes modWarnPulse{
-    0%,100%{box-shadow:0 0 6px rgba(232,162,61,.25);}
-    50%{box-shadow:0 0 14px rgba(232,162,61,.5);}
-  }
+    /* ---------- tab content ---------- */
+    .tab-content {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding: 14px 16px 108px;
+      -webkit-overflow-scrolling: touch;
+    }
 
-  /* Aeration pulse ring */
-  .mod-aeration-ring{
-    position:absolute; inset:-5px; border-radius:16px;
-    border:1.5px solid rgba(87,214,141,.4);
-    animation:aerRing 2s ease-out infinite; pointer-events:none;
-  }
-  @keyframes aerRing{ 0%{transform:scale(1);opacity:.55;} 100%{transform:scale(1.6);opacity:0;} }
+    .tab-panel {
+      display: none;
+    }
 
-  /* Sensor scan line */
-  .mod-sensor-scan{
-    position:absolute; inset:0; border-radius:12px; overflow:hidden; pointer-events:none;
-  }
-  .mod-sensor-scan::after{
-    content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
-    background:linear-gradient(90deg,transparent,rgba(87,214,141,.22),transparent);
-    animation:senScan 2.5s ease-in-out infinite;
-  }
-  @keyframes senScan{ 0%{left:-100%;} 100%{left:200%;} }
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn .25s ease;
+    }
 
-  /* Module tooltip */
-  .module-tooltip{
-    position:absolute; bottom:calc(100% + 10px); left:50%; transform:translateX(-50%) translateY(5px);
-    background:rgba(10,42,61,.95); color:#fff; padding:10px 12px; border-radius:10px;
-    font-size:11px; line-height:1.55; pointer-events:none;
-    opacity:0; transition:opacity .2s, transform .2s; z-index:20;
-    backdrop-filter:blur(8px); box-shadow:0 6px 16px rgba(0,0,0,.4);
-    width:max-content; max-width:220px; text-align:center; white-space:normal; word-break:break-word;
-  }
-  .module-tooltip::after{
-    content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
-    border:5px solid transparent; border-top-color:rgba(10,42,61,.92);
-  }
-  .pond-module.tooltip-active .module-tooltip{ opacity:1; transform:translateX(-50%) translateY(0); }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
 
-  /* Sensor mini overlay */
-  .sensor-mini-overlay{
-    position:absolute; z-index:5; display:flex; gap:4px;
-    top:40px; right:8px;
-  }
-  .sensor-mini-tag{
-    background:rgba(0,0,0,.38); backdrop-filter:blur(6px);
-    color:#fff; padding:3px 7px; border-radius:6px;
-    font-size:8.5px; font-weight:600; display:flex; align-items:center; gap:3px;
-    border:1px solid rgba(255,255,255,.12);
-    letter-spacing:-.01em;
-  }
-  .sensor-mini-dot{
-    width:5px; height:5px; border-radius:50%; flex:0 0 auto;
-  }
-  .sensor-mini-dot.safe{ background:#57D68D; }
-  .sensor-mini-dot.warn{ background:var(--amber); }
-  .sensor-mini-dot.danger{ background:var(--coral); animation:blink 1s infinite; }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-  /* Data flow lines */
-  .pond-links .flow-line{
-    stroke:rgba(87,214,141,.35); stroke-width:.9;
-    stroke-dasharray:2 8;
-    animation:dashFlow 1.8s linear infinite;
-  }
-  @keyframes dashFlow{ 0%{stroke-dashoffset:10;} 100%{stroke-dashoffset:0;} }
-  .pond-visual.data-dead .flow-line{ stroke:rgba(216,86,62,.3); animation:none; stroke-dasharray:2 4; }
+    .panel-eyebrow {
+      font-size: 12px;
+      letter-spacing: .01em;
+      color: var(--brand-dark);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
 
-  /* DeltaV station enhanced */
-  .pond-station{
-    min-width:94px; padding:7px 12px; border-radius:12px; z-index:4;
-    background:linear-gradient(135deg,#1c6b80,#0d4755);
-    border:1.5px solid rgba(255,255,255,.3);
-    box-shadow:0 6px 20px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.1);
-    display:flex; align-items:center; justify-content:center; gap:6px;
-    font-size:inherit; text-align:center;
-  }
-  .station-chip{
-    width:14px; height:14px; border-radius:3px;
-    background:linear-gradient(135deg,#2a7a8f,#1a5a6f);
-    border:1px solid rgba(255,255,255,.25);
-    display:flex; align-items:center; justify-content:center;
-    font-size:7px; color:rgba(255,255,255,.75); line-height:1;
-  }
-  .station-label{
-    font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
-    color:rgba(255,255,255,.9);
-  }
-  .station-led{
-    width:5px; height:5px; border-radius:50%; background:#57D68D;
-    animation:ledBlink 1.5s ease-in-out infinite; flex:0 0 auto;
-  }
-  @keyframes ledBlink{ 0%,100%{opacity:.35;} 50%{opacity:1;} }
-  .station-led.dead{ background:var(--coral); animation:none; opacity:.6; }
-  .station-conn{
-    font-size:8px; color:rgba(191,220,242,.8); line-height:1;
-  }
-  .station-conn.dead{ opacity:.35; }
+    .panel-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0 0 4px;
+    }
 
-  /* Sediment layer */
-  .sediment-layer{
-    position:absolute; bottom:0; left:0; right:0; z-index:1;
-    background:linear-gradient(0deg,
-      rgba(101,78,42,.55) 0%,
-      rgba(101,78,42,.25) 55%,
-      transparent 100%
-    );
-    transition:height .9s ease;
-    border-radius:0 0 20px 20px;
-  }
+    .panel-subtitle {
+      font-size: 13px;
+      color: var(--ink-soft);
+      margin: 0 0 14px;
+      line-height: 1.55;
+    }
 
-  /* Status glow border */
-  .pond-visual.glow-safe{
-    box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 10px rgba(87,214,141,.12);
-  }
-  .pond-visual.glow-warn{
-    box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 14px rgba(232,162,61,.22);
-    outline:1.5px solid rgba(232,162,61,.35);
-    outline-offset:-1.5px;
-  }
-  .pond-visual.glow-danger{
-    box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 18px rgba(216,86,62,.28);
-    outline:1.5px solid rgba(216,86,62,.45);
-    outline-offset:-1.5px;
-    animation:dangerGlow 2s ease-in-out infinite;
-  }
-  @keyframes dangerGlow{
-    0%,100%{box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 10px rgba(216,86,62,.18);}
-    50%{box-shadow:inset 0 0 30px rgba(0,0,0,.25), 0 0 24px rgba(216,86,62,.38);}
-  }
-</style>
+    /* ---------- buttons ---------- */
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      letter-spacing: -0.01em;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: #fff;
+      width: 100%;
+    }
+
+    .btn-amber {
+      background: var(--amber);
+      color: #402A08;
+      width: 100%;
+    }
+
+    .btn-outline {
+      background: #fff;
+      border: 1px solid var(--card-border);
+      color: var(--ink);
+      width: 100%;
+    }
+
+    .btn-danger-outline {
+      background: #fff;
+      border: 1px solid var(--coral);
+      color: var(--coral);
+      width: 100%;
+    }
+
+    .btn-small {
+      padding: 8px 12px;
+      font-size: 12px;
+      width: auto;
+      min-height: 40px;
+    }
+
+    /* ---------- pond list ---------- */
+    .pond-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .12s;
+    }
+
+    .pond-card:active {
+      transform: scale(.98);
+    }
+
+    .pond-card:hover {
+      box-shadow: 0 4px 16px rgba(10, 42, 61, .08);
+    }
+
+    .pond-card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .pond-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--brand-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      flex: 0 0 auto;
+    }
+
+    .pond-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .pond-card-info h4 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .pond-card-info span {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+    }
+
+    .pond-mini-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .mini-badge {
+      font-size: 10.5px;
+      background: var(--page-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 4px 7px;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      color: var(--ink-soft);
+    }
+
+    .mini-badge b {
+      color: var(--ink);
+    }
+
+    .pond-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--ink-soft);
+      border-top: 1px solid var(--card-border);
+      padding-top: 9px;
+    }
+
+    .add-pond-btn {
+      border: 1.5px dashed var(--card-border);
+      background: transparent;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      color: var(--ink-soft);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .add-pond-btn:hover {
+      border-color: var(--brand);
+      color: var(--brand-dark);
+    }
+
+    /* ---------- pond list / detail (full-screen swap) ---------- */
+    .pond-list-view {
+      display: none;
+    }
+
+    .pond-list-view.active {
+      display: block;
+      animation: fadeIn .25s ease;
+    }
+
+    .pond-detail-view {
+      display: none;
+    }
+
+    .pond-detail-view.active {
+      display: block;
+      animation: fadeIn .25s ease;
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .back-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: var(--ink);
+    }
+
+    .detail-header-info h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .detail-header-info span {
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .segmented {
+      display: flex;
+      background: #EAE7DB;
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .segmented button {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 9px 4px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      cursor: pointer;
+    }
+
+    .segmented button.active {
+      background: #fff;
+      color: var(--brand-dark);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
+    }
+
+    .pond-subpanel {
+      display: none;
+    }
+
+    .pond-subpanel.active {
+      display: block;
+      animation: fadeIn .2s ease;
+    }
+
+    /* ---------- pond visual (signature element) ---------- */
+    .pond-visual {
+      position: relative;
+      height: 280px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(180deg, var(--teal) 0%, var(--deep) 85%);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, .25);
+      transition: box-shadow .3s;
+    }
+
+    .pond-visual.on-battery {
+      box-shadow: inset 0 0 0 2px var(--amber), inset 0 0 30px rgba(0, 0, 0, .25);
+    }
+
+    .pond-visual.aeration-off .bubble {
+      animation-play-state: paused;
+      opacity: .12;
+    }
+
+    .surface-line {
+      position: absolute;
+      top: 28px;
+      left: 0;
+      right: 0;
+      border-top: 1px dashed rgba(255, 255, 255, .35);
+    }
+
+    .pond-links {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .pond-links line {
+      stroke: rgba(255, 255, 255, .22);
+      stroke-width: .6;
+      stroke-dasharray: 2.5 2.5;
+    }
+
+    .buoy {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--page-bg);
+      color: var(--ink);
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, .3);
+      z-index: 4;
+    }
+
+    .buoy::after {
+      content: '';
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 8px;
+      background: rgba(255, 255, 255, .5);
+    }
+
+    .tether {
+      position: absolute;
+      top: 40px;
+      bottom: 68px;
+      left: 50%;
+      width: 0;
+      border-left: 2px dashed rgba(255, 255, 255, .28);
+      z-index: 1;
+    }
+
+    .pond-station {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 72px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      z-index: 2;
+      background: linear-gradient(180deg, #1c5b70, #0d3745);
+      border: 1px solid rgba(255, 255, 255, .28);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .4);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .88);
+      text-align: center;
+    }
+
+    .pond-modules {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+    }
+
+    .pond-module {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 54px;
+    }
+
+    .pond-module-pin {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      margin: 0 auto 4px;
+      background: rgba(255, 255, 255, .14);
+      border: 1.5px solid rgba(255, 255, 255, .38);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      backdrop-filter: blur(4px);
+      transition: opacity .25s, border-color .25s;
+    }
+
+    .pond-module.off .pond-module-pin {
+      opacity: .5;
+      border-color: rgba(255, 255, 255, .18);
+    }
+
+    .pond-module-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .pond-module-status {
+      position: absolute;
+      bottom: -3px;
+      right: -3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1.5px solid var(--deep);
+    }
+
+    .pond-module-status.on {
+      background: #57D68D;
+    }
+
+    .pond-module-status.off {
+      background: #8A9AA3;
+    }
+
+    .pond-module-status.warn {
+      background: var(--amber);
+      animation: blink 1.4s infinite;
+    }
+
+    .pond-module-status.run {
+      background: #57D68D;
+      box-shadow: 0 0 0 0 rgba(87, 214, 141, .55);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: .45;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .pond-module-label {
+      display: block;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.25;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
+    }
+
+    .pond-module-state {
+      display: block;
+      font-size: 8.5px;
+      font-weight: 600;
+      color: rgba(191, 220, 242, .95);
+      margin-top: 1px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: 52%;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .5);
+      animation: rise 3s linear infinite;
+      z-index: 2;
+    }
+
+    .bubble:nth-child(1) {
+      left: 31%;
+      animation-delay: 0s;
+    }
+
+    .bubble:nth-child(2) {
+      left: 34%;
+      animation-delay: .7s;
+    }
+
+    .bubble:nth-child(3) {
+      left: 37%;
+      animation-delay: 1.4s;
+    }
+
+    .bubble:nth-child(4) {
+      left: 33%;
+      animation-delay: 2.1s;
+    }
+
+    @keyframes rise {
+      0% {
+        transform: translateY(0);
+        opacity: 0;
+      }
+
+      15% {
+        opacity: .7;
+      }
+
+      100% {
+        transform: translateY(-120px);
+        opacity: 0;
+      }
+    }
+
+    .pond-caption {
+      font-size: 11px;
+      color: var(--ink-soft);
+      text-align: center;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* ---------- gauges ---------- */
+    .gauge-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .gauge-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 4px;
+      text-align: center;
+    }
+
+    .gauge-label {
+      font-size: 11px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .gauge-value {
+      font-size: 22px;
+      margin: 4px 0 6px;
+    }
+
+    .gauge-unit {
+      font-size: 10px;
+      color: var(--ink-soft);
+      margin-left: 2px;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    .pill-safe {
+      background: var(--brand-light);
+      color: var(--brand-dark);
+    }
+
+    .pill-warn {
+      background: rgba(232, 162, 61, .2);
+      color: #8A5A11;
+    }
+
+    .pill-danger {
+      background: rgba(216, 86, 62, .16);
+      color: var(--coral);
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+      position: relative;
+    }
+
+    .chart-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .chart-card h3 {
+      font-size: 13px;
+      margin: 0;
+      flex: 1;
+    }
+
+    .info-btn {
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      margin: -2px 0;
+      border: 1.5px solid var(--card-border);
+      background: var(--page-bg);
+      color: var(--ink-soft);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .info-btn:hover,
+    .info-btn:focus-visible {
+      background: #fff;
+      border-color: var(--brand);
+      color: var(--brand-dark);
+    }
+
+    /* ---------- info popup ---------- */
+    .info-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 42, 61, .45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+
+    .info-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .info-popup {
+      width: 100%;
+      max-width: 340px;
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px 16px 14px;
+      box-shadow: 0 16px 40px rgba(10, 42, 61, .22);
+      transform: translateY(8px) scale(.98);
+      transition: transform .2s ease;
+    }
+
+    .info-overlay.show .info-popup {
+      transform: translateY(0) scale(1);
+    }
+
+    .info-popup-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .info-popup-head h4 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .info-close {
+      flex: 0 0 auto;
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: var(--page-bg);
+      color: var(--ink-soft);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .info-close:hover,
+    .info-close:focus-visible {
+      background: #EAE7DB;
+      color: var(--ink);
+    }
+
+    .info-popup p {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+
+    .info-popup p:last-of-type {
+      margin-bottom: 0;
+    }
+
+    svg#sparkline {
+      width: 100%;
+      height: 70px;
+      display: block;
+    }
+
+    svg#sparkline polyline {
+      fill: none;
+      stroke: var(--brand);
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ---------- power / eco ---------- */
+    .power-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .power-source {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .power-source .icon {
+      font-size: 26px;
+    }
+
+    .power-source .info h4 {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .power-source .info span {
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .battery-track {
+      height: 10px;
+      border-radius: 6px;
+      background: #EAF1EF;
+      margin: 14px 0 8px;
+      overflow: hidden;
+    }
+
+    .battery-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width .4s;
+    }
+
+    .battery-fill.ok {
+      background: var(--brand);
+    }
+
+    .battery-fill.warn {
+      background: var(--amber);
+    }
+
+    .battery-fill.crit {
+      background: var(--coral);
+    }
+
+    .battery-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .battery-row b {
+      color: var(--ink);
+    }
+
+    .outage-warning {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(232, 162, 61, .12);
+      border: 1px solid rgba(232, 162, 61, .4);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .outage-warning b {
+      color: #8A5A11;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      flex: 0 0 auto;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-toggle {
+      position: absolute;
+      inset: 0;
+      background: #DCE4E2;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: .3s;
+    }
+
+    .slider-toggle:before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .3s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+    }
+
+    input:checked+.slider-toggle {
+      background: var(--brand);
+    }
+
+    input:checked+.slider-toggle:before {
+      transform: translateX(18px);
+    }
+
+    input[type=range]:disabled {
+      opacity: .4;
+    }
+
+    .field-hint {
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      margin-top: 8px;
+      line-height: 1.55;
+    }
+
+    .freq-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-top: 10px;
+    }
+
+    .freq-row b {
+      color: var(--ink);
+    }
+
+    .eco-hint {
+      display: none;
+      margin-top: 10px;
+      font-size: 11.5px;
+      color: var(--brand-dark);
+      background: var(--brand-light);
+      border: 1px solid rgba(44, 140, 90, .35);
+      border-radius: 10px;
+      padding: 9px 10px;
+      line-height: 1.6;
+    }
+
+    /* ---------- control ---------- */
+    .control-card {
+      background: #fff;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .sludge-track {
+      height: 10px;
+      border-radius: 6px;
+      background: #EAF1EF;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .sludge-fill {
+      height: 100%;
+      background: var(--brand);
+      transition: width .4s;
+    }
+
+    .sludge-fill.crit {
+      background: var(--coral);
+    }
+
+    /* ---------- alerts / history ---------- */
+    .alert-item {
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-left: 4px solid;
+      background: #fff;
+      border: 1px solid var(--card-border);
+    }
+
+    .alert-item.alert-danger {
+      border-left-color: var(--coral);
+    }
+
+    .alert-item.alert-warn {
+      border-left-color: var(--amber);
+    }
+
+    .alert-item.alert-info {
+      border-left-color: var(--sky);
+    }
+
+    .alert-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+
+    .alert-time {
+      font-size: 11px;
+      color: var(--ink-soft);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .alert-msg {
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .alert-pond-tag {
+      display: inline-block;
+      margin-top: 7px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--brand-dark);
+      background: var(--brand-light);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .log-pond-tag {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--brand-dark);
+      background: var(--brand-light);
+      padding: 1px 6px;
+      border-radius: 8px;
+      margin-left: 4px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 44px 10px;
+      color: var(--ink-soft);
+      font-size: 13px;
+    }
+
+    .log-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 12px;
+    }
+
+    .log-time {
+      color: var(--ink-soft);
+      flex: 0 0 58px;
+      font-weight: 500;
+    }
+
+    .log-icon {
+      flex: 0 0 18px;
+    }
+
+    .log-text {
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .alert-item.interactive { cursor: pointer; transition: background .2s, border-color .2s; }
+    .alert-item.interactive:hover { background: #fdfdfd; border-color: rgba(14, 74, 94, 0.2); }
+    .alert-item.interactive:active { background: #f5f5f5; }
+
+    .control-recommendation {
+      background: var(--brand-light);
+      color: var(--brand-dark);
+      font-size: 11.5px;
+      line-height: 1.5;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-top: 12px;
+      border: 1px solid rgba(87, 214, 141, 0.3);
+    }
+
+    .alert-ext {
+      margin-top: 6px;
+      font-size: 11.5px;
+      line-height: 1.45;
+      border-radius: 6px;
+      padding: 6px 8px;
+    }
+
+    .alert-impact {
+      background: rgba(232, 162, 61, 0.1);
+      color: #8a5a19;
+    }
+
+    .alert-action {
+      background: rgba(87, 214, 141, 0.1);
+      color: #1e7040;
+      margin-top: 4px;
+    }
+
+    .alert-danger .alert-impact {
+      background: rgba(240, 98, 146, 0.1);
+      color: #a3224b;
+    }
+
+    .analytics-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .analytics-card {
+      background: #fff;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .analytics-val {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--brand-dark);
+    }
+    .analytics-label {
+      font-size: 11px;
+      color: var(--ink-soft);
+      line-height: 1.3;
+    }
+    .action-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+    .action-list li {
+      margin-bottom: 8px;
+    }
+    .log-filter {
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .log-filter select {
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    /* System Accordion Custom Styles */
+    details.system-accordion {
+      background: #fff;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    details.system-accordion summary {
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--brand-dark);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    details.system-accordion summary::-webkit-details-marker {
+      display: none;
+    }
+    details.system-accordion summary:after {
+      content: '+';
+      font-size: 20px;
+      line-height: 1;
+      color: var(--ink-soft);
+    }
+    details.system-accordion[open] summary:after {
+      content: '−';
+    }
+    details.system-accordion summary:hover {
+      background: rgba(14, 74, 94, 0.03);
+    }
+    details.system-accordion .accordion-content {
+      padding: 0 16px 16px 16px;
+      border-top: 1px solid var(--card-border);
+      margin-top: 0;
+      padding-top: 14px;
+    }
+    details.system-accordion .power-card, 
+    details.system-accordion .limit-card {
+      border: none;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    /* ---------- system tab ---------- */
+    .pipeline-step {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .pipeline-step-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-num {
+      display: inline-flex;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--brand-light);
+      color: var(--brand-dark);
+      font-size: 11px;
+      font-weight: 800;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .pipeline-step h4 {
+      margin: 0;
+      font-size: 13.5px;
+    }
+
+    .pipeline-step span {
+      font-size: 11px;
+      color: var(--ink-soft);
+      padding-left: 28px;
+      line-height: 1.5;
+    }
+
+    .pipeline-arrow {
+      text-align: center;
+      color: var(--brand);
+      font-size: 15px;
+      padding: 2px 0;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      margin-top: 10px;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      text-align: left;
+      padding: 8px 5px;
+      border-bottom: 1px solid var(--card-border);
+      vertical-align: top;
+    }
+
+    .compare-table th {
+      color: var(--ink-soft);
+      font-weight: 700;
+    }
+
+    .calc-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .calc-row label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+
+    .calc-row input[type=number] {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      font-size: 15px;
+      width: 100%;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--brand);
+    }
+
+    .calc-result {
+      display: flex;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-top: 1px dashed var(--card-border);
+      font-size: 12.5px;
+    }
+
+    .limit-card {
+      background: #FFF7ED;
+      border: 1px solid #F3D9AE;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .limit-card h3 {
+      margin: 0 0 6px;
+      font-size: 13px;
+    }
+
+    .limit-card ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    /* ---------- toast ---------- */
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 78px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all .25s;
+      z-index: 50;
+      max-width: 82%;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ---------- bottom nav ---------- */
+    .eco-badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--brand-light);
+      color: var(--brand-dark);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 6px;
+      line-height: 1;
+      vertical-align: middle;
+      margin-left: 6px;
+      letter-spacing: 0.02em;
+      border: 1px solid rgba(87, 214, 141, 0.4);
+    }
+
+    .eco-badge-small {
+      font-size: 8px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+
+    .bottom-nav {
+      flex: 0 0 auto;
+      display: flex;
+      background: #fff;
+      border-top: 1px solid var(--card-border);
+      padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+      position: relative;
+      z-index: 5;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .nav-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 2px;
+      color: var(--ink-soft);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      letter-spacing: -0.01em;
+      transition: color .2s;
+    }
+
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke .2s, transform .2s;
+    }
+
+    .nav-btn:active svg {
+      transform: scale(0.9);
+    }
+
+    .nav-btn.active {
+      color: var(--brand-dark);
+    }
+
+    .nav-badge {
+      display: none;
+      position: absolute;
+      top: 2px;
+      right: 18%;
+      background: var(--coral);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      min-width: 15px;
+      height: 15px;
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+    }
+
+    /* ========== ENHANCED POND VISUAL ========== */
+
+    /* Depth gradient override */
+    .pond-visual {
+      background: linear-gradient(180deg,
+          #1a6b85 0%, #156878 12%, #0e4a5e 35%, #0a3a4d 65%, #072d3d 100%);
+    }
+
+    /* Wave animation */
+    .pond-wave {
+      position: absolute;
+      top: 16px;
+      left: 0;
+      width: 200%;
+      height: 34px;
+      z-index: 2;
+      animation: waveSlide 6s linear infinite;
+    }
+
+    .pond-wave-fill {
+      fill: var(--page-bg);
+      opacity: .07;
+    }
+
+    .pond-wave-stroke {
+      fill: none;
+      stroke: rgba(191, 220, 242, .22);
+      stroke-width: 1.2;
+    }
+
+    @keyframes waveSlide {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* Enhanced bubbles */
+    .bubble-enhanced {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .65), rgba(255, 255, 255, .15));
+      z-index: 2;
+      opacity: 0;
+      animation: riseEnhanced var(--dur, 3s) var(--delay, 0s) linear infinite;
+    }
+
+    @keyframes riseEnhanced {
+      0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0;
+      }
+
+      12% {
+        opacity: var(--max-op, 0.55);
+        transform: translateY(-8px) scale(0.75);
+      }
+
+      75% {
+        opacity: calc(var(--max-op, 0.55) * 0.35);
+      }
+
+      100% {
+        transform: translateY(var(--rise-h, -130px)) scale(1.1);
+        opacity: 0;
+      }
+    }
+
+    /* Fish */
+    .pond-fish {
+      position: absolute;
+      z-index: 3;
+      transition: top 1.8s ease-in-out;
+      pointer-events: none;
+    }
+
+    .fish-body {
+      fill: rgba(255, 255, 255, .16);
+    }
+
+    .fish-detail {
+      fill: rgba(255, 255, 255, .28);
+    }
+
+    .pond-fish.swim-right {
+      animation: swimRight var(--swim-dur, 8s) linear infinite;
+    }
+
+    .pond-fish.swim-left {
+      animation: swimLeft var(--swim-dur, 8s) linear infinite;
+    }
+
+    @keyframes swimRight {
+      0% {
+        left: -10%;
+      }
+
+      100% {
+        left: 108%;
+      }
+    }
+
+    @keyframes swimLeft {
+      0% {
+        left: 108%;
+      }
+
+      100% {
+        left: -10%;
+      }
+    }
+
+    .fish-tail-anim {
+      animation: tailWag .55s ease-in-out infinite alternate;
+      transform-origin: right center;
+    }
+
+    @keyframes tailWag {
+      0% {
+        transform: rotate(-9deg);
+      }
+
+      100% {
+        transform: rotate(9deg);
+      }
+    }
+
+    /* Module enhancements */
+    .pond-module {
+      cursor: pointer;
+      transition: transform .15s ease;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .pond-module:hover {
+      transform: translate(-50%, -50%) scale(1.14);
+      z-index: 10;
+    }
+
+    .pond-module-pin {
+      transition: opacity .25s, border-color .25s, box-shadow .25s;
+    }
+
+    .pond-module.on .pond-module-pin,
+    .pond-module.run .pond-module-pin {
+      box-shadow: 0 0 10px rgba(87, 214, 141, .3);
+    }
+
+    .pond-module.warn .pond-module-pin {
+      box-shadow: 0 0 10px rgba(232, 162, 61, .35);
+      animation: modWarnPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes modWarnPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 6px rgba(232, 162, 61, .25);
+      }
+
+      50% {
+        box-shadow: 0 0 14px rgba(232, 162, 61, .5);
+      }
+    }
+
+    /* Aeration pulse ring */
+    .mod-aeration-ring {
+      position: absolute;
+      inset: -5px;
+      border-radius: 16px;
+      border: 1.5px solid rgba(87, 214, 141, .4);
+      animation: aerRing 2s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes aerRing {
+      0% {
+        transform: scale(1);
+        opacity: .55;
+      }
+
+      100% {
+        transform: scale(1.6);
+        opacity: 0;
+      }
+    }
+
+    /* Sensor scan line */
+    .mod-sensor-scan {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .mod-sensor-scan::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(87, 214, 141, .22), transparent);
+      animation: senScan 2.5s ease-in-out infinite;
+    }
+
+    @keyframes senScan {
+      0% {
+        left: -100%;
+      }
+
+      100% {
+        left: 200%;
+      }
+    }
+
+    /* Module tooltip */
+    .module-tooltip {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(5px);
+      background: rgba(10, 42, 61, .95);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 11px;
+      line-height: 1.55;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s, transform .2s;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .4);
+      width: max-content;
+      max-width: 220px;
+      text-align: center;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .module-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: rgba(10, 42, 61, .92);
+    }
+
+    .pond-module.tooltip-active .module-tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Sensor mini overlay */
+    .sensor-mini-overlay {
+      position: absolute;
+      z-index: 5;
+      display: flex;
+      gap: 4px;
+      top: 40px;
+      right: 8px;
+    }
+
+    .sensor-mini-tag {
+      background: rgba(0, 0, 0, .38);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 8.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      letter-spacing: -.01em;
+    }
+
+    .sensor-mini-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+    }
+
+    .sensor-mini-dot.safe {
+      background: #57D68D;
+    }
+
+    .sensor-mini-dot.warn {
+      background: var(--amber);
+    }
+
+    .sensor-mini-dot.danger {
+      background: var(--coral);
+      animation: blink 1s infinite;
+    }
+
+    /* Data flow lines */
+    .pond-links .flow-line {
+      stroke: rgba(87, 214, 141, .35);
+      stroke-width: .9;
+      stroke-dasharray: 2 8;
+      animation: dashFlow 1.8s linear infinite;
+    }
+
+    @keyframes dashFlow {
+      0% {
+        stroke-dashoffset: 10;
+      }
+
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .pond-visual.data-dead .flow-line {
+      stroke: rgba(216, 86, 62, .3);
+      animation: none;
+      stroke-dasharray: 2 4;
+    }
+
+    /* DeltaV station enhanced */
+    .pond-station {
+      min-width: 94px;
+      padding: 7px 12px;
+      border-radius: 12px;
+      z-index: 4;
+      background: linear-gradient(135deg, #1c6b80, #0d4755);
+      border: 1.5px solid rgba(255, 255, 255, .3);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: inherit;
+      text-align: center;
+    }
+
+    .station-chip {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, #2a7a8f, #1a5a6f);
+      border: 1px solid rgba(255, 255, 255, .25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7px;
+      color: rgba(255, 255, 255, .75);
+      line-height: 1;
+    }
+
+    .station-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .9);
+    }
+
+    .station-led {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #57D68D;
+      animation: ledBlink 1.5s ease-in-out infinite;
+      flex: 0 0 auto;
+    }
+
+    @keyframes ledBlink {
+
+      0%,
+      100% {
+        opacity: .35;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .station-led.dead {
+      background: var(--coral);
+      animation: none;
+      opacity: .6;
+    }
+
+    .station-conn {
+      font-size: 8px;
+      color: rgba(191, 220, 242, .8);
+      line-height: 1;
+    }
+
+    .station-conn.dead {
+      opacity: .35;
+    }
+
+    /* Sediment layer */
+    .sediment-layer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      background: linear-gradient(0deg,
+          rgba(101, 78, 42, .55) 0%,
+          rgba(101, 78, 42, .25) 55%,
+          transparent 100%);
+      transition: height .9s ease;
+      border-radius: 0 0 20px 20px;
+    }
+
+    /* Status glow border */
+    .pond-visual.glow-safe {
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, .25), 0 0 10px rgba(87, 214, 141, .12);
+    }
+
+    .pond-visual.glow-warn {
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, .25), 0 0 14px rgba(232, 162, 61, .22);
+      outline: 1.5px solid rgba(232, 162, 61, .35);
+      outline-offset: -1.5px;
+    }
+
+    .pond-visual.glow-danger {
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, .25), 0 0 18px rgba(216, 86, 62, .28);
+      outline: 1.5px solid rgba(216, 86, 62, .45);
+      outline-offset: -1.5px;
+      animation: dangerGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes dangerGlow {
+
+      0%,
+      100% {
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, .25), 0 0 10px rgba(216, 86, 62, .18);
+      }
+
+      50% {
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, .25), 0 0 24px rgba(216, 86, 62, .38);
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="app-shell">
+  <div class="app-shell">
 
-  <header class="app-header">
-    <div>
-      <div class="brand-row"><span class="brand-logo">🐟</span><span class="brand-name">DeltaV</span></div>
-      <span class="eyebrow">Trạm Đa Năng Đáy Hồ — demo mô phỏng</span>
-      <div class="conn-status"><span class="conn-dot"></span> Đã kết nối qua WiFi</div>
-    </div>
-    <div class="header-actions">
-      <button class="btn btn-outline btn-small" id="pauseBtn" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff;">⏸️ Tạm dừng</button>
-    </div>
-  </header>
-
-  <main class="tab-content" id="tabContent">
-
-    <!-- ===== PONDS (list + detail) ===== -->
-    <section class="tab-panel active" id="tab-ponds">
-
-      <div class="pond-list-view active" id="pondListView">
-        <div class="panel-eyebrow">Quản lý đa ao</div>
-        <h2 class="panel-title">Ao nuôi của tôi</h2>
-        <p class="panel-subtitle">Theo dõi nhiều ao cùng lúc chỉ trên 1 màn hình — phù hợp hộ nuôi quy mô lớn hoặc chủ trang trại nhiều ao.</p>
-        <div id="pondListCards"></div>
-        <button class="add-pond-btn" id="addPondBtn">+ Thêm ao mới</button>
+    <header class="app-header">
+      <div>
+        <div class="brand-row"><span class="brand-logo">🐟</span><span class="brand-name">DeltaV</span></div>
+        <span class="eyebrow">Trạm Đa Năng Đáy Hồ — demo mô phỏng</span>
+        <div class="conn-status"><span class="conn-dot"></span> Đã kết nối qua WiFi</div>
       </div>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-small" id="pauseBtn"
+          style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff;">⏸️ Tạm dừng</button>
+      </div>
+    </header>
 
-      <div class="pond-detail-view" id="pondDetailView">
-        <div class="detail-header">
-          <button class="back-btn" id="backToListBtn" aria-label="Quay lại danh sách ao">←</button>
-          <div class="detail-header-info">
-            <h2 id="pondDetailName">Ao 1</h2>
-            <span id="pondDetailMeta">Vị Thanh, Hậu Giang • 500 m²</span>
+    <main class="tab-content" id="tabContent">
+
+      <!-- ===== PONDS (list + detail) ===== -->
+      <section class="tab-panel active" id="tab-ponds">
+
+        <div class="pond-list-view active" id="pondListView">
+          <div class="panel-eyebrow">Quản lý đa ao</div>
+          <h2 class="panel-title">Ao nuôi của tôi</h2>
+          <p class="panel-subtitle">Theo dõi nhiều ao cùng lúc chỉ trên 1 màn hình — phù hợp hộ nuôi quy mô lớn hoặc chủ
+            trang trại nhiều ao.</p>
+          <div id="pondListCards"></div>
+          <button class="add-pond-btn" id="addPondBtn">+ Thêm ao mới</button>
+        </div>
+
+        <div class="pond-detail-view" id="pondDetailView">
+          <div class="detail-header">
+            <button class="back-btn" id="backToListBtn" aria-label="Quay lại danh sách ao">←</button>
+            <div class="detail-header-info">
+              <h2 id="pondDetailName">Ao 1</h2>
+              <span id="pondDetailMeta">Vị Thanh, Hậu Giang • 500 m²</span>
+            </div>
+          </div>
+
+          <div class="segmented">
+            <button id="pondTabBtn-overview" data-pondtab="overview" class="active">Tổng quan</button>
+            <button id="pondTabBtn-power" data-pondtab="power">Nguồn điện</button>
+            <button id="pondTabBtn-control" data-pondtab="control">Điều khiển</button>
+          </div>
+
+          <!-- Overview -->
+          <div class="pond-subpanel active" id="pondPanel-overview">
+            <div class="pond-visual" id="pondVisual">
+              <!-- Wave SVG -->
+              <svg class="pond-wave" viewBox="0 0 600 34" preserveAspectRatio="none" aria-hidden="true">
+                <path class="pond-wave-fill"
+                  d="M0,17 C50,9 100,25 150,17 C200,9 250,25 300,17 C350,9 400,25 450,17 C500,9 550,25 600,17 L600,0 L0,0 Z" />
+                <path class="pond-wave-stroke"
+                  d="M0,21 C60,11 120,31 180,21 C240,11 300,31 360,21 C420,11 480,31 540,21 C600,11 660,31 720,21" />
+              </svg>
+
+              <!-- Connection lines SVG with data flow -->
+              <svg class="pond-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="50" y1="22" x2="50" y2="84" />
+                <line x1="50" y1="84" x2="34" y2="52" />
+                <line x1="50" y1="84" x2="66" y2="58" />
+                <line x1="50" y1="84" x2="22" y2="72" />
+                <line x1="50" y1="84" x2="78" y2="72" />
+                <line class="flow-line" x1="34" y1="52" x2="50" y2="84" />
+                <line class="flow-line" x1="66" y1="58" x2="50" y2="84" />
+                <line class="flow-line" x1="22" y1="72" x2="50" y2="84" />
+                <line class="flow-line" x1="78" y1="72" x2="50" y2="84" />
+              </svg>
+
+              <!-- Sensor mini overlay -->
+              <div class="sensor-mini-overlay" id="sensorMiniOverlay"></div>
+
+              <!-- Buoy -->
+              <div class="buoy"><span id="buoyIcon">🔌</span><span id="buoyBattery">96%</span></div>
+              <div class="tether"></div>
+
+              <!-- Fish -->
+              <div class="pond-fish swim-right" id="fish1" style="--swim-dur:9s;top:48%;">
+                <svg width="28" height="14" viewBox="0 0 28 14">
+                  <path class="fish-body" d="M2,7 Q7,1 14,2 Q21,3 26,7 Q21,11 14,12 Q7,13 2,7Z" />
+                  <path class="fish-tail-anim" d="M1,7 L-4,2 L-4,12Z" fill="rgba(255,255,255,.14)" />
+                  <circle class="fish-detail" cx="21" cy="5.5" r="1.2" />
+                </svg>
+              </div>
+              <div class="pond-fish swim-left" id="fish2" style="--swim-dur:13s;top:60%;">
+                <svg width="22" height="11" viewBox="0 0 22 11" style="transform:scaleX(-1)">
+                  <path class="fish-body" d="M2,5.5 Q5,1 11,1.5 Q17,2 20,5.5 Q17,9 11,9.5 Q5,10 2,5.5Z" />
+                  <path class="fish-tail-anim" d="M1,5.5 L-3,1.5 L-3,9.5Z" fill="rgba(255,255,255,.12)" />
+                  <circle class="fish-detail" cx="16" cy="4" r="1" />
+                </svg>
+              </div>
+              <div class="pond-fish swim-right" id="fish3" style="--swim-dur:16s;top:40%;animation-delay:-6s;">
+                <svg width="18" height="9" viewBox="0 0 18 9">
+                  <path class="fish-body" d="M1,4.5 Q4,0.5 9,1 Q14,1.5 17,4.5 Q14,7.5 9,8 Q4,8.5 1,4.5Z" />
+                  <path class="fish-tail-anim" d="M0.5,4.5 L-2,1 L-2,8Z" fill="rgba(255,255,255,.11)" />
+                  <circle class="fish-detail" cx="13" cy="3.2" r="0.8" />
+                </svg>
+              </div>
+
+              <!-- Enhanced bubbles container -->
+              <div id="bubbleContainer"></div>
+
+              <!-- Sediment layer -->
+              <div class="sediment-layer" id="sedimentLayer" style="height:8%"></div>
+
+              <!-- DeltaV Station enhanced -->
+              <div class="pond-station" id="pondStation">
+                <div class="station-chip">⬡</div>
+                <span class="station-label">DeltaV</span>
+                <span class="station-led" id="stationLed"></span>
+                <span class="station-conn" id="stationConn">📶</span>
+              </div>
+
+              <!-- Modules -->
+              <div class="pond-modules" id="pondModules"></div>
+            </div>
+            <p class="pond-caption">Mặt cắt ao — vị trí 4 module trong khối DeltaV dưới đáy</p>
+
+            <div class="gauge-row">
+              <div class="gauge-card">
+                <div class="gauge-label">DO</div>
+                <div class="gauge-value" id="doValue">5.8<span class="gauge-unit">mg/L</span></div>
+                <span class="pill pill-safe" id="doPill">An toàn</span>
+              </div>
+              <div class="gauge-card">
+                <div class="gauge-label">pH</div>
+                <div class="gauge-value" id="phValue">7.2</div>
+                <span class="pill pill-safe" id="phPill">An toàn</span>
+              </div>
+              <div class="gauge-card">
+                <div class="gauge-label">Nhiệt độ</div>
+                <div class="gauge-value" id="tempValue">28.4<span class="gauge-unit">°C</span></div>
+                <span class="pill pill-safe" id="tempPill">An toàn</span>
+              </div>
+              <div class="gauge-card">
+                <div class="gauge-label">NH₃ (khí độc)</div>
+                <div class="gauge-value" id="nh3Value">0.08<span class="gauge-unit">mg/L</span></div>
+                <span class="pill pill-safe" id="nh3Pill">An toàn</span>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-head">
+                <h3>Xu hướng DO — 1 phút gần nhất</h3>
+                <button class="info-btn" id="doInfoBtn" type="button" aria-label="Thông tin về cảm biến DO">i</button>
+              </div>
+              <svg id="sparkline" viewBox="0 0 300 70" preserveAspectRatio="none">
+                <polyline points=""></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Power -->
+          <div class="pond-subpanel" id="pondPanel-power">
+            <div class="power-card">
+              <div class="power-source">
+                <span class="icon" id="powerSourceIcon">🔌</span>
+                <div class="info">
+                  <h4 id="powerSourceLabel">Điện lưới</h4>
+                  <span>Mạch chuyển nguồn tự động (ATS)</span>
+                </div>
+              </div>
+              <div class="battery-track">
+                <div class="battery-fill ok" id="batteryFillBar" style="width:96%"></div>
+              </div>
+              <div class="battery-row"><span>Pin dự phòng</span><b id="batteryPercentText">96%</b></div>
+
+              <div class="outage-warning" id="outageWarning">
+                <b>⚡ Đang chạy bằng pin dự phòng.</b><br>
+                Thời gian pin còn lại ước tính: <b id="batteryTimeLeft">—</b>.<br>
+                So sánh: hệ thống rời truyền thống chỉ có <b>20–40 phút</b> trước khi cá bắt đầu chết hàng loạt vì thiếu
+                oxy.
+              </div>
+
+              <button class="btn btn-amber" id="outageBtn" style="margin-top:14px;">⚡ Giả lập mất điện lưới</button>
+            </div>
+
+            <div class="power-card">
+              <div class="switch-row">
+                <div>
+                  <h4 style="margin:0;font-size:14px;display:flex;align-items:center;">Chế độ tiết kiệm điện - ECO</h4>
+                  <span style="font-size:12px;color:var(--ink-soft);">Ưu tiên giảm tiêu thụ điện</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="ecoModeToggle"><span
+                    class="slider-toggle"></span></label>
+              </div>
+              <p class="field-hint">Tự động bật khi mất điện lưới, có thể bật/tắt thủ công.<br>Khi bật:<br>1.
+                <b>Xi-phông</b> tạm dừng để tiết kiệm điện bơm.<br>2. <b>Cảm biến</b> giảm tần suất gửi dữ liệu.<br>3.
+                <b>Ngưỡng an toàn</b> không thay đổi, vẫn giám sát 24/24.<br>4. <b>Sục khí (Quan trọng)</b> không bao
+                giờ bị giảm công suất để đảm bảo oxy.
+              </p>
+              <div class="freq-row"><span>Tần suất gửi dữ liệu</span><b id="dataFreqText">mỗi 5 phút</b></div>
+              <div class="eco-hint" id="ecoHint">Đang tiết kiệm điện — Sẵn sàng tối ưu năng lượng.</div>
+            </div>
+          </div>
+
+          <!-- Control -->
+          <div class="pond-subpanel" id="pondPanel-control">
+            <div class="control-card">
+              <div class="switch-row">
+                <div>
+                  <h4 style="margin:0;font-size:14px;">Sục khí vi bọt</h4>
+                  <span style="font-size:12px;color:var(--ink-soft);">Đĩa khí bọt mịn &lt;3mm + bơm DC</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="aerationToggle" checked><span
+                    class="slider-toggle"></span></label>
+              </div>
+              <div style="margin-top:14px;">
+                <label style="font-size:12px;font-weight:600;color:var(--ink-soft);">Công suất: <span
+                    id="aerationPowerText">70%</span></label>
+                <input type="range" id="aerationPowerRange" min="0" max="100" value="70">
+              </div>
+              <div class="control-recommendation">💡 <b>Đề xuất:</b> Nên duy trì công suất 60-70% vào ban ngày (có tảo quang hợp). Tăng lên 100% vào ban đêm, gần sáng, hoặc khi DO &lt; 4.0 mg/L.</div>
+            </div>
+
+            <div class="control-card">
+              <div class="switch-row" style="align-items:flex-start;">
+                <h4 style="margin:0;font-size:14px;">Xi‑phông tự động</h4>
+                <span class="pill pill-safe" id="h2sPill">Nguy cơ H₂S: Thấp</span>
+              </div>
+              <span style="font-size:12px;color:var(--ink-soft);" id="sludgeText">14% — tự động kích hoạt khi đạt
+                92%</span>
+              <div class="sludge-track">
+                <div class="sludge-fill" id="sludgeBarFill" style="width:14%"></div>
+              </div>
+              <p class="field-hint">H₂S không có cảm biến riêng — bùn tích tụ càng nhiều, nguy cơ H₂S càng cao. Xi‑phông
+                kịp thời là cách kiểm soát H₂S gián tiếp.</p>
+              <button class="btn btn-outline" id="manualSiphonBtn" style="margin-top:12px;">🧹 Kích hoạt xi‑phông thủ
+                công</button>
+              <div class="control-recommendation">💡 <b>Đề xuất:</b> Hệ thống tự động kích hoạt khi bùn đạt 92%. Nếu đang dùng pin dự phòng, hạn chế kích hoạt thủ công để kéo dài thời lượng pin cho Sục khí.</div>
+            </div>
+
+            <div class="control-card">
+              <h4 style="margin:0 0 6px;font-size:14px;">Demo tình huống</h4>
+              <button class="btn btn-danger-outline" id="simLowDOBtn">🧪 Giả lập sự cố DO tụt thấp</button>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="segmented">
-          <button id="pondTabBtn-overview" data-pondtab="overview" class="active">Tổng quan</button>
-          <button id="pondTabBtn-power" data-pondtab="power">Nguồn điện</button>
-          <button id="pondTabBtn-control" data-pondtab="control">Điều khiển</button>
-        </div>
+      <!-- ===== ALERTS (toàn bộ ao) ===== -->
+      <section class="tab-panel" id="tab-alerts">
+        <div class="panel-eyebrow">Tất cả các ao</div>
+        <h2 class="panel-title">Cảnh báo tự động</h2>
+        <p class="panel-subtitle">Tổng hợp cảnh báo từ toàn bộ ao đang quản lý, mới nhất trước.</p>
+        <div id="alertsList"></div>
+        <div class="empty-state" id="alertsEmpty">Chưa có cảnh báo nào. Tất cả các ao đang hoạt động ổn định.</div>
+        <button class="btn btn-outline btn-small" id="clearAlertsBtn" style="margin-top:8px;">Xóa tất cả cảnh
+          báo</button>
+      </section>
 
-        <!-- Overview -->
-        <div class="pond-subpanel active" id="pondPanel-overview">
-          <div class="pond-visual" id="pondVisual">
-            <!-- Wave SVG -->
-            <svg class="pond-wave" viewBox="0 0 600 34" preserveAspectRatio="none" aria-hidden="true">
-              <path class="pond-wave-fill" d="M0,17 C50,9 100,25 150,17 C200,9 250,25 300,17 C350,9 400,25 450,17 C500,9 550,25 600,17 L600,0 L0,0 Z"/>
-              <path class="pond-wave-stroke" d="M0,21 C60,11 120,31 180,21 C240,11 300,31 360,21 C420,11 480,31 540,21 C600,11 660,31 720,21"/>
+      <!-- ===== ANALYTICS (Thay thế HISTORY) ===== -->
+      <section class="tab-panel" id="tab-history">
+        <div class="panel-eyebrow">Tất cả các ao</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 class="panel-title">Báo cáo phân tích</h2>
+          <button class="btn btn-outline btn-small" onclick="window.openLogDetail()" title="Xem toàn bộ nhật ký" style="padding: 4px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
             </svg>
-
-            <!-- Connection lines SVG with data flow -->
-            <svg class="pond-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-              <line x1="50" y1="22" x2="50" y2="84"/>
-              <line x1="50" y1="84" x2="34" y2="52"/>
-              <line x1="50" y1="84" x2="66" y2="58"/>
-              <line x1="50" y1="84" x2="22" y2="72"/>
-              <line x1="50" y1="84" x2="78" y2="72"/>
-              <line class="flow-line" x1="34" y1="52" x2="50" y2="84"/>
-              <line class="flow-line" x1="66" y1="58" x2="50" y2="84"/>
-              <line class="flow-line" x1="22" y1="72" x2="50" y2="84"/>
-              <line class="flow-line" x1="78" y1="72" x2="50" y2="84"/>
-            </svg>
-
-            <!-- Sensor mini overlay -->
-            <div class="sensor-mini-overlay" id="sensorMiniOverlay"></div>
-
-            <!-- Buoy -->
-            <div class="buoy"><span id="buoyIcon">🔌</span><span id="buoyBattery">96%</span></div>
-            <div class="tether"></div>
-
-            <!-- Fish -->
-            <div class="pond-fish swim-right" id="fish1" style="--swim-dur:9s;top:48%;">
-              <svg width="28" height="14" viewBox="0 0 28 14"><path class="fish-body" d="M2,7 Q7,1 14,2 Q21,3 26,7 Q21,11 14,12 Q7,13 2,7Z"/><path class="fish-tail-anim" d="M1,7 L-4,2 L-4,12Z" fill="rgba(255,255,255,.14)"/><circle class="fish-detail" cx="21" cy="5.5" r="1.2"/></svg>
-            </div>
-            <div class="pond-fish swim-left" id="fish2" style="--swim-dur:13s;top:60%;">
-              <svg width="22" height="11" viewBox="0 0 22 11" style="transform:scaleX(-1)"><path class="fish-body" d="M2,5.5 Q5,1 11,1.5 Q17,2 20,5.5 Q17,9 11,9.5 Q5,10 2,5.5Z"/><path class="fish-tail-anim" d="M1,5.5 L-3,1.5 L-3,9.5Z" fill="rgba(255,255,255,.12)"/><circle class="fish-detail" cx="16" cy="4" r="1"/></svg>
-            </div>
-            <div class="pond-fish swim-right" id="fish3" style="--swim-dur:16s;top:40%;animation-delay:-6s;">
-              <svg width="18" height="9" viewBox="0 0 18 9"><path class="fish-body" d="M1,4.5 Q4,0.5 9,1 Q14,1.5 17,4.5 Q14,7.5 9,8 Q4,8.5 1,4.5Z"/><path class="fish-tail-anim" d="M0.5,4.5 L-2,1 L-2,8Z" fill="rgba(255,255,255,.11)"/><circle class="fish-detail" cx="13" cy="3.2" r="0.8"/></svg>
-            </div>
-
-            <!-- Enhanced bubbles container -->
-            <div id="bubbleContainer"></div>
-
-            <!-- Sediment layer -->
-            <div class="sediment-layer" id="sedimentLayer" style="height:8%"></div>
-
-            <!-- DeltaV Station enhanced -->
-            <div class="pond-station" id="pondStation">
-              <div class="station-chip">⬡</div>
-              <span class="station-label">DeltaV</span>
-              <span class="station-led" id="stationLed"></span>
-              <span class="station-conn" id="stationConn">📶</span>
-            </div>
-
-            <!-- Modules -->
-            <div class="pond-modules" id="pondModules"></div>
+            Nhật ký thô
+          </button>
+        </div>
+        <p class="panel-subtitle">Tổng hợp tình trạng vận hành và đề xuất tối ưu hệ thống trong 7 ngày qua.</p>
+        
+        <div class="analytics-summary">
+          <div class="analytics-card">
+            <span class="analytics-val">98.5%</span>
+            <span class="analytics-label">Tỷ lệ an toàn DO</span>
           </div>
-          <p class="pond-caption">Mặt cắt ao — vị trí 4 module trong khối DeltaV dưới đáy</p>
-
-          <div class="gauge-row">
-            <div class="gauge-card">
-              <div class="gauge-label">DO</div>
-              <div class="gauge-value" id="doValue">5.8<span class="gauge-unit">mg/L</span></div>
-              <span class="pill pill-safe" id="doPill">An toàn</span>
-            </div>
-            <div class="gauge-card">
-              <div class="gauge-label">pH</div>
-              <div class="gauge-value" id="phValue">7.2</div>
-              <span class="pill pill-safe" id="phPill">An toàn</span>
-            </div>
-            <div class="gauge-card">
-              <div class="gauge-label">Nhiệt độ</div>
-              <div class="gauge-value" id="tempValue">28.4<span class="gauge-unit">°C</span></div>
-              <span class="pill pill-safe" id="tempPill">An toàn</span>
-            </div>
-            <div class="gauge-card">
-              <div class="gauge-label">NH₃ (khí độc)</div>
-              <div class="gauge-value" id="nh3Value">0.08<span class="gauge-unit">mg/L</span></div>
-              <span class="pill pill-safe" id="nh3Pill">An toàn</span>
-            </div>
+          <div class="analytics-card">
+            <span class="analytics-val">3</span>
+            <span class="analytics-label">Sự cố mất điện</span>
           </div>
-
-          <div class="chart-card">
-            <div class="chart-card-head">
-              <h3>Xu hướng DO — 1 phút gần nhất</h3>
-              <button class="info-btn" id="doInfoBtn" type="button" aria-label="Thông tin về cảm biến DO">i</button>
-            </div>
-            <svg id="sparkline" viewBox="0 0 300 70" preserveAspectRatio="none"><polyline points=""></polyline></svg>
+          <div class="analytics-card">
+            <span class="analytics-val">12</span>
+            <span class="analytics-label">Lần xi-phông</span>
           </div>
         </div>
 
-        <!-- Power -->
-        <div class="pond-subpanel" id="pondPanel-power">
-          <div class="power-card">
-            <div class="power-source">
-              <span class="icon" id="powerSourceIcon">🔌</span>
-              <div class="info">
-                <h4 id="powerSourceLabel">Điện lưới</h4>
-                <span>Mạch chuyển nguồn tự động (ATS)</span>
+        <div class="control-card">
+          <h4 style="margin:0 0 8px;font-size:14px;color:var(--brand-dark);">Tình trạng hiện tại</h4>
+          <p style="font-size:13px;line-height:1.5;margin:0;">Hệ thống đang hoạt động tương đối ổn định. Tuy nhiên, <b>Ao 2</b> thường xuyên gặp tình trạng tụt DO vào khoảng 4:00 - 5:00 sáng. Bùn đáy tích tụ nhanh hơn 15% so với tuần trước.</p>
+        </div>
+
+        <div class="control-card">
+          <h4 style="margin:0 0 8px;font-size:14px;color:var(--brand-dark);">Hành động đề xuất</h4>
+          <ul class="action-list">
+            <li><b>Điều chỉnh sục khí Ao 2:</b> Cài đặt sục khí tự động tăng lên 100% từ 3:00 đến 6:00 sáng để bù đắp lượng oxy thiếu hụt.</li>
+            <li><b>Kiểm tra pin dự phòng:</b> Đã có 3 lần mất điện lưới trong tuần, pin dự phòng xả sâu 2 lần. Cần kiểm tra lại dung lượng thực tế.</li>
+            <li><b>Giảm lượng thức ăn:</b> Bùn đáy tích tụ nhanh cho thấy thức ăn dư thừa. Đề xuất giảm 10% lượng thức ăn trong 3 ngày tới.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ===== SYSTEM ===== -->
+      <section class="tab-panel" id="tab-system">
+        <div class="panel-eyebrow">DeltaV</div>
+        <h2 class="panel-title">Hệ thống &amp; công cụ</h2>
+
+        <details class="system-accordion">
+          <summary>Kiến trúc kết nối dữ liệu</summary>
+          <div class="accordion-content">
+            <div class="power-card">
+              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Đường đi thật của 1 chỉ số đo
+                được, từ đáy ao lên màn hình điện thoại.</p>
+  
+              <div class="pipeline-step">
+                <div class="pipeline-step-top"><span class="step-num">1</span>
+                  <h4>4 thiết bị dưới đáy ao</h4>
+                </div>
+                <span>Cảm biến DO/pH/nhiệt độ · sục khí vi bọt · xi‑phông tự động · lọc sinh học</span>
               </div>
-            </div>
-            <div class="battery-track"><div class="battery-fill ok" id="batteryFillBar" style="width:96%"></div></div>
-            <div class="battery-row"><span>Pin dự phòng</span><b id="batteryPercentText">96%</b></div>
-
-            <div class="outage-warning" id="outageWarning">
-              <b>⚡ Đang chạy bằng pin dự phòng.</b><br>
-              Thời gian pin còn lại ước tính: <b id="batteryTimeLeft">—</b>.<br>
-              So sánh: hệ thống rời truyền thống chỉ có <b>20–40 phút</b> trước khi cá bắt đầu chết hàng loạt vì thiếu oxy.
-            </div>
-
-            <button class="btn btn-amber" id="outageBtn" style="margin-top:14px;">⚡ Giả lập mất điện lưới</button>
-          </div>
-
-          <div class="power-card">
-            <div class="switch-row">
-              <div>
-                <h4 style="margin:0;font-size:14px;display:flex;align-items:center;">Chế độ tiết kiệm điện - ECO</h4>
-                <span style="font-size:12px;color:var(--ink-soft);">Ưu tiên thiết bị sống còn, tiết kiệm pin</span>
+              <div class="pipeline-arrow">↓</div>
+              <div class="pipeline-step">
+                <div class="pipeline-step-top"><span class="step-num">2</span>
+                  <h4>Module ESP32 (Arduino)</h4>
+                </div>
+                <span>Nhận toàn bộ dữ liệu từ 3 thiết bị điện tử qua bus RS485 Modbus RTU</span>
               </div>
-              <label class="switch"><input type="checkbox" id="ecoModeToggle"><span class="slider-toggle"></span></label>
-            </div>
-            <p class="field-hint">Tự động bật khi mất điện lưới, có thể bật/tắt thủ công.<br>Khi bật:<br>1. <b>Xi-phông</b> tạm dừng để tiết kiệm điện bơm.<br>2. <b>Cảm biến</b> giảm tần suất gửi dữ liệu.<br>3. <b>Ngưỡng an toàn</b> không thay đổi, vẫn giám sát 24/24.<br>4. <b>Sục khí (Quan trọng)</b> không bao giờ bị giảm công suất để đảm bảo oxy.</p>
-            <div class="freq-row"><span>Tần suất gửi dữ liệu</span><b id="dataFreqText">mỗi 5 phút</b></div>
-            <div class="eco-hint" id="ecoHint">✅ Đang tiết kiệm điện — Sẵn sàng tối ưu năng lượng.</div>
-          </div>
-        </div>
-
-        <!-- Control -->
-        <div class="pond-subpanel" id="pondPanel-control">
-          <div class="control-card">
-            <div class="switch-row">
-              <div>
-                <h4 style="margin:0;font-size:14px;">Sục khí vi bọt</h4>
-                <span style="font-size:12px;color:var(--ink-soft);">Đĩa khí bọt mịn &lt;3mm + bơm DC</span>
+              <div class="pipeline-arrow">↓</div>
+              <div class="pipeline-step">
+                <div class="pipeline-step-top"><span class="step-num">3</span>
+                  <h4>Gateway</h4>
+                </div>
+                <span>Chuẩn hóa dữ liệu thành định dạng JSON phù hợp</span>
               </div>
-              <label class="switch"><input type="checkbox" id="aerationToggle" checked><span class="slider-toggle"></span></label>
-            </div>
-            <div style="margin-top:14px;">
-              <label style="font-size:12px;font-weight:600;color:var(--ink-soft);">Công suất: <span id="aerationPowerText">70%</span></label>
-              <input type="range" id="aerationPowerRange" min="0" max="100" value="70">
+              <div class="pipeline-arrow">↓</div>
+              <div class="pipeline-step">
+                <div class="pipeline-step-top"><span class="step-num">4</span>
+                  <h4>App di động DeltaV</h4>
+                </div>
+                <span>Gateway gửi qua WiFi để đồng bộ dữ liệu, hiển thị và điều khiển từ xa</span>
+              </div>
+  
+              <p class="field-hint" style="margin-top:12px;">*Lọc sinh học là vật liệu thụ động (giá thể vi sinh), không có
+                điện tử nên không nằm trên bus — chỉ 3/4 thiết bị thật sự kết nối vào module ESP32.</p>
             </div>
           </div>
+        </details>
 
-          <div class="control-card">
-            <div class="switch-row" style="align-items:flex-start;">
-              <h4 style="margin:0;font-size:14px;">Xi‑phông tự động</h4>
-              <span class="pill pill-safe" id="h2sPill">Nguy cơ H₂S: Thấp</span>
+        <details class="system-accordion">
+          <summary>So sánh hệ thống</summary>
+          <div class="accordion-content">
+            <div class="power-card">
+              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0;">Trạm Đa Năng gộp 4 thiết bị rời thành 1
+                khối, giảm điểm hỏng và chi phí lắp đặt.</p>
+              <table class="compare-table" style="margin-top: 12px;">
+                <tr>
+                  <th></th>
+                  <th>Hệ thống rời</th>
+                  <th>Trạm Đa Năng</th>
+                </tr>
+                <tr>
+                  <td>Điểm hỏng độc lập</td>
+                  <td>4 thiết bị riêng</td>
+                  <td>1 khối tích hợp</td>
+                </tr>
+                <tr>
+                  <td>Dự phòng mất điện</td>
+                  <td>Không có / máy phát riêng</td>
+                  <td>Pin sạc‑lưới tự động</td>
+                </tr>
+                <tr>
+                  <td>Thời gian phản ứng</td>
+                  <td>~20–40 phút</td>
+                  <td>Vài giờ (pin dự phòng)</td>
+                </tr>
+                <tr>
+                  <td>Giám sát</td>
+                  <td>Đo thủ công</td>
+                  <td>Tự động, cảnh báo qua app</td>
+                </tr>
+              </table>
             </div>
-            <span style="font-size:12px;color:var(--ink-soft);" id="sludgeText">14% — tự động kích hoạt khi đạt 92%</span>
-            <div class="sludge-track"><div class="sludge-fill" id="sludgeBarFill" style="width:14%"></div></div>
-            <p class="field-hint">H₂S không có cảm biến riêng — bùn tích tụ càng nhiều, nguy cơ H₂S càng cao. Xi‑phông kịp thời là cách kiểm soát H₂S gián tiếp.</p>
-            <button class="btn btn-outline" id="manualSiphonBtn" style="margin-top:12px;">🧹 Kích hoạt xi‑phông thủ công</button>
           </div>
+        </details>
 
-          <div class="control-card">
-            <h4 style="margin:0 0 6px;font-size:14px;">Demo tình huống</h4>
-            <button class="btn btn-danger-outline" id="simLowDOBtn">🧪 Giả lập sự cố DO tụt thấp</button>
+        <details class="system-accordion">
+          <summary>Bài toán kinh tế: Vận hành</summary>
+          <div class="accordion-content">
+            <div class="power-card">
+              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Ước tính minh họa dựa trên mức giảm chi
+                phí vận hành 40–50% khi chuyển từ quạt nước sang sục khí vi bọt (nguồn: nextfarm.vn).</p>
+              <div class="calc-row">
+                <label for="calcCurrentCost">Chi phí điện hiện tại / tháng (VNĐ)</label>
+                <input type="number" id="calcCurrentCost" value="3000000" min="0" step="100000">
+              </div>
+              <div class="calc-row">
+                <label for="calcSavingsPercent">Mức giảm kỳ vọng: <span id="calcSavingsPercentText">45%</span></label>
+                <input type="range" id="calcSavingsPercent" min="40" max="50" value="45">
+              </div>
+              <div class="calc-result"><span>Chi phí điện mới / tháng</span><b id="calcNewCost">—</b></div>
+              <div class="calc-result"><span>Tiết kiệm / tháng</span><b id="calcSavingsAmount">—</b></div>
+              <div class="calc-result"><span>Tiết kiệm / năm</span><b id="calcSavingsYear">—</b></div>
+              <p class="field-hint">🧮 Công cụ ước tính tài chính — kéo thanh trượt không ảnh hưởng đến các ao đang mô
+                phỏng.</p>
+            </div>
           </div>
+        </details>
+
+        <details class="system-accordion">
+          <summary>Bài toán kinh tế: Đầu tư (CAPEX)</summary>
+          <div class="accordion-content">
+            <div class="power-card">
+              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Áp dụng cho 1 ao hoặc nhiều ao (mỗi ao
+                lắp riêng số khối cần thiết).</p>
+              <div class="calc-row">
+                <label for="capexPondArea">Diện tích mỗi ao (m²)</label>
+                <input type="number" id="capexPondArea" value="500" min="1" step="50">
+              </div>
+              <div class="calc-row">
+                <label for="capexNumPonds">Số ao áp dụng</label>
+                <input type="number" id="capexNumPonds" value="3" min="1" step="1">
+                <p class="field-hint">*Mặc định lấy theo số ao bạn đang quản lý trong DeltaV.</p>
+              </div>
+              <div class="calc-row">
+                <label for="capexAreaPerUnit">Diện tích 1 khối xử lý được (m²/khối)</label>
+                <input type="number" id="capexAreaPerUnit" value="500" min="1" step="50">
+                <p class="field-hint">*Giả định minh họa, cần xác định qua thử nghiệm thực địa.</p>
+              </div>
+              <div class="calc-row">
+                <label for="capexUnitPrice">Đơn giá ước tính 1 khối (VNĐ)</label>
+                <input type="number" id="capexUnitPrice" value="8000000" min="0" step="500000">
+                <p class="field-hint">*Chưa có báo giá chính thức — nhập số liệu thực tế khi có.</p>
+              </div>
+              <div class="calc-result"><span>Số khối cần / ao</span><b id="capexUnitsPerPond">—</b></div>
+              <div class="calc-result"><span>Tổng số khối cần</span><b id="capexTotalUnits">—</b></div>
+              <div class="calc-result"><span>Tổng chi phí đầu tư</span><b id="capexTotalCost">—</b></div>
+              <div class="calc-result"><span>Chi phí trung bình / ao</span><b id="capexAvgPerPond">—</b></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="system-accordion">
+          <summary>⚠️ Giới hạn cần lưu ý</summary>
+          <div class="accordion-content">
+            <div class="limit-card">
+              <ul style="margin:0; padding-left:20px; font-size:13px; line-height:1.5;">
+                <li style="margin-bottom:6px;">Ao lớn (&gt;1.000–2.000m²) có thể cần lắp nhiều khối thay vì một khối duy nhất.</li>
+                <li style="margin-bottom:6px;">Xi‑phông tự động là phần cơ khí dễ hỏng nhất nếu bùn quá đặc gây tắc nghẽn.</li>
+                <li style="margin-bottom:6px;">Pin dự phòng sạc‑lưới chỉ đủ vài giờ — không giải quyết mất điện kéo dài nhiều ngày (ví dụ bão). Cần
+                  phương án máy phát điện dùng chung cấp cụm hộ.</li>
+                <li style="margin-bottom:6px;">Cần thử nghiệm thực địa ít nhất 1–2 vụ nuôi trước khi khẳng định hiệu quả kinh tế thực tế.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <button class="btn btn-outline btn-small" id="resetDemoBtn" style="margin-top:16px;">↺ Đặt lại dữ liệu
+          demo</button>
+      </section>
+
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="info-overlay" id="alertDetailOverlay" aria-hidden="true">
+      <div class="info-popup" role="dialog" aria-labelledby="alertDetailTitle" aria-modal="true">
+        <div class="info-popup-head">
+          <h4 id="alertDetailTitle">Chi tiết cảnh báo</h4>
+          <button class="info-close" id="alertDetailCloseBtn" type="button" aria-label="Đóng">×</button>
         </div>
+        <div id="alertDetailContent"></div>
       </div>
-    </section>
-
-    <!-- ===== ALERTS (toàn bộ ao) ===== -->
-    <section class="tab-panel" id="tab-alerts">
-      <div class="panel-eyebrow">Tất cả các ao</div>
-      <h2 class="panel-title">Cảnh báo tự động</h2>
-      <p class="panel-subtitle">Tổng hợp cảnh báo từ toàn bộ ao đang quản lý, mới nhất trước.</p>
-      <div id="alertsList"></div>
-      <div class="empty-state" id="alertsEmpty">Chưa có cảnh báo nào. Tất cả các ao đang hoạt động ổn định.</div>
-      <button class="btn btn-outline btn-small" id="clearAlertsBtn" style="margin-top:8px;">Xóa tất cả cảnh báo</button>
-    </section>
-
-    <!-- ===== HISTORY (toàn bộ ao) ===== -->
-    <section class="tab-panel" id="tab-history">
-      <div class="panel-eyebrow">Tất cả các ao</div>
-      <h2 class="panel-title">Nhật ký vận hành</h2>
-      <p class="panel-subtitle">Log xi‑phông, sự cố mất điện, thao tác điều khiển của mọi ao.</p>
-      <div id="logList"></div>
-    </section>
-
-    <!-- ===== SYSTEM ===== -->
-    <section class="tab-panel" id="tab-system">
-      <div class="panel-eyebrow">DeltaV</div>
-      <h2 class="panel-title">Hệ thống &amp; công cụ</h2>
-
-      <div class="power-card">
-        <h3 style="margin:0 0 4px;font-size:14px;">Kiến trúc kết nối dữ liệu</h3>
-        <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Đường đi thật của 1 chỉ số đo được, từ đáy ao lên màn hình điện thoại.</p>
-
-        <div class="pipeline-step">
-          <div class="pipeline-step-top"><span class="step-num">1</span><h4>4 thiết bị dưới đáy ao</h4></div>
-          <span>Cảm biến DO/pH/nhiệt độ · sục khí vi bọt · xi‑phông tự động · lọc sinh học</span>
-        </div>
-        <div class="pipeline-arrow">↓</div>
-        <div class="pipeline-step">
-          <div class="pipeline-step-top"><span class="step-num">2</span><h4>Module ESP32 (Arduino)</h4></div>
-          <span>Nhận toàn bộ dữ liệu từ 3 thiết bị điện tử qua bus RS485 Modbus RTU</span>
-        </div>
-        <div class="pipeline-arrow">↓</div>
-        <div class="pipeline-step">
-          <div class="pipeline-step-top"><span class="step-num">3</span><h4>Gateway</h4></div>
-          <span>Chuẩn hóa dữ liệu thành định dạng JSON phù hợp</span>
-        </div>
-        <div class="pipeline-arrow">↓</div>
-        <div class="pipeline-step">
-          <div class="pipeline-step-top"><span class="step-num">4</span><h4>App di động DeltaV</h4></div>
-          <span>Gateway gửi qua WiFi để đồng bộ dữ liệu, hiển thị và điều khiển từ xa</span>
-        </div>
-
-        <p class="field-hint" style="margin-top:12px;">*Lọc sinh học là vật liệu thụ động (giá thể vi sinh), không có điện tử nên không nằm trên bus — chỉ 3/4 thiết bị thật sự kết nối vào module ESP32.</p>
-      </div>
-
-      <div class="power-card">
-        <h3 style="margin:0 0 4px;font-size:14px;">So sánh hệ thống</h3>
-        <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0;">Trạm Đa Năng gộp 4 thiết bị rời thành 1 khối, giảm điểm hỏng và chi phí lắp đặt.</p>
-        <table class="compare-table">
-          <tr><th></th><th>Hệ thống rời</th><th>Trạm Đa Năng</th></tr>
-          <tr><td>Điểm hỏng độc lập</td><td>4 thiết bị riêng</td><td>1 khối tích hợp</td></tr>
-          <tr><td>Dự phòng mất điện</td><td>Không có / máy phát riêng</td><td>Pin sạc‑lưới tự động</td></tr>
-          <tr><td>Thời gian phản ứng</td><td>~20–40 phút</td><td>Vài giờ (pin dự phòng)</td></tr>
-          <tr><td>Giám sát</td><td>Đo thủ công</td><td>Tự động, cảnh báo qua app</td></tr>
-        </table>
-      </div>
-
-      <div class="power-card">
-        <h3 style="margin:0 0 4px;font-size:14px;">Máy tính tiết kiệm điện</h3>
-        <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0;">Ước tính minh họa dựa trên mức giảm chi phí vận hành 40–50% khi chuyển từ quạt nước sang sục khí vi bọt (nguồn: nextfarm.vn).</p>
-        <div class="calc-row">
-          <label for="calcCurrentCost">Chi phí điện hiện tại / tháng (VNĐ)</label>
-          <input type="number" id="calcCurrentCost" value="3000000" min="0" step="100000">
-        </div>
-        <div class="calc-row">
-          <label for="calcSavingsPercent">Mức giảm kỳ vọng: <span id="calcSavingsPercentText">45%</span></label>
-          <input type="range" id="calcSavingsPercent" min="40" max="50" value="45">
-        </div>
-        <div class="calc-result"><span>Chi phí điện mới / tháng</span><b id="calcNewCost">—</b></div>
-        <div class="calc-result"><span>Tiết kiệm / tháng</span><b id="calcSavingsAmount">—</b></div>
-        <div class="calc-result"><span>Tiết kiệm / năm</span><b id="calcSavingsYear">—</b></div>
-        <p class="field-hint">🧮 Công cụ ước tính tài chính — kéo thanh trượt không ảnh hưởng đến các ao đang mô phỏng.</p>
-      </div>
-
-      <div class="power-card">
-        <h3 style="margin:0 0 4px;font-size:14px;">Ước tính chi phí đầu tư (CAPEX)</h3>
-        <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0;">Áp dụng cho 1 ao hoặc nhiều ao (mỗi ao lắp riêng số khối cần thiết).</p>
-        <div class="calc-row">
-          <label for="capexPondArea">Diện tích mỗi ao (m²)</label>
-          <input type="number" id="capexPondArea" value="500" min="1" step="50">
-        </div>
-        <div class="calc-row">
-          <label for="capexNumPonds">Số ao áp dụng</label>
-          <input type="number" id="capexNumPonds" value="3" min="1" step="1">
-          <p class="field-hint">*Mặc định lấy theo số ao bạn đang quản lý trong DeltaV.</p>
-        </div>
-        <div class="calc-row">
-          <label for="capexAreaPerUnit">Diện tích 1 khối xử lý được (m²/khối)</label>
-          <input type="number" id="capexAreaPerUnit" value="500" min="1" step="50">
-          <p class="field-hint">*Giả định minh họa, cần xác định qua thử nghiệm thực địa.</p>
-        </div>
-        <div class="calc-row">
-          <label for="capexUnitPrice">Đơn giá ước tính 1 khối (VNĐ)</label>
-          <input type="number" id="capexUnitPrice" value="8000000" min="0" step="500000">
-          <p class="field-hint">*Chưa có báo giá chính thức — nhập số liệu thực tế khi có.</p>
-        </div>
-        <div class="calc-result"><span>Số khối cần / ao</span><b id="capexUnitsPerPond">—</b></div>
-        <div class="calc-result"><span>Tổng số khối cần</span><b id="capexTotalUnits">—</b></div>
-        <div class="calc-result"><span>Tổng chi phí đầu tư</span><b id="capexTotalCost">—</b></div>
-        <div class="calc-result"><span>Chi phí trung bình / ao</span><b id="capexAvgPerPond">—</b></div>
-      </div>
-
-      <div class="limit-card">
-        <h3>⚠️ Giới hạn cần lưu ý</h3>
-        <ul>
-          <li>Ao lớn (&gt;1.000–2.000m²) có thể cần lắp nhiều khối thay vì một khối duy nhất.</li>
-          <li>Xi‑phông tự động là phần cơ khí dễ hỏng nhất nếu bùn quá đặc gây tắc nghẽn.</li>
-          <li>Pin dự phòng sạc‑lưới chỉ đủ vài giờ — không giải quyết mất điện kéo dài nhiều ngày (ví dụ bão). Cần phương án máy phát điện dùng chung cấp cụm hộ.</li>
-          <li>Cần thử nghiệm thực địa ít nhất 1–2 vụ nuôi trước khi khẳng định hiệu quả kinh tế thực tế.</li>
-        </ul>
-      </div>
-
-      <button class="btn btn-outline btn-small" id="resetDemoBtn" style="margin-top:16px;">↺ Đặt lại dữ liệu demo</button>
-    </section>
-
-  </main>
-
-  <div class="toast" id="toast"></div>
-
-  <div class="info-overlay" id="doInfoOverlay" aria-hidden="true">
-    <div class="info-popup" role="dialog" aria-labelledby="doInfoTitle" aria-modal="true">
-      <div class="info-popup-head">
-        <h4 id="doInfoTitle">Về cảm biến DO</h4>
-        <button class="info-close" id="doInfoCloseBtn" type="button" aria-label="Đóng">×</button>
-      </div>
-      <p><b>DO (oxy hòa tan)</b> là chỉ số sống còn nhất: chỉ cần tụt nhanh trong vài phút là nguy hiểm cho cá.</p>
-      <p>Cảm biến DO đặt tại điểm oxy thấp nhất của ao, cách xa dòng sủi bọt trực tiếp — tránh đo nhầm oxy cục bộ tăng cao do chính máy tạo ra.</p>
-      <p>NH₃ do lõi lọc sinh học xử lý liên tục; H₂S không đo trực tiếp mà suy ra qua mức bùn tích tụ đáy (xem tab Điều khiển).</p>
     </div>
+
+    <div class="info-overlay" id="logDetailOverlay" aria-hidden="true">
+      <div class="info-popup" role="dialog" aria-labelledby="logDetailTitle" aria-modal="true">
+        <div class="info-popup-head">
+          <h4 id="logDetailTitle">Nhật ký vận hành thô</h4>
+          <button class="info-close" id="logDetailCloseBtn" type="button" aria-label="Đóng" onclick="window.closeLogDetail()">×</button>
+        </div>
+        <div class="log-filter">
+          <label>Chọn thời gian:</label>
+          <select id="logTimeRange" onchange="window.filterLogs(this.value)">
+            <option value="week">7 ngày gần đây</option>
+            <option value="3days">3 ngày gần đây</option>
+            <option value="today">Hôm nay</option>
+          </select>
+        </div>
+        <div id="logList" style="max-height: 400px; overflow-y: auto;"></div>
+      </div>
+    </div>
+
+    <div class="info-overlay" id="doInfoOverlay" aria-hidden="true">
+      <div class="info-popup" role="dialog" aria-labelledby="doInfoTitle" aria-modal="true">
+        <div class="info-popup-head">
+          <h4 id="doInfoTitle">Về cảm biến DO</h4>
+          <button class="info-close" id="doInfoCloseBtn" type="button" aria-label="Đóng">×</button>
+        </div>
+        <p><b>DO (oxy hòa tan)</b> là chỉ số sống còn nhất: chỉ cần tụt nhanh trong vài phút là nguy hiểm cho cá.</p>
+        <p>Cảm biến DO đặt tại điểm oxy thấp nhất của ao, cách xa dòng sủi bọt trực tiếp — tránh đo nhầm oxy cục bộ tăng
+          cao do chính máy tạo ra.</p>
+        <p>NH₃ do lõi lọc sinh học xử lý liên tục; H₂S không đo trực tiếp mà suy ra qua mức bùn tích tụ đáy (xem tab
+          Điều khiển).</p>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" id="nav-ponds" data-tab="ponds">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Quản lý ao
+      </button>
+      <button class="nav-btn" id="nav-alerts" data-tab="alerts">
+        <svg viewBox="0 0 24 24">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        Cảnh báo<span class="nav-badge" id="alertBadge">0</span>
+      </button>
+      <button class="nav-btn" id="nav-history" data-tab="history">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        Phân tích
+      </button>
+      <button class="nav-btn" id="nav-system" data-tab="system">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-2.82.13 1.65 1.65 0 0 0-.13 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 2.82-.13 1.65 1.65 0 0 0 .13-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H15a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V15z">
+          </path>
+        </svg>
+        Hệ thống
+      </button>
+    </nav>
+
   </div>
 
-  <nav class="bottom-nav">
-    <button class="nav-btn active" id="nav-ponds" data-tab="ponds">
-      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-      Quản lý ao
-    </button>
-    <button class="nav-btn" id="nav-alerts" data-tab="alerts">
-      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-      Cảnh báo<span class="nav-badge" id="alertBadge">0</span>
-    </button>
-    <button class="nav-btn" id="nav-history" data-tab="history">
-      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-      Nhật ký
-    </button>
-    <button class="nav-btn" id="nav-system" data-tab="system">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-2.82.13 1.65 1.65 0 0 0-.13 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 2.82-.13 1.65 1.65 0 0 0 .13-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H15a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V15z"></path></svg>
-      Hệ thống
-    </button>
-  </nav>
+  <script>
+    (function () {
+      "use strict";
+      var STORAGE_KEY = 'deltav_state_v1';
+      var MAX_HOURS = 4;
+      var HISTORY_LEN = 30;
 
-</div>
+      var PONDS_SEED = [
+        { id: 'ao1', name: 'Ao 1', location: 'Vị Thanh, Hậu Giang', area: 500 },
+        { id: 'ao2', name: 'Ao 2', location: 'Vị Thanh, Hậu Giang', area: 800 },
+        { id: 'ao3', name: 'Ao 3', location: 'Long Mỹ, Hậu Giang', area: 350 }
+      ];
 
-<script>
-(function(){
-  "use strict";
-  var STORAGE_KEY = 'deltav_state_v1';
-  var MAX_HOURS = 4;
-  var HISTORY_LEN = 30;
-
-  var PONDS_SEED = [
-    { id:'ao1', name:'Ao 1', location:'Vị Thanh, Hậu Giang', area:500 },
-    { id:'ao2', name:'Ao 2', location:'Vị Thanh, Hậu Giang', area:800 },
-    { id:'ao3', name:'Ao 3', location:'Long Mỹ, Hậu Giang', area:350 }
-  ];
-
-  function nowStr(){
-    var d = new Date();
-    return d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  }
-  function uid(){ return Date.now() + '-' + Math.random().toString(36).slice(2,7); }
-  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-  function round(v,d){ d = d || 1; var m = Math.pow(10,d); return Math.round(v*m)/m; }
-  function escapeHTML(s){
-    return String(s).replace(/[&<>"']/g, function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-  }
-  function formatVND(n){ return Math.round(n).toLocaleString('vi-VN') + ' đ'; }
-
-  function makePond(seed){
-    return {
-      id: seed.id, name: seed.name, location: seed.location, area: seed.area,
-      sensors: {
-        do_: round(5.6 + Math.random()*0.6,2),
-        ph: round(7.0 + Math.random()*0.4,2),
-        temp: round(27.8 + Math.random()*1.2,2),
-        nh3: round(0.06 + Math.random()*0.05,3)
-      },
-      history: [],
-      power: { source:'grid', battery: round(88 + Math.random()*10,1) },
-      aeration: { on:true, power:70 },
-      sludge: round(8 + Math.random()*10,1),
-      sludgeFullAlerted: false,
-      ecoMode: false,
-      lastStatus: { do_:'safe', ph:'safe', temp:'safe', nh3:'safe' }
-    };
-  }
-
-  function defaultState(){
-    return {
-      ponds: PONDS_SEED.map(makePond),
-      alerts: [],
-      log: [{ id:uid(), time:nowStr(), type:'system', text:'Hệ thống khởi động. Đang giám sát '+PONDS_SEED.length+' ao nuôi.', pondName:'Hệ thống' }],
-      selectedPondId: null,
-      activeTab: 'ponds',
-      pondTab: 'overview',
-      paused: false
-    };
-  }
-
-  function load(){
-    try{
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return null;
-      return JSON.parse(raw);
-    }catch(e){ return null; }
-  }
-  function save(){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
-  }
-
-  var state = load() || defaultState();
-
-  /* ---------- status logic ---------- */
-  function statusDO(v){ if(v >= 4.5) return 'safe'; if(v >= 3.0) return 'warn'; return 'danger'; }
-  function statusPH(v){
-    if(v >= 6.5 && v <= 8.0) return 'safe';
-    if((v >= 6.0 && v < 6.5) || (v > 8.0 && v <= 8.5)) return 'warn';
-    return 'danger';
-  }
-  function statusTemp(v){
-    if(v >= 26 && v <= 32) return 'safe';
-    if((v >= 24 && v < 26) || (v > 32 && v <= 34)) return 'warn';
-    return 'danger';
-  }
-  function statusNH3(v){ if(v < 0.1) return 'safe'; if(v < 0.25) return 'warn'; return 'danger'; }
-  function statusH2SRisk(sludge){ if(sludge < 50) return 'safe'; if(sludge < 80) return 'warn'; return 'danger'; }
-  var h2sLabel = { safe:'Thấp', warn:'Trung bình', danger:'Cao' };
-  var statusLabel = { safe:'An toàn', warn:'Cảnh báo', danger:'Nguy hiểm' };
-  var statusRank = { safe:0, warn:1, danger:2 };
-
-  function pushAlert(pond, level, title, msg){
-    state.alerts.unshift({ id: uid(), time: nowStr(), level: level, title: title, msg: msg, pondId: pond.id, pondName: pond.name });
-    if(state.alerts.length > 60) state.alerts.length = 60;
-  }
-  function pushLog(pond, type, text){
-    state.log.unshift({ id: uid(), time: nowStr(), type: type, text: text, pondId: pond ? pond.id : null, pondName: pond ? pond.name : 'Hệ thống' });
-    if(state.log.length > 80) state.log.length = 80;
-  }
-  function checkStatus(pond, key, current, label, valueDisplay){
-    var prev = pond.lastStatus[key];
-    if(statusRank[current] > statusRank[prev]){
-      var level = current === 'danger' ? 'danger' : 'warn';
-      pushAlert(pond, level, label + ' — ' + statusLabel[current], 'Giá trị hiện tại: ' + valueDisplay + '. Cần kiểm tra và xử lý.');
-    } else if(current === 'safe' && prev === 'danger'){
-      pushAlert(pond, 'info', label + ' đã trở lại an toàn', 'Giá trị hiện tại: ' + valueDisplay + '.');
-    }
-    pond.lastStatus[key] = current;
-  }
-
-  function getPond(id){
-    for(var i=0;i<state.ponds.length;i++){ if(state.ponds[i].id===id) return state.ponds[i]; }
-    return null;
-  }
-  function currentPond(){ return getPond(state.selectedPondId); }
-
-  /* ---------- simulation ---------- */
-  function simulatePond(pond){
-    var doTarget = pond.aeration.on ? (5.8 + (pond.aeration.power - 70) / 100) : 1.6;
-    var doNoise = (Math.random() - 0.5) * (pond.aeration.on ? 0.5 : 0.3);
-    var doDelta = (doTarget - pond.sensors.do_) * (pond.aeration.on ? 0.35 : 0.2);
-    pond.sensors.do_ = clamp(round(pond.sensors.do_ + doDelta + doNoise, 2), 0.2, 9.5);
-
-    var phDelta = (7.2 - pond.sensors.ph) * 0.08 + (Math.random() - 0.5) * 0.18;
-    pond.sensors.ph = clamp(round(pond.sensors.ph + phDelta, 2), 5.5, 9.0);
-
-    var tempDelta = (28.5 - pond.sensors.temp) * 0.06 + (Math.random() - 0.5) * 0.3;
-    pond.sensors.temp = clamp(round(pond.sensors.temp + tempDelta, 2), 22, 36);
-
-    var filterDead = (pond.power.source === 'battery' && pond.power.battery <= 0);
-    var nh3Production = 0.006 + Math.random() * 0.004;
-    var nh3Removal = filterDead ? 0.004 : 0.02;
-    var nh3Delta = nh3Production - nh3Removal + (Math.random() - 0.5) * 0.01;
-    pond.sensors.nh3 = clamp(round(pond.sensors.nh3 + nh3Delta, 3), 0, 1);
-
-    pond.sludge = clamp(round(pond.sludge + 0.7 + Math.random() * 0.4, 1), 0, 100);
-    if(pond.sludge >= 92){
-      if(!pond.ecoMode){
-        pond.sludge = round(6 + Math.random() * 5, 1);
-        pushLog(pond, 'siphon', 'Xi‑phông tự động kích hoạt: bơm bùn đáy hồ ra khoang chứa ngoài hồ.');
-      } else if(!pond.sludgeFullAlerted){
-        pushAlert(pond, 'warn', 'Bùn đáy đã đầy — xi‑phông tạm dừng', 'Đang ở Chế độ tiết kiệm điện (ECO) nên xi‑phông tự động không kích hoạt. Bấm "Kích hoạt xi‑phông thủ công" nếu cần.');
-        pond.sludgeFullAlerted = true;
+      function nowStr() {
+        var d = new Date();
+        return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       }
-    } else if(pond.sludge < 70){
-      pond.sludgeFullAlerted = false;
-    }
-
-    if(pond.power.source === 'grid'){
-      pond.power.battery = clamp(round(pond.power.battery + 1.4, 1), 0, 100);
-    } else {
-      var idleLoad = pond.ecoMode ? 0.05 : 0.15;
-      var drain = idleLoad + (pond.aeration.on ? (pond.aeration.power / 100) * 0.55 : 0.15);
-      var prevBattery = pond.power.battery;
-      pond.power.battery = clamp(round(pond.power.battery - drain, 1), 0, 100);
-      if(prevBattery > 0 && pond.power.battery <= 0){
-        pushAlert(pond, 'danger', 'Hết pin dự phòng', 'Pin dự phòng đã cạn — cần phương án máy phát điện dùng chung cấp cụm hộ.');
-        pushLog(pond, 'power', 'Pin dự phòng đã cạn (0%).');
+      function uid() { return Date.now() + '-' + Math.random().toString(36).slice(2, 7); }
+      function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+      function round(v, d) { d = d || 1; var m = Math.pow(10, d); return Math.round(v * m) / m; }
+      function escapeHTML(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
       }
-    }
+      function formatVND(n) { return Math.round(n).toLocaleString('vi-VN') + ' đ'; }
 
-    pond.history.push({ t: Date.now(), do_: pond.sensors.do_ });
-    if(pond.history.length > HISTORY_LEN) pond.history.shift();
+      function makePond(seed) {
+        return {
+          id: seed.id, name: seed.name, location: seed.location, area: seed.area,
+          sensors: {
+            do_: round(5.6 + Math.random() * 0.6, 2),
+            ph: round(7.0 + Math.random() * 0.4, 2),
+            temp: round(27.8 + Math.random() * 1.2, 2),
+            nh3: round(0.06 + Math.random() * 0.05, 3)
+          },
+          history: [],
+          power: { source: 'grid', battery: round(88 + Math.random() * 10, 1) },
+          aeration: { on: true, power: 70 },
+          sludge: round(8 + Math.random() * 10, 1),
+          sludgeFullAlerted: false,
+          ecoMode: false,
+          lastStatus: { do_: 'safe', ph: 'safe', temp: 'safe', nh3: 'safe' }
+        };
+      }
 
-    checkStatus(pond, 'do_', statusDO(pond.sensors.do_), 'DO (oxy hòa tan)', pond.sensors.do_.toFixed(1) + ' mg/L');
-    checkStatus(pond, 'ph', statusPH(pond.sensors.ph), 'pH nước', pond.sensors.ph.toFixed(1));
-    checkStatus(pond, 'temp', statusTemp(pond.sensors.temp), 'Nhiệt độ nước', pond.sensors.temp.toFixed(1) + '°C');
-    checkStatus(pond, 'nh3', statusNH3(pond.sensors.nh3), 'NH₃ (khí độc)', pond.sensors.nh3.toFixed(2) + ' mg/L');
-  }
+      function mockOldLogs() {
+        var logs = [];
+        var now = new Date();
+        var types = ['power', 'siphon', 'control', 'system'];
+        var ponds = ['Ao 1', 'Ao 2', 'Ao 3'];
+        
+        for (var i = 7; i >= 1; i--) {
+          var numLogs = Math.floor(Math.random() * 5) + 2;
+          for (var j = 0; j < numLogs; j++) {
+            var d = new Date(now.getTime() - i * 86400000 + j * 3600000);
+            var timeStr = d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            var dateStr = d.toLocaleDateString('vi-VN');
+            var t = types[Math.floor(Math.random() * types.length)];
+            var p = ponds[Math.floor(Math.random() * ponds.length)];
+            var msg = '';
+            if (t === 'power') msg = 'Sự cố điện lưới, tự động chuyển sang pin dự phòng.';
+            else if (t === 'siphon') msg = 'Xi-phông tự động kích hoạt do lượng bùn tích tụ.';
+            else if (t === 'control') msg = 'Điều chỉnh công suất sục khí.';
+            else msg = 'Hệ thống tự động đồng bộ dữ liệu.';
+            
+            logs.push({ id: uid(), time: timeStr, dateStr: dateStr, dateObj: d, type: t, text: msg, pondName: p });
+          }
+        }
+        return logs;
+      }
 
-  function tick(){
-    if(!state.paused){
-      state.ponds.forEach(simulatePond);
-      save();
-    }
-    render();
-  }
+      function defaultState() {
+        var initLog = { id: uid(), time: nowStr(), dateStr: new Date().toLocaleDateString('vi-VN'), dateObj: new Date(), type: 'system', text: 'Hệ thống khởi động. Đang giám sát ' + PONDS_SEED.length + ' ao nuôi.', pondName: 'Hệ thống' };
+        return {
+          ponds: PONDS_SEED.map(makePond),
+          alerts: [],
+          log: mockOldLogs().concat([initLog]).reverse(),
+          selectedPondId: null,
+          activeTab: 'ponds',
+          pondTab: 'overview',
+          paused: false
+        };
+      }
 
-  /* ---------- actions ---------- */
-  function toggleOutage(){
-    var pond = currentPond(); if(!pond) return;
-    if(pond.power.source === 'grid'){
-      pond.power.source = 'battery'; pond.ecoMode = true;
-      pushAlert(pond, 'warn', 'Mất điện lưới', 'Mạch chuyển nguồn tự động (ATS) đã chuyển sang pin dự phòng. Chế độ tiết kiệm điện đã tự động bật.');
-      pushLog(pond, 'power', 'Giả lập mất điện lưới → chuyển sang pin dự phòng.');
-    } else {
-      pond.power.source = 'grid'; pond.ecoMode = false;
-      pushAlert(pond, 'info', 'Điện lưới đã khôi phục', 'Đã chuyển về sạc/dùng điện lưới. Chế độ tiết kiệm điện đã tự động tắt.');
-      pushLog(pond, 'power', 'Điện lưới khôi phục → chuyển về nguồn lưới.');
-    }
-    save(); render();
-  }
-  function toggleEcoMode(){
-    var pond = currentPond(); if(!pond) return;
-    pond.ecoMode = !pond.ecoMode;
-    pushLog(pond, 'control', pond.ecoMode ? 'Bật Chế độ tiết kiệm điện (thủ công).' : 'Tắt Chế độ tiết kiệm điện (thủ công).');
-    save(); render();
-  }
-  function toggleAeration(){
-    var pond = currentPond(); if(!pond) return;
-    pond.aeration.on = !pond.aeration.on;
-    pushLog(pond, 'control', pond.aeration.on ? 'Bật sục khí vi bọt.' : 'Tắt sục khí vi bọt.');
-    save(); render();
-  }
-  function setAerationPower(v){
-    var pond = currentPond(); if(!pond) return;
-    pond.aeration.power = clamp(parseInt(v, 10) || 0, 0, 100);
-    save(); render();
-  }
-  function manualSiphon(){
-    var pond = currentPond(); if(!pond) return;
-    pond.sludge = round(5 + Math.random() * 4, 1);
-    pond.sludgeFullAlerted = false;
-    pushLog(pond, 'siphon', 'Kích hoạt xi‑phông thủ công.');
-    save(); render();
-  }
-  function simulateLowDO(){
-    var pond = currentPond(); if(!pond) return;
-    pond.sensors.do_ = 2.1;
-    pushLog(pond, 'control', '[Demo] Giả lập sự cố DO tụt thấp đột ngột.');
-    save(); render();
-  }
-  function togglePause(){ state.paused = !state.paused; save(); render(); }
-  function clearAlerts(){ state.alerts = []; save(); render(); }
-  function resetDemo(){
-    if(!window.confirm('Đặt lại toàn bộ dữ liệu mô phỏng (tất cả các ao) về mặc định?')) return;
-    state = defaultState();
-    save(); render();
-  }
-  function scrollTabToTop(){
-    var el = document.getElementById('tabContent');
-    if(el) el.scrollTop = 0;
-  }
-  function selectPond(id){ state.selectedPondId = id; state.pondTab = 'overview'; save(); render(); scrollTabToTop(); }
-  function backToList(){ state.selectedPondId = null; save(); render(); scrollTabToTop(); }
-  function setPondTab(tab){ state.pondTab = tab; save(); render(); }
-  function setActiveTab(tab){
-    state.activeTab = tab;
-    if(tab === 'ponds'){ state.selectedPondId = null; }
-    save(); render();
-    scrollTabToTop();
-  }
-  function showToast(msg){
-    var t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(window.__toastTimer);
-    window.__toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
-  }
-  function openDoInfo(){
-    var overlay = document.getElementById('doInfoOverlay');
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden', 'false');
-  }
-  function closeDoInfo(){
-    var overlay = document.getElementById('doInfoOverlay');
-    overlay.classList.remove('show');
-    overlay.setAttribute('aria-hidden', 'true');
-  }
+      function load() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch (e) { return null; }
+      }
+      function save() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { }
+      }
 
-  /* ---------- render: ponds list ---------- */
-  function renderPondList(){
-    var wrap = document.getElementById('pondListCards');
-    wrap.innerHTML = state.ponds.map(function(pond){
-      var s = pond.sensors;
-      var statuses = [statusDO(s.do_), statusPH(s.ph), statusTemp(s.temp), statusNH3(s.nh3)];
-      var overall = statuses.indexOf('danger') >= 0 ? 'danger' : (statuses.indexOf('warn') >= 0 ? 'warn' : 'safe');
-      var alertCount = state.alerts.filter(function(a){ return a.pondId === pond.id; }).length;
-      var powerIcon = pond.power.source === 'grid' ? '🔌' : '🔋';
-      return '<div class="pond-card" data-pondid="' + pond.id + '">'
-        + '<div class="pond-card-top">'
-          + '<div class="pond-avatar">🐟</div>'
-          + '<div class="pond-card-info"><h4>' + escapeHTML(pond.name) + '</h4><span>' + escapeHTML(pond.location) + ' • ' + pond.area + ' m²</span></div>'
-          + '<span class="pill pill-' + overall + '">' + statusLabel[overall] + '</span>'
-        + '</div>'
-        + '<div class="pond-mini-row">'
-          + '<span class="mini-badge">DO <b>' + s.do_.toFixed(1) + '</b></span>'
-          + '<span class="mini-badge">pH <b>' + s.ph.toFixed(1) + '</b></span>'
-          + '<span class="mini-badge">T° <b>' + s.temp.toFixed(1) + '</b></span>'
-          + '<span class="mini-badge">NH₃ <b>' + s.nh3.toFixed(2) + '</b></span>'
-        + '</div>'
-        + '<div class="pond-card-footer">'
-          + '<span>' + powerIcon + ' ' + Math.round(pond.power.battery) + '%' + (pond.power.source === 'battery' ? ' (đang dùng pin)' : '') + (pond.ecoMode ? '<span class="eco-badge eco-badge-small">ECO</span>' : '') + '</span>'
-          + (alertCount > 0 ? '<span style="color:var(--coral);font-weight:700;">🔔 ' + alertCount + '</span>' : '<span style="color:var(--brand-dark);font-weight:600;">Ổn định</span>')
-        + '</div>'
-      + '</div>';
-    }).join('');
-    wrap.querySelectorAll('.pond-card').forEach(function(card){
-      card.addEventListener('click', function(){ selectPond(card.getAttribute('data-pondid')); });
-    });
-  }
+      var state = load() || defaultState();
 
-  /* ---------- render: pond detail ---------- */
-  function setPill(id, status){
-    var el = document.getElementById(id);
-    el.className = 'pill pill-' + status;
-    el.textContent = statusLabel[status];
-  }
+      /* ---------- status logic ---------- */
+      function statusDO(v) { if (v >= 4.5) return 'safe'; if (v >= 3.0) return 'warn'; return 'danger'; }
+      function statusPH(v) {
+        if (v >= 6.5 && v <= 8.0) return 'safe';
+        if ((v >= 6.0 && v < 6.5) || (v > 8.0 && v <= 8.5)) return 'warn';
+        return 'danger';
+      }
+      function statusTemp(v) {
+        if (v >= 26 && v <= 32) return 'safe';
+        if ((v >= 24 && v < 26) || (v > 32 && v <= 34)) return 'warn';
+        return 'danger';
+      }
+      function statusNH3(v) { if (v < 0.1) return 'safe'; if (v < 0.25) return 'warn'; return 'danger'; }
+      function statusH2SRisk(sludge) { if (sludge < 50) return 'safe'; if (sludge < 80) return 'warn'; return 'danger'; }
+      var h2sLabel = { safe: 'Thấp', warn: 'Trung bình', danger: 'Cao' };
+      var statusLabel = { safe: 'An toàn', warn: 'Cảnh báo', danger: 'Nguy hiểm' };
+      var statusRank = { safe: 0, warn: 1, danger: 2 };
 
-  function renderSparkline(pond){
-    var svg = document.getElementById('sparkline');
-    var pts = pond.history;
-    var poly = svg.querySelector('polyline');
-    if(pts.length < 2){ poly.setAttribute('points',''); return; }
-    var w = 300, h = 70, pad = 6;
-    var vals = pts.map(function(p){ return p.do_; });
-    var min = Math.min.apply(null, vals.concat([3]));
-    var max = Math.max.apply(null, vals.concat([7]));
-    var range = (max - min) || 1;
-    var step = (w - 2*pad) / (HISTORY_LEN - 1);
-    var startIndex = HISTORY_LEN - pts.length;
-    var points = pts.map(function(p, i){
-      var x = pad + (startIndex + i) * step;
-      var y = h - pad - ((p.do_ - min) / range) * (h - 2*pad);
-      return round(x,1) + ',' + round(y,1);
-    }).join(' ');
-    poly.setAttribute('points', points);
-  }
+      function pushAlert(pond, level, title, msg, impact, action, actionTab) {
+        state.alerts.unshift({ id: uid(), time: nowStr(), level: level, title: title, msg: msg, impact: impact || '', action: action || '', pondId: pond.id, pondName: pond.name, actionTab: actionTab || '' });
+        if (state.alerts.length > 60) state.alerts.length = 60;
+      }
+      function pushLog(pond, type, text) {
+        var d = new Date();
+        state.log.unshift({ id: uid(), time: nowStr(), dateStr: d.toLocaleDateString('vi-VN'), dateObj: d, type: type, text: text, pondId: pond ? pond.id : null, pondName: pond ? pond.name : 'Hệ thống' });
+        if (state.log.length > 200) state.log.length = 200;
+      }
+      function checkStatus(pond, key, current, label, valueDisplay) {
+        var prev = pond.lastStatus[key];
+        if (statusRank[current] > statusRank[prev]) {
+          var level = current === 'danger' ? 'danger' : 'warn';
+          var impact = '', action = '';
+          if(key === 'do_') {
+              if(current === 'danger') { impact = 'Cá thiếu oxy nghiêm trọng, nổi đầu, bỏ ăn, rủi ro chết hàng loạt.'; action = 'Tăng công suất sục khí tối đa ngay lập tức. Cấp cứu bằng oxy hạt (oxy viên) nếu cần.'; }
+              else if(current === 'warn') { impact = 'Cá bắt đầu ngột ngạt, giảm ăn, stress.'; action = 'Kiểm tra và bật sục khí hoặc tăng công suất sục khí.'; }
+          } else if (key === 'ph') {
+              impact = 'Môi trường nước thay đổi, cá dễ sốc, tuột nhớt và giảm sức đề kháng.'; action = 'Kiểm tra mật độ tảo, bón vôi nông nghiệp hoặc khoáng để ổn định môi trường.';
+          } else if (key === 'temp') {
+              impact = 'Nhiệt độ ngoài ngưỡng tối ưu, cá giảm ăn, dễ phát sinh dịch bệnh.'; action = 'Kiểm tra mực nước, hệ thống lưới che nắng hoặc điều chỉnh lượng thức ăn.';
+          } else if (key === 'nh3') {
+              if(current === 'danger') { impact = 'Khí độc ở mức nguy hiểm, cá ngộ độc máu, phồng mang.'; action = 'Bật xi-phông khẩn cấp, tạt vi sinh xử lý đáy, ngừng cho ăn hoàn toàn.'; }
+              else if(current === 'warn') { impact = 'Môi trường nước đang ô nhiễm hữu cơ.'; action = 'Giảm lượng thức ăn, bổ sung vi sinh xử lý nước.'; }
+          }
+          pushAlert(pond, level, label + ' — ' + statusLabel[current], 'Giá trị hiện tại: ' + valueDisplay + '. Cần kiểm tra và xử lý.', impact, action, 'control');
+        } else if (current === 'safe' && prev === 'danger') {
+          pushAlert(pond, 'info', label + ' đã trở lại an toàn', 'Giá trị hiện tại: ' + valueDisplay + '.');
+        }
+        pond.lastStatus[key] = current;
+      }
 
-  var POND_MODULES = [
-    { id:'aeration', icon:'💨', label:'Sục khí', pos:{ left:'34%', top:'52%' } },
-    { id:'sensors', icon:'📡', label:'Cảm biến', pos:{ left:'66%', top:'58%' } },
-    { id:'filter', icon:'🌿', label:'Lọc SH', pos:{ left:'22%', top:'72%' } },
-    { id:'siphon', icon:'🧹', label:'Xi-phông', pos:{ left:'78%', top:'72%' } }
-  ];
+      function getPond(id) {
+        for (var i = 0; i < state.ponds.length; i++) { if (state.ponds[i].id === id) return state.ponds[i]; }
+        return null;
+      }
+      function currentPond() { return getPond(state.selectedPondId); }
 
-  function moduleStatuses(pond){
-    var dead = pond.power.source === 'battery' && pond.power.battery <= 0;
-    var nh3St = statusNH3(pond.sensors.nh3);
-    var siphonPaused = pond.ecoMode && pond.sludge >= 92;
-    return {
-      aeration: !pond.aeration.on
-        ? { state:'off', text:'Tắt' }
-        : { state: pond.aeration.power < 35 ? 'warn' : 'on', text: pond.aeration.power + '%' },
-      sensors: dead
-        ? { state:'off', text:'Mất nguồn' }
-        : { state:'on', text:'Đo liên tục' },
-      filter: dead
-        ? { state:'off', text:'Ngừng xử lý' }
-        : (nh3St !== 'safe' ? { state:'warn', text:'Tải cao' } : { state:'on', text:'Ổn định' }),
-      siphon: siphonPaused
-        ? { state:'warn', text:'Tạm dừng' }
-        : (pond.sludge >= 85 ? { state:'run', text:'Sắp chạy' } : { state:'on', text:'Chờ' })
-    };
-  }
+      /* ---------- simulation ---------- */
+      function simulatePond(pond) {
+        var doTarget = pond.aeration.on ? (5.8 + (pond.aeration.power - 70) / 100) : 1.6;
+        var doNoise = (Math.random() - 0.5) * (pond.aeration.on ? 0.5 : 0.3);
+        var doDelta = (doTarget - pond.sensors.do_) * (pond.aeration.on ? 0.35 : 0.2);
+        pond.sensors.do_ = clamp(round(pond.sensors.do_ + doDelta + doNoise, 2), 0.2, 9.5);
 
-  function getModuleTooltip(pond, id){
-    switch(id){
-      case 'aeration': return 'Sục khí vi bọt<br>Công suất: '+pond.aeration.power+'%<br>'+(pond.aeration.on?'⚡ Đang chạy':'⏸ Đã tắt');
-      case 'sensors': return 'Cảm biến RS485 Modbus<br>DO: '+pond.sensors.do_.toFixed(1)+' mg/L<br>pH: '+pond.sensors.ph.toFixed(1)+'<br>T°: '+pond.sensors.temp.toFixed(1)+'°C<br>'+(pond.ecoMode?'Tần suất gửi: 15p (ECO)':'Tần suất gửi: 5p');
-      case 'filter': return 'Lọc sinh học MBBR<br>NH₃: '+pond.sensors.nh3.toFixed(2)+' mg/L<br>Giá thể Hel-X Bio Chip';
-      case 'siphon': return 'Xi-phông tự động<br>Bùn: '+Math.round(pond.sludge)+'%<br>'+(pond.ecoMode?'⏸ Tạm dừng (ECO)':'Kích hoạt khi ≥92%');
-      default: return '';
-    }
-  }
+        var phDelta = (7.2 - pond.sensors.ph) * 0.08 + (Math.random() - 0.5) * 0.18;
+        pond.sensors.ph = clamp(round(pond.sensors.ph + phDelta, 2), 5.5, 9.0);
 
-  function renderPondModules(pond){
-    var wrap = document.getElementById('pondModules');
-    if(!wrap) return;
-    var st = moduleStatuses(pond);
-    wrap.innerHTML = POND_MODULES.map(function(m){
-      var s = st[m.id];
-      var extra = '';
-      if(m.id === 'aeration' && s.state !== 'off') extra = '<div class="mod-aeration-ring"></div>';
-      else if(m.id === 'sensors' && s.state !== 'off') extra = '<div class="mod-sensor-scan"></div>';
-      var tip = getModuleTooltip(pond, m.id);
-      return '<div class="pond-module ' + s.state + '" style="left:' + m.pos.left + ';top:' + m.pos.top + '" data-module="' + m.id + '">'
-        + '<div class="pond-module-pin">' + extra + '<span class="pond-module-icon">' + m.icon + '</span>'
-        + '<span class="pond-module-status ' + s.state + '"></span></div>'
-        + '<span class="pond-module-label">' + m.label + '</span>'
-        + '<span class="pond-module-state">' + s.text + '</span>'
-        + '<div class="module-tooltip">' + tip + '</div>'
-        + '</div>';
-    }).join('');
-    wrap.querySelectorAll('.pond-module').forEach(function(mod){
-      mod.addEventListener('click', function(e){
-        e.stopPropagation();
-        var active = mod.classList.contains('tooltip-active');
-        wrap.querySelectorAll('.pond-module').forEach(function(m){ m.classList.remove('tooltip-active'); });
-        if(!active) mod.classList.add('tooltip-active');
+        var tempDelta = (28.5 - pond.sensors.temp) * 0.06 + (Math.random() - 0.5) * 0.3;
+        pond.sensors.temp = clamp(round(pond.sensors.temp + tempDelta, 2), 22, 36);
+
+        var filterDead = (pond.power.source === 'battery' && pond.power.battery <= 0);
+        var nh3Production = 0.006 + Math.random() * 0.004;
+        var nh3Removal = filterDead ? 0.004 : 0.02;
+        var nh3Delta = nh3Production - nh3Removal + (Math.random() - 0.5) * 0.01;
+        pond.sensors.nh3 = clamp(round(pond.sensors.nh3 + nh3Delta, 3), 0, 1);
+
+        pond.sludge = clamp(round(pond.sludge + 0.7 + Math.random() * 0.4, 1), 0, 100);
+        if (pond.sludge >= 92) {
+          if (!pond.ecoMode) {
+            pond.sludge = round(6 + Math.random() * 5, 1);
+            pushLog(pond, 'siphon', 'Xi‑phông tự động kích hoạt: bơm bùn đáy hồ ra khoang chứa ngoài hồ.');
+          } else if (!pond.sludgeFullAlerted) {
+            pushAlert(pond, 'warn', 'Bùn đáy đã đầy — xi‑phông tạm dừng', 'Đang ở Chế độ tiết kiệm điện (ECO) nên xi‑phông tự động không kích hoạt.', 'Nguy cơ tích tụ khí độc H₂S, NH₃ do phân hủy hữu cơ trong điều kiện yếm khí.', 'Cân nhắc bật "Kích hoạt xi‑phông thủ công" 1 lần nếu dung lượng pin cho phép, hoặc sau khi có điện lưới.', 'control');
+            pond.sludgeFullAlerted = true;
+          }
+        } else if (pond.sludge < 70) {
+          pond.sludgeFullAlerted = false;
+        }
+
+        if (pond.power.source === 'grid') {
+          pond.power.battery = clamp(round(pond.power.battery + 1.4, 1), 0, 100);
+        } else {
+          var idleLoad = pond.ecoMode ? 0.05 : 0.15;
+          var drain = idleLoad + (pond.aeration.on ? (pond.aeration.power / 100) * 0.55 : 0.15);
+          var prevBattery = pond.power.battery;
+          pond.power.battery = clamp(round(pond.power.battery - drain, 1), 0, 100);
+          if (prevBattery > 0 && pond.power.battery <= 0) {
+            pushAlert(pond, 'danger', 'Hết pin dự phòng', 'Pin dự phòng đã cạn, hệ thống ngừng hoạt động hoàn toàn.', 'Ngừng giám sát tự động, cá có nguy cơ ngạt khí do mất sục khí.', 'Khởi động máy phát điện dùng chung cho cụm ao ngay lập tức!');
+            pushLog(pond, 'power', 'Pin dự phòng đã cạn (0%).');
+          }
+        }
+
+        pond.history.push({ t: Date.now(), do_: pond.sensors.do_ });
+        if (pond.history.length > HISTORY_LEN) pond.history.shift();
+
+        checkStatus(pond, 'do_', statusDO(pond.sensors.do_), 'DO (oxy hòa tan)', pond.sensors.do_.toFixed(1) + ' mg/L');
+        checkStatus(pond, 'ph', statusPH(pond.sensors.ph), 'pH nước', pond.sensors.ph.toFixed(1));
+        checkStatus(pond, 'temp', statusTemp(pond.sensors.temp), 'Nhiệt độ nước', pond.sensors.temp.toFixed(1) + '°C');
+        checkStatus(pond, 'nh3', statusNH3(pond.sensors.nh3), 'NH₃ (khí độc)', pond.sensors.nh3.toFixed(2) + ' mg/L');
+      }
+
+      function tick() {
+        if (!state.paused) {
+          state.ponds.forEach(simulatePond);
+          save();
+        }
+        render();
+      }
+
+      /* ---------- actions ---------- */
+      function toggleOutage() {
+        var pond = currentPond(); if (!pond) return;
+        if (pond.power.source === 'grid') {
+          pond.power.source = 'battery'; pond.ecoMode = true;
+          pushAlert(pond, 'warn', 'Mất điện lưới', 'Mạch chuyển nguồn tự động (ATS) đã chuyển sang pin dự phòng. Chế độ tiết kiệm điện đã tự động bật.', 'Hệ thống dùng năng lượng dự phòng, thời lượng có hạn (khoảng vài giờ).', 'Theo dõi thời lượng pin, chuẩn bị sẵn sàng máy phát điện nếu mất điện kéo dài.');
+          pushLog(pond, 'power', 'Giả lập mất điện lưới → chuyển sang pin dự phòng.');
+        } else {
+          pond.power.source = 'grid'; pond.ecoMode = false;
+          pushAlert(pond, 'info', 'Điện lưới đã khôi phục', 'Đã chuyển về sạc/dùng điện lưới. Chế độ tiết kiệm điện đã tự động tắt.');
+          pushLog(pond, 'power', 'Điện lưới khôi phục → chuyển về nguồn lưới.');
+        }
+        save(); render();
+      }
+      function toggleEcoMode() {
+        var pond = currentPond(); if (!pond) return;
+        pond.ecoMode = !pond.ecoMode;
+        pushLog(pond, 'control', pond.ecoMode ? 'Bật Chế độ tiết kiệm điện (thủ công).' : 'Tắt Chế độ tiết kiệm điện (thủ công).');
+        save(); render();
+      }
+      function toggleAeration() {
+        var pond = currentPond(); if (!pond) return;
+        pond.aeration.on = !pond.aeration.on;
+        pushLog(pond, 'control', pond.aeration.on ? 'Bật sục khí vi bọt.' : 'Tắt sục khí vi bọt.');
+        save(); render();
+      }
+      function setAerationPower(v) {
+        var pond = currentPond(); if (!pond) return;
+        pond.aeration.power = clamp(parseInt(v, 10) || 0, 0, 100);
+        save(); render();
+      }
+      function manualSiphon() {
+        var pond = currentPond(); if (!pond) return;
+        pond.sludge = round(5 + Math.random() * 4, 1);
+        pond.sludgeFullAlerted = false;
+        pushLog(pond, 'siphon', 'Kích hoạt xi‑phông thủ công.');
+        save(); render();
+      }
+      function simulateLowDO() {
+        var pond = currentPond(); if (!pond) return;
+        pond.sensors.do_ = 2.1;
+        pushLog(pond, 'control', '[Demo] Giả lập sự cố DO tụt thấp đột ngột.');
+        save(); render();
+      }
+      function togglePause() { state.paused = !state.paused; save(); render(); }
+      function clearAlerts() { state.alerts = []; save(); render(); }
+      function resetDemo() {
+        if (!window.confirm('Đặt lại toàn bộ dữ liệu mô phỏng (tất cả các ao) về mặc định?')) return;
+        state = defaultState();
+        save(); render();
+      }
+      function scrollTabToTop() {
+        var el = document.getElementById('tabContent');
+        if (el) el.scrollTop = 0;
+      }
+      function selectPond(id) { state.selectedPondId = id; state.pondTab = 'overview'; save(); render(); scrollTabToTop(); }
+      function backToList() { state.selectedPondId = null; save(); render(); scrollTabToTop(); }
+      function setPondTab(tab) { state.pondTab = tab; save(); render(); }
+      function setActiveTab(tab) {
+        state.activeTab = tab;
+        if (tab === 'ponds') { state.selectedPondId = null; }
+        save(); render();
+        scrollTabToTop();
+      }
+      function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+      }
+      function openDoInfo() {
+        var overlay = document.getElementById('doInfoOverlay');
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+      }
+      function closeDoInfo() {
+        var overlay = document.getElementById('doInfoOverlay');
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+
+      function openAlertDetail(id) {
+        var a = state.alerts.find(function(x) { return x.id === id; });
+        if(!a) return;
+        var impactHtml = a.impact ? '<div class="alert-ext alert-impact"><b>Ảnh hưởng:</b> ' + escapeHTML(a.impact) + '</div>' : '';
+        var actionHtml = a.action ? '<div class="alert-ext alert-action"><b>Hành động:</b> ' + escapeHTML(a.action) + '</div>' : '';
+        var navBtn = (a.actionTab === 'control') ? '<button class="btn btn-outline" style="width:100%;margin-top:14px;" onclick="window.navToPondControl(\''+a.pondId+'\')">Đi đến bảng Điều khiển ' + escapeHTML(a.pondName) + '</button>' : '';
+        
+        var html = '<div class="alert-item alert-' + a.level + '" style="border:none;padding:0;box-shadow:none;">'
+              + '<div class="alert-top"><span style="font-weight:700;">' + escapeHTML(a.title) + '</span><span class="alert-time">' + a.time + '</span></div>'
+              + '<div class="alert-msg">' + escapeHTML(a.msg) + '</div>'
+              + impactHtml
+              + actionHtml
+              + '</div>'
+              + navBtn;
+              
+        document.getElementById('alertDetailContent').innerHTML = html;
+        var overlay = document.getElementById('alertDetailOverlay');
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeAlertDetail() {
+        var overlay = document.getElementById('alertDetailOverlay');
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+
+      window.navToPondControl = function(pondId) {
+        closeAlertDetail();
+        selectPond(pondId);
+        setPondTab('control');
+      };
+
+      /* ---------- render: ponds list ---------- */
+      function renderPondList() {
+        var wrap = document.getElementById('pondListCards');
+        wrap.innerHTML = state.ponds.map(function (pond) {
+          var s = pond.sensors;
+          var statuses = [statusDO(s.do_), statusPH(s.ph), statusTemp(s.temp), statusNH3(s.nh3)];
+          var overall = statuses.indexOf('danger') >= 0 ? 'danger' : (statuses.indexOf('warn') >= 0 ? 'warn' : 'safe');
+          var alertCount = state.alerts.filter(function (a) { return a.pondId === pond.id; }).length;
+          var powerIcon = pond.power.source === 'grid' ? '🔌' : '🔋';
+          return '<div class="pond-card" data-pondid="' + pond.id + '">'
+            + '<div class="pond-card-top">'
+            + '<div class="pond-avatar">🐟</div>'
+            + '<div class="pond-card-info"><h4>' + escapeHTML(pond.name) + '</h4><span>' + escapeHTML(pond.location) + ' • ' + pond.area + ' m²</span></div>'
+            + '<span class="pill pill-' + overall + '">' + statusLabel[overall] + '</span>'
+            + '</div>'
+            + '<div class="pond-mini-row">'
+            + '<span class="mini-badge">DO <b>' + s.do_.toFixed(1) + '</b></span>'
+            + '<span class="mini-badge">pH <b>' + s.ph.toFixed(1) + '</b></span>'
+            + '<span class="mini-badge">T° <b>' + s.temp.toFixed(1) + '</b></span>'
+            + '<span class="mini-badge">NH₃ <b>' + s.nh3.toFixed(2) + '</b></span>'
+            + '</div>'
+            + '<div class="pond-card-footer">'
+            + '<span>' + powerIcon + ' ' + Math.round(pond.power.battery) + '%' + (pond.power.source === 'battery' ? ' (đang dùng pin)' : '') + (pond.ecoMode ? '<span class="eco-badge eco-badge-small">ECO</span>' : '') + '</span>'
+            + (alertCount > 0 ? '<span style="color:var(--coral);font-weight:700;">🔔 ' + alertCount + '</span>' : '<span style="color:var(--brand-dark);font-weight:600;">Ổn định</span>')
+            + '</div>'
+            + '</div>';
+        }).join('');
+        wrap.querySelectorAll('.pond-card').forEach(function (card) {
+          card.addEventListener('click', function () { selectPond(card.getAttribute('data-pondid')); });
+        });
+      }
+
+      /* ---------- render: pond detail ---------- */
+      function setPill(id, status) {
+        var el = document.getElementById(id);
+        el.className = 'pill pill-' + status;
+        el.textContent = statusLabel[status];
+      }
+
+      function renderSparkline(pond) {
+        var svg = document.getElementById('sparkline');
+        var pts = pond.history;
+        var poly = svg.querySelector('polyline');
+        if (pts.length < 2) { poly.setAttribute('points', ''); return; }
+        var w = 300, h = 70, pad = 6;
+        var vals = pts.map(function (p) { return p.do_; });
+        var min = Math.min.apply(null, vals.concat([3]));
+        var max = Math.max.apply(null, vals.concat([7]));
+        var range = (max - min) || 1;
+        var step = (w - 2 * pad) / (HISTORY_LEN - 1);
+        var startIndex = HISTORY_LEN - pts.length;
+        var points = pts.map(function (p, i) {
+          var x = pad + (startIndex + i) * step;
+          var y = h - pad - ((p.do_ - min) / range) * (h - 2 * pad);
+          return round(x, 1) + ',' + round(y, 1);
+        }).join(' ');
+        poly.setAttribute('points', points);
+      }
+
+      var POND_MODULES = [
+        { id: 'aeration', icon: '💨', label: 'Sục khí', pos: { left: '34%', top: '52%' } },
+        { id: 'sensors', icon: '📡', label: 'Cảm biến', pos: { left: '66%', top: '58%' } },
+        { id: 'filter', icon: '🌿', label: 'Lọc SH', pos: { left: '22%', top: '72%' } },
+        { id: 'siphon', icon: '🧹', label: 'Xi-phông', pos: { left: '78%', top: '72%' } }
+      ];
+
+      function moduleStatuses(pond) {
+        var dead = pond.power.source === 'battery' && pond.power.battery <= 0;
+        var nh3St = statusNH3(pond.sensors.nh3);
+        var siphonPaused = pond.ecoMode && pond.sludge >= 92;
+        return {
+          aeration: !pond.aeration.on
+            ? { state: 'off', text: 'Tắt' }
+            : { state: pond.aeration.power < 35 ? 'warn' : 'on', text: pond.aeration.power + '%' },
+          sensors: dead
+            ? { state: 'off', text: 'Mất nguồn' }
+            : { state: 'on', text: 'Đo liên tục' },
+          filter: dead
+            ? { state: 'off', text: 'Ngừng xử lý' }
+            : (nh3St !== 'safe' ? { state: 'warn', text: 'Tải cao' } : { state: 'on', text: 'Ổn định' }),
+          siphon: siphonPaused
+            ? { state: 'warn', text: 'Tạm dừng' }
+            : (pond.sludge >= 85 ? { state: 'run', text: 'Sắp chạy' } : { state: 'on', text: 'Chờ' })
+        };
+      }
+
+      function getModuleTooltip(pond, id) {
+        switch (id) {
+          case 'aeration': return 'Sục khí vi bọt<br>Công suất: ' + pond.aeration.power + '%<br>' + (pond.aeration.on ? '⚡ Đang chạy' : '⏸ Đã tắt');
+          case 'sensors': return 'Cảm biến RS485 Modbus<br>DO: ' + pond.sensors.do_.toFixed(1) + ' mg/L<br>pH: ' + pond.sensors.ph.toFixed(1) + '<br>T°: ' + pond.sensors.temp.toFixed(1) + '°C<br>' + (pond.ecoMode ? 'Tần suất gửi: 15p (ECO)' : 'Tần suất gửi: 5p');
+          case 'filter': return 'Lọc sinh học MBBR<br>NH₃: ' + pond.sensors.nh3.toFixed(2) + ' mg/L<br>Giá thể Hel-X Bio Chip';
+          case 'siphon': return 'Xi-phông tự động<br>Bùn: ' + Math.round(pond.sludge) + '%<br>' + (pond.ecoMode ? '⏸ Tạm dừng (ECO)' : 'Kích hoạt khi ≥92%');
+          default: return '';
+        }
+      }
+
+      function renderPondModules(pond) {
+        var wrap = document.getElementById('pondModules');
+        if (!wrap) return;
+        var st = moduleStatuses(pond);
+        wrap.innerHTML = POND_MODULES.map(function (m) {
+          var s = st[m.id];
+          var extra = '';
+          if (m.id === 'aeration' && s.state !== 'off') extra = '<div class="mod-aeration-ring"></div>';
+          else if (m.id === 'sensors' && s.state !== 'off') extra = '<div class="mod-sensor-scan"></div>';
+          var tip = getModuleTooltip(pond, m.id);
+          return '<div class="pond-module ' + s.state + '" style="left:' + m.pos.left + ';top:' + m.pos.top + '" data-module="' + m.id + '">'
+            + '<div class="pond-module-pin">' + extra + '<span class="pond-module-icon">' + m.icon + '</span>'
+            + '<span class="pond-module-status ' + s.state + '"></span></div>'
+            + '<span class="pond-module-label">' + m.label + '</span>'
+            + '<span class="pond-module-state">' + s.text + '</span>'
+            + '<div class="module-tooltip">' + tip + '</div>'
+            + '</div>';
+        }).join('');
+        wrap.querySelectorAll('.pond-module').forEach(function (mod) {
+          mod.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var active = mod.classList.contains('tooltip-active');
+            wrap.querySelectorAll('.pond-module').forEach(function (m) { m.classList.remove('tooltip-active'); });
+            if (!active) mod.classList.add('tooltip-active');
+          });
+        });
+      }
+
+      function renderPondOverview(pond) {
+        var s = pond.sensors;
+        document.getElementById('doValue').innerHTML = s.do_.toFixed(1) + '<span class="gauge-unit">mg/L</span>';
+        document.getElementById('phValue').textContent = s.ph.toFixed(1);
+        document.getElementById('tempValue').innerHTML = s.temp.toFixed(1) + '<span class="gauge-unit">°C</span>';
+        document.getElementById('nh3Value').innerHTML = s.nh3.toFixed(2) + '<span class="gauge-unit">mg/L</span>';
+        setPill('doPill', statusDO(s.do_));
+        setPill('phPill', statusPH(s.ph));
+        setPill('tempPill', statusTemp(s.temp));
+        setPill('nh3Pill', statusNH3(s.nh3));
+
+        document.getElementById('buoyBattery').textContent = Math.round(pond.power.battery) + '%';
+        document.getElementById('buoyIcon').textContent = pond.power.source === 'grid' ? '🔌' : '🔋';
+        var visual = document.getElementById('pondVisual');
+        visual.classList.toggle('on-battery', pond.power.source === 'battery');
+        visual.classList.toggle('aeration-off', !pond.aeration.on);
+
+        /* --- Enhanced visuals --- */
+        var doSt = statusDO(s.do_);
+        // Fish react to DO level
+        var f1 = document.getElementById('fish1');
+        var f2 = document.getElementById('fish2');
+        var f3 = document.getElementById('fish3');
+        if (f1 && f2 && f3) {
+          var tops = doSt === 'danger' ? ['24%', '30%', '22%'] : doSt === 'warn' ? ['36%', '46%', '32%'] : ['48%', '60%', '40%'];
+          f1.style.top = tops[0]; f2.style.top = tops[1]; f3.style.top = tops[2];
+        }
+
+        // Bubbles
+        renderBubbles(pond);
+
+        // Sediment layer
+        var sediment = document.getElementById('sedimentLayer');
+        if (sediment) sediment.style.height = (4 + (pond.sludge / 100) * 26) + '%';
+
+        // Sensor mini overlay
+        renderSensorOverlay(pond);
+
+        // Status glow
+        visual.classList.remove('glow-safe', 'glow-warn', 'glow-danger');
+        var sts = [doSt, statusPH(s.ph), statusTemp(s.temp), statusNH3(s.nh3)];
+        var overall = sts.indexOf('danger') >= 0 ? 'danger' : (sts.indexOf('warn') >= 0 ? 'warn' : 'safe');
+        visual.classList.add('glow-' + overall);
+
+        // DeltaV station state
+        var isDead = pond.power.source === 'battery' && pond.power.battery <= 0;
+        visual.classList.toggle('data-dead', isDead);
+        var led = document.getElementById('stationLed');
+        var conn = document.getElementById('stationConn');
+        if (led) { led.classList.toggle('dead', isDead); }
+        if (conn) { conn.classList.toggle('dead', isDead); conn.textContent = isDead ? '📵' : '📶'; }
+
+        renderPondModules(pond);
+        renderSparkline(pond);
+      }
+
+      function renderBubbles(pond) {
+        var c = document.getElementById('bubbleContainer');
+        if (!c) return;
+        var key = (pond.aeration.on ? '1' : '0') + '-' + Math.floor(pond.aeration.power / 15);
+        if (c.getAttribute('data-bk') === key) return;
+        c.setAttribute('data-bk', key);
+        if (!pond.aeration.on) { c.innerHTML = ''; return; }
+        var count = Math.max(4, Math.floor(pond.aeration.power / 8));
+        var h = '';
+        for (var i = 0; i < count; i++) {
+          var left = 24 + Math.random() * 18;
+          var sz = 2.5 + Math.random() * 5;
+          var dur = 2.2 + Math.random() * 2.5;
+          var del = Math.random() * dur;
+          var mop = 0.25 + Math.random() * 0.4;
+          var rh = -(70 + Math.random() * 80);
+          h += '<div class="bubble-enhanced" style="left:' + left + '%;bottom:32%;width:' + sz + 'px;height:' + sz + 'px;--dur:' + dur + 's;--delay:' + del + 's;--max-op:' + mop + ';--rise-h:' + rh + 'px;"></div>';
+        }
+        c.innerHTML = h;
+      }
+
+      function renderSensorOverlay(pond) {
+        var o = document.getElementById('sensorMiniOverlay');
+        if (!o) return;
+        var s = pond.sensors;
+        o.innerHTML =
+          '<div class="sensor-mini-tag"><span class="sensor-mini-dot ' + statusDO(s.do_) + '"></span>DO ' + s.do_.toFixed(1) + '</div>'
+          + '<div class="sensor-mini-tag"><span class="sensor-mini-dot ' + statusPH(s.ph) + '"></span>pH ' + s.ph.toFixed(1) + '</div>'
+          + '<div class="sensor-mini-tag"><span class="sensor-mini-dot ' + statusTemp(s.temp) + '"></span>' + s.temp.toFixed(1) + '°</div>';
+      }
+
+      function renderPondPower(pond) {
+        var p = pond.power;
+        document.getElementById('powerSourceLabel').textContent = p.source === 'grid' ? 'Điện lưới' : 'Pin dự phòng';
+        document.getElementById('powerSourceIcon').textContent = p.source === 'grid' ? '🔌' : '🔋';
+        document.getElementById('batteryPercentText').textContent = Math.round(p.battery) + '%';
+        var fill = document.getElementById('batteryFillBar');
+        fill.style.width = clamp(p.battery, 0, 100) + '%';
+        fill.className = 'battery-fill ' + (p.battery < 20 ? 'crit' : p.battery < 50 ? 'warn' : 'ok');
+
+        var outageWarn = document.getElementById('outageWarning');
+        var outageBtn = document.getElementById('outageBtn');
+        if (p.source === 'battery') {
+          outageWarn.style.display = 'block';
+          var hoursLeft = (p.battery / 100) * MAX_HOURS;
+          var hh = Math.floor(hoursLeft);
+          var mm = Math.round((hoursLeft - hh) * 60);
+          document.getElementById('batteryTimeLeft').textContent = hh + ' giờ ' + mm + ' phút';
+          outageBtn.textContent = '🔌 Khôi phục điện lưới (demo)';
+        } else {
+          outageWarn.style.display = 'none';
+          outageBtn.textContent = '⚡ Giả lập mất điện lưới';
+        }
+
+        document.getElementById('ecoModeToggle').checked = pond.ecoMode;
+        document.getElementById('dataFreqText').textContent = pond.ecoMode ? 'mỗi 15 phút (đã giảm)' : 'mỗi 5 phút';
+
+        var ecoHint = document.getElementById('ecoHint');
+        if (pond.ecoMode) {
+          ecoHint.style.display = 'block';
+          if (p.source === 'battery') {
+            ecoHint.textContent = '✅ Đang tiết kiệm điện — thời gian pin dự phòng được kéo dài hơn.';
+          } else {
+            ecoHint.textContent = '✅ Đang tiết kiệm điện (Bật thủ công) — Sẵn sàng tối ưu năng lượng nếu mất điện.';
+          }
+        } else {
+          ecoHint.style.display = 'none';
+        }
+      }
+
+      function renderPondControl(pond) {
+        document.getElementById('aerationToggle').checked = pond.aeration.on;
+        var range = document.getElementById('aerationPowerRange');
+        range.value = pond.aeration.power;
+        range.disabled = !pond.aeration.on;
+        document.getElementById('aerationPowerText').textContent = pond.aeration.power + '%';
+        var fill = document.getElementById('sludgeBarFill');
+        fill.style.width = pond.sludge + '%';
+        fill.className = 'sludge-fill' + (pond.sludge >= 80 ? ' crit' : '');
+        document.getElementById('sludgeText').textContent = Math.round(pond.sludge) + '% — tự động kích hoạt khi đạt 92%' + (pond.ecoMode ? ' (đang tạm dừng do Chế độ tiết kiệm điện)' : '');
+        var h2s = statusH2SRisk(pond.sludge);
+        setPill('h2sPill', h2s);
+        document.getElementById('h2sPill').textContent = 'Nguy cơ H₂S: ' + h2sLabel[h2s];
+      }
+
+      function renderPondDetail() {
+        var pond = currentPond();
+        if (!pond) return;
+        document.getElementById('pondDetailName').innerHTML = escapeHTML(pond.name) + (pond.ecoMode ? '<span class="eco-badge">ECO</span>' : '');
+        document.getElementById('pondDetailMeta').textContent = pond.location + ' • ' + pond.area + ' m²';
+        ['overview', 'power', 'control'].forEach(function (t) {
+          document.getElementById('pondTabBtn-' + t).classList.toggle('active', state.pondTab === t);
+          document.getElementById('pondPanel-' + t).classList.toggle('active', state.pondTab === t);
+        });
+        renderPondOverview(pond);
+        renderPondPower(pond);
+        renderPondControl(pond);
+      }
+
+      /* ---------- render: alerts / history ---------- */
+      function renderAlerts() {
+        var list = document.getElementById('alertsList');
+        var empty = document.getElementById('alertsEmpty');
+        if (state.alerts.length === 0) {
+          list.innerHTML = '';
+          empty.style.display = 'block';
+        } else {
+          empty.style.display = 'none';
+          list.innerHTML = state.alerts.map(function (a) {
+            var impactHtml = a.impact ? '<div class="alert-ext alert-impact"><b>Ảnh hưởng:</b> ' + escapeHTML(a.impact) + '</div>' : '';
+            var actionHtml = a.action ? '<div class="alert-ext alert-action"><b>Hành động:</b> ' + escapeHTML(a.action) + '</div>' : '';
+            return '<div class="alert-item alert-' + a.level + ' interactive" data-id="' + a.id + '">'
+              + '<div class="alert-top"><span style="font-weight:700;">' + escapeHTML(a.title) + '</span><span class="alert-time">' + a.time + '</span></div>'
+              + '<div class="alert-msg">' + escapeHTML(a.msg) + '</div>'
+              + impactHtml
+              + actionHtml
+              + '<div class="alert-pond-tag">' + escapeHTML(a.pondName) + '</div>'
+              + '</div>';
+          }).join('');
+        }
+        var badge = document.getElementById('alertBadge');
+        if (state.alerts.length > 0) {
+          badge.style.display = 'flex';
+          badge.textContent = state.alerts.length > 9 ? '9+' : String(state.alerts.length);
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+
+      function renderAnalytics() {
+        // Có thể update các thông số ở thẻ summary tại đây nếu muốn. Hiện tại giao diện tĩnh.
+      }
+
+      window.openLogDetail = function() {
+        var overlay = document.getElementById('logDetailOverlay');
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.getElementById('logTimeRange').value = 'week';
+        window.filterLogs('week');
+      };
+
+      window.closeLogDetail = function() {
+        var overlay = document.getElementById('logDetailOverlay');
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+      };
+
+      window.filterLogs = function(range) {
+        var now = new Date();
+        var filtered = state.log.filter(function(l) {
+          if (!l.dateObj) return true;
+          var diff = now.getTime() - new Date(l.dateObj).getTime();
+          if (range === 'today') return diff <= 86400000;
+          if (range === '3days') return diff <= 86400000 * 3;
+          return true; // week
+        });
+        
+        var icons = { power: '🔌', siphon: '🧹', control: '🎛️', system: '⚙️' };
+        document.getElementById('logList').innerHTML = filtered.map(function (l) {
+          var icon = icons[l.type] || '•';
+          var tag = (l.pondName && l.pondName !== 'Hệ thống') ? ' <span class="log-pond-tag">' + escapeHTML(l.pondName) + '</span>' : '';
+          var timeDisplay = (l.dateStr ? l.dateStr + ' ' : '') + l.time;
+          return '<div class="log-item"><span class="log-time">' + timeDisplay + '</span><span class="log-icon">' + icon + '</span><span class="log-text">' + escapeHTML(l.text) + tag + '</span></div>';
+        }).join('');
+      }
+
+      /* ---------- render: system tab calculators ---------- */
+      function updateCalculator() {
+        var cost = parseFloat(document.getElementById('calcCurrentCost').value) || 0;
+        var pct = parseFloat(document.getElementById('calcSavingsPercent').value) || 0;
+        document.getElementById('calcSavingsPercentText').textContent = pct + '%';
+        var newCost = cost * (1 - pct / 100);
+        var savingsMonth = cost - newCost;
+        document.getElementById('calcNewCost').textContent = formatVND(newCost);
+        document.getElementById('calcSavingsAmount').textContent = formatVND(savingsMonth);
+        document.getElementById('calcSavingsYear').textContent = formatVND(savingsMonth * 12);
+      }
+      function updateCapex() {
+        var area = parseFloat(document.getElementById('capexPondArea').value) || 0;
+        var numPonds = parseInt(document.getElementById('capexNumPonds').value, 10) || 0;
+        var areaPerUnit = parseFloat(document.getElementById('capexAreaPerUnit').value) || 1;
+        var unitPrice = parseFloat(document.getElementById('capexUnitPrice').value) || 0;
+        var unitsPerPond = Math.max(1, Math.ceil(area / areaPerUnit));
+        var totalUnits = unitsPerPond * numPonds;
+        var totalCost = totalUnits * unitPrice;
+        var avgPerPond = numPonds > 0 ? totalCost / numPonds : 0;
+        document.getElementById('capexUnitsPerPond').textContent = unitsPerPond + ' khối/ao';
+        document.getElementById('capexTotalUnits').textContent = totalUnits + ' khối';
+        document.getElementById('capexTotalCost').textContent = formatVND(totalCost);
+        document.getElementById('capexAvgPerPond').textContent = formatVND(avgPerPond);
+      }
+
+      /* ---------- main render ---------- */
+      function render() {
+        ['ponds', 'alerts', 'history', 'system'].forEach(function (t) {
+          document.getElementById('tab-' + t).classList.toggle('active', state.activeTab === t);
+          document.getElementById('nav-' + t).classList.toggle('active', state.activeTab === t);
+        });
+
+        if (state.selectedPondId) {
+          document.getElementById('pondListView').classList.remove('active');
+          document.getElementById('pondDetailView').classList.add('active');
+          renderPondDetail();
+        } else {
+          document.getElementById('pondListView').classList.add('active');
+          document.getElementById('pondDetailView').classList.remove('active');
+          renderPondList();
+        }
+
+        renderAlerts();
+        renderAnalytics();
+        updateCalculator();
+        updateCapex();
+        document.getElementById('pauseBtn').textContent = state.paused ? '▶️ Tiếp tục' : '⏸️ Tạm dừng';
+      }
+
+      /* ---------- wiring ---------- */
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.nav-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            setActiveTab(btn.getAttribute('data-tab'));
+          });
+        });
+        document.querySelectorAll('.segmented button').forEach(function (btn) {
+          btn.addEventListener('click', function () { setPondTab(btn.getAttribute('data-pondtab')); });
+        });
+
+        document.getElementById('backToListBtn').addEventListener('click', backToList);
+        document.getElementById('pauseBtn').addEventListener('click', togglePause);
+        document.getElementById('outageBtn').addEventListener('click', toggleOutage);
+        document.getElementById('ecoModeToggle').addEventListener('change', toggleEcoMode);
+        document.getElementById('aerationToggle').addEventListener('change', toggleAeration);
+        document.getElementById('aerationPowerRange').addEventListener('input', function (e) { setAerationPower(e.target.value); });
+        document.getElementById('manualSiphonBtn').addEventListener('click', manualSiphon);
+        document.getElementById('simLowDOBtn').addEventListener('click', simulateLowDO);
+        document.getElementById('clearAlertsBtn').addEventListener('click', clearAlerts);
+        document.getElementById('resetDemoBtn').addEventListener('click', resetDemo);
+        document.getElementById('addPondBtn').addEventListener('click', function () {
+          showToast('Bản demo: liên hệ đội kỹ thuật để lắp thêm ao mới.');
+        });
+        document.getElementById('doInfoBtn').addEventListener('click', openDoInfo);
+        document.getElementById('doInfoCloseBtn').addEventListener('click', closeDoInfo);
+        document.getElementById('doInfoOverlay').addEventListener('click', function (e) {
+          if (e.target === e.currentTarget) closeDoInfo();
+        });
+
+        document.getElementById('alertDetailCloseBtn').addEventListener('click', closeAlertDetail);
+        document.getElementById('alertDetailOverlay').addEventListener('click', function (e) {
+          if (e.target === e.currentTarget) closeAlertDetail();
+        });
+        document.getElementById('alertsList').addEventListener('click', function (e) {
+          var item = e.target.closest('.alert-item.interactive');
+          if (item) {
+            openAlertDetail(item.getAttribute('data-id'));
+          }
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!e.target.closest('.pond-module')) {
+            document.querySelectorAll('.pond-module.tooltip-active').forEach(function (m) { m.classList.remove('tooltip-active'); });
+          }
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            closeDoInfo();
+            closeAlertDetail();
+          }
+        });
+        document.getElementById('calcCurrentCost').addEventListener('input', updateCalculator);
+        document.getElementById('calcSavingsPercent').addEventListener('input', updateCalculator);
+        ['capexPondArea', 'capexNumPonds', 'capexAreaPerUnit', 'capexUnitPrice'].forEach(function (id) {
+          document.getElementById(id).addEventListener('input', updateCapex);
+        });
+        document.getElementById('capexNumPonds').value = state.ponds.length;
+
+        render();
+        setInterval(tick, 2000);
       });
-    });
-  }
-
-  function renderPondOverview(pond){
-    var s = pond.sensors;
-    document.getElementById('doValue').innerHTML = s.do_.toFixed(1) + '<span class="gauge-unit">mg/L</span>';
-    document.getElementById('phValue').textContent = s.ph.toFixed(1);
-    document.getElementById('tempValue').innerHTML = s.temp.toFixed(1) + '<span class="gauge-unit">°C</span>';
-    document.getElementById('nh3Value').innerHTML = s.nh3.toFixed(2) + '<span class="gauge-unit">mg/L</span>';
-    setPill('doPill', statusDO(s.do_));
-    setPill('phPill', statusPH(s.ph));
-    setPill('tempPill', statusTemp(s.temp));
-    setPill('nh3Pill', statusNH3(s.nh3));
-
-    document.getElementById('buoyBattery').textContent = Math.round(pond.power.battery) + '%';
-    document.getElementById('buoyIcon').textContent = pond.power.source === 'grid' ? '🔌' : '🔋';
-    var visual = document.getElementById('pondVisual');
-    visual.classList.toggle('on-battery', pond.power.source === 'battery');
-    visual.classList.toggle('aeration-off', !pond.aeration.on);
-
-    /* --- Enhanced visuals --- */
-    var doSt = statusDO(s.do_);
-    // Fish react to DO level
-    var f1 = document.getElementById('fish1');
-    var f2 = document.getElementById('fish2');
-    var f3 = document.getElementById('fish3');
-    if(f1 && f2 && f3){
-      var tops = doSt==='danger' ? ['24%','30%','22%'] : doSt==='warn' ? ['36%','46%','32%'] : ['48%','60%','40%'];
-      f1.style.top = tops[0]; f2.style.top = tops[1]; f3.style.top = tops[2];
-    }
-
-    // Bubbles
-    renderBubbles(pond);
-
-    // Sediment layer
-    var sediment = document.getElementById('sedimentLayer');
-    if(sediment) sediment.style.height = (4 + (pond.sludge/100)*26) + '%';
-
-    // Sensor mini overlay
-    renderSensorOverlay(pond);
-
-    // Status glow
-    visual.classList.remove('glow-safe','glow-warn','glow-danger');
-    var sts = [doSt, statusPH(s.ph), statusTemp(s.temp), statusNH3(s.nh3)];
-    var overall = sts.indexOf('danger')>=0 ? 'danger' : (sts.indexOf('warn')>=0 ? 'warn' : 'safe');
-    visual.classList.add('glow-'+overall);
-
-    // DeltaV station state
-    var isDead = pond.power.source==='battery' && pond.power.battery<=0;
-    visual.classList.toggle('data-dead', isDead);
-    var led = document.getElementById('stationLed');
-    var conn = document.getElementById('stationConn');
-    if(led){ led.classList.toggle('dead', isDead); }
-    if(conn){ conn.classList.toggle('dead', isDead); conn.textContent = isDead ? '📵' : '📶'; }
-
-    renderPondModules(pond);
-    renderSparkline(pond);
-  }
-
-  function renderBubbles(pond){
-    var c = document.getElementById('bubbleContainer');
-    if(!c) return;
-    var key = (pond.aeration.on?'1':'0')+'-'+Math.floor(pond.aeration.power/15);
-    if(c.getAttribute('data-bk') === key) return;
-    c.setAttribute('data-bk', key);
-    if(!pond.aeration.on){ c.innerHTML=''; return; }
-    var count = Math.max(4, Math.floor(pond.aeration.power/8));
-    var h = '';
-    for(var i=0;i<count;i++){
-      var left = 24+Math.random()*18;
-      var sz = 2.5+Math.random()*5;
-      var dur = 2.2+Math.random()*2.5;
-      var del = Math.random()*dur;
-      var mop = 0.25+Math.random()*0.4;
-      var rh = -(70+Math.random()*80);
-      h += '<div class="bubble-enhanced" style="left:'+left+'%;bottom:32%;width:'+sz+'px;height:'+sz+'px;--dur:'+dur+'s;--delay:'+del+'s;--max-op:'+mop+';--rise-h:'+rh+'px;"></div>';
-    }
-    c.innerHTML = h;
-  }
-
-  function renderSensorOverlay(pond){
-    var o = document.getElementById('sensorMiniOverlay');
-    if(!o) return;
-    var s = pond.sensors;
-    o.innerHTML =
-      '<div class="sensor-mini-tag"><span class="sensor-mini-dot '+statusDO(s.do_)+'"></span>DO '+s.do_.toFixed(1)+'</div>'
-      +'<div class="sensor-mini-tag"><span class="sensor-mini-dot '+statusPH(s.ph)+'"></span>pH '+s.ph.toFixed(1)+'</div>'
-      +'<div class="sensor-mini-tag"><span class="sensor-mini-dot '+statusTemp(s.temp)+'"></span>'+s.temp.toFixed(1)+'°</div>';
-  }
-
-  function renderPondPower(pond){
-    var p = pond.power;
-    document.getElementById('powerSourceLabel').textContent = p.source === 'grid' ? 'Điện lưới' : 'Pin dự phòng';
-    document.getElementById('powerSourceIcon').textContent = p.source === 'grid' ? '🔌' : '🔋';
-    document.getElementById('batteryPercentText').textContent = Math.round(p.battery) + '%';
-    var fill = document.getElementById('batteryFillBar');
-    fill.style.width = clamp(p.battery,0,100) + '%';
-    fill.className = 'battery-fill ' + (p.battery < 20 ? 'crit' : p.battery < 50 ? 'warn' : 'ok');
-
-    var outageWarn = document.getElementById('outageWarning');
-    var outageBtn = document.getElementById('outageBtn');
-    if(p.source === 'battery'){
-      outageWarn.style.display = 'block';
-      var hoursLeft = (p.battery/100) * MAX_HOURS;
-      var hh = Math.floor(hoursLeft);
-      var mm = Math.round((hoursLeft - hh) * 60);
-      document.getElementById('batteryTimeLeft').textContent = hh + ' giờ ' + mm + ' phút';
-      outageBtn.textContent = '🔌 Khôi phục điện lưới (demo)';
-    } else {
-      outageWarn.style.display = 'none';
-      outageBtn.textContent = '⚡ Giả lập mất điện lưới';
-    }
-
-    document.getElementById('ecoModeToggle').checked = pond.ecoMode;
-    document.getElementById('dataFreqText').textContent = pond.ecoMode ? 'mỗi 15 phút (đã giảm)' : 'mỗi 5 phút';
-    
-    var ecoHint = document.getElementById('ecoHint');
-    if(pond.ecoMode){
-      ecoHint.style.display = 'block';
-      if(p.source === 'battery'){
-        ecoHint.textContent = '✅ Đang tiết kiệm điện — thời gian pin dự phòng được kéo dài hơn.';
-      } else {
-        ecoHint.textContent = '✅ Đang tiết kiệm điện (Bật thủ công) — Sẵn sàng tối ưu năng lượng nếu mất điện.';
-      }
-    } else {
-      ecoHint.style.display = 'none';
-    }
-  }
-
-  function renderPondControl(pond){
-    document.getElementById('aerationToggle').checked = pond.aeration.on;
-    var range = document.getElementById('aerationPowerRange');
-    range.value = pond.aeration.power;
-    range.disabled = !pond.aeration.on;
-    document.getElementById('aerationPowerText').textContent = pond.aeration.power + '%';
-    var fill = document.getElementById('sludgeBarFill');
-    fill.style.width = pond.sludge + '%';
-    fill.className = 'sludge-fill' + (pond.sludge >= 80 ? ' crit' : '');
-    document.getElementById('sludgeText').textContent = Math.round(pond.sludge) + '% — tự động kích hoạt khi đạt 92%' + (pond.ecoMode ? ' (đang tạm dừng do Chế độ tiết kiệm điện)' : '');
-    var h2s = statusH2SRisk(pond.sludge);
-    setPill('h2sPill', h2s);
-    document.getElementById('h2sPill').textContent = 'Nguy cơ H₂S: ' + h2sLabel[h2s];
-  }
-
-  function renderPondDetail(){
-    var pond = currentPond();
-    if(!pond) return;
-    document.getElementById('pondDetailName').innerHTML = escapeHTML(pond.name) + (pond.ecoMode ? '<span class="eco-badge">ECO</span>' : '');
-    document.getElementById('pondDetailMeta').textContent = pond.location + ' • ' + pond.area + ' m²';
-    ['overview','power','control'].forEach(function(t){
-      document.getElementById('pondTabBtn-'+t).classList.toggle('active', state.pondTab === t);
-      document.getElementById('pondPanel-'+t).classList.toggle('active', state.pondTab === t);
-    });
-    renderPondOverview(pond);
-    renderPondPower(pond);
-    renderPondControl(pond);
-  }
-
-  /* ---------- render: alerts / history ---------- */
-  function renderAlerts(){
-    var list = document.getElementById('alertsList');
-    var empty = document.getElementById('alertsEmpty');
-    if(state.alerts.length === 0){
-      list.innerHTML = '';
-      empty.style.display = 'block';
-    } else {
-      empty.style.display = 'none';
-      list.innerHTML = state.alerts.map(function(a){
-        var icon = a.level === 'danger' ? '🔴' : a.level === 'warn' ? '⚠️' : 'ℹ️';
-        return '<div class="alert-item alert-' + a.level + '">'
-          + '<div class="alert-top"><span>' + icon + ' ' + escapeHTML(a.title) + '</span><span class="alert-time">' + a.time + '</span></div>'
-          + '<div class="alert-msg">' + escapeHTML(a.msg) + '</div>'
-          + '<div class="alert-pond-tag">' + escapeHTML(a.pondName) + '</div>'
-          + '</div>';
-      }).join('');
-    }
-    var badge = document.getElementById('alertBadge');
-    if(state.alerts.length > 0){
-      badge.style.display = 'flex';
-      badge.textContent = state.alerts.length > 9 ? '9+' : String(state.alerts.length);
-    } else {
-      badge.style.display = 'none';
-    }
-  }
-
-  function renderHistory(){
-    var icons = { power:'🔌', siphon:'🧹', control:'🎛️', system:'⚙️' };
-    document.getElementById('logList').innerHTML = state.log.map(function(l){
-      var icon = icons[l.type] || '•';
-      var tag = (l.pondName && l.pondName !== 'Hệ thống') ? ' <span class="log-pond-tag">' + escapeHTML(l.pondName) + '</span>' : '';
-      return '<div class="log-item"><span class="log-time">' + l.time + '</span><span class="log-icon">' + icon + '</span><span class="log-text">' + escapeHTML(l.text) + tag + '</span></div>';
-    }).join('');
-  }
-
-  /* ---------- render: system tab calculators ---------- */
-  function updateCalculator(){
-    var cost = parseFloat(document.getElementById('calcCurrentCost').value) || 0;
-    var pct = parseFloat(document.getElementById('calcSavingsPercent').value) || 0;
-    document.getElementById('calcSavingsPercentText').textContent = pct + '%';
-    var newCost = cost * (1 - pct/100);
-    var savingsMonth = cost - newCost;
-    document.getElementById('calcNewCost').textContent = formatVND(newCost);
-    document.getElementById('calcSavingsAmount').textContent = formatVND(savingsMonth);
-    document.getElementById('calcSavingsYear').textContent = formatVND(savingsMonth * 12);
-  }
-  function updateCapex(){
-    var area = parseFloat(document.getElementById('capexPondArea').value) || 0;
-    var numPonds = parseInt(document.getElementById('capexNumPonds').value, 10) || 0;
-    var areaPerUnit = parseFloat(document.getElementById('capexAreaPerUnit').value) || 1;
-    var unitPrice = parseFloat(document.getElementById('capexUnitPrice').value) || 0;
-    var unitsPerPond = Math.max(1, Math.ceil(area / areaPerUnit));
-    var totalUnits = unitsPerPond * numPonds;
-    var totalCost = totalUnits * unitPrice;
-    var avgPerPond = numPonds > 0 ? totalCost / numPonds : 0;
-    document.getElementById('capexUnitsPerPond').textContent = unitsPerPond + ' khối/ao';
-    document.getElementById('capexTotalUnits').textContent = totalUnits + ' khối';
-    document.getElementById('capexTotalCost').textContent = formatVND(totalCost);
-    document.getElementById('capexAvgPerPond').textContent = formatVND(avgPerPond);
-  }
-
-  /* ---------- main render ---------- */
-  function render(){
-    ['ponds','alerts','history','system'].forEach(function(t){
-      document.getElementById('tab-'+t).classList.toggle('active', state.activeTab === t);
-      document.getElementById('nav-'+t).classList.toggle('active', state.activeTab === t);
-    });
-
-    if(state.selectedPondId){
-      document.getElementById('pondListView').classList.remove('active');
-      document.getElementById('pondDetailView').classList.add('active');
-      renderPondDetail();
-    } else {
-      document.getElementById('pondListView').classList.add('active');
-      document.getElementById('pondDetailView').classList.remove('active');
-      renderPondList();
-    }
-
-    renderAlerts();
-    renderHistory();
-    updateCalculator();
-    updateCapex();
-    document.getElementById('pauseBtn').textContent = state.paused ? '▶️ Tiếp tục' : '⏸️ Tạm dừng';
-  }
-
-  /* ---------- wiring ---------- */
-  document.addEventListener('DOMContentLoaded', function(){
-    document.querySelectorAll('.nav-btn').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        setActiveTab(btn.getAttribute('data-tab'));
-      });
-    });
-    document.querySelectorAll('.segmented button').forEach(function(btn){
-      btn.addEventListener('click', function(){ setPondTab(btn.getAttribute('data-pondtab')); });
-    });
-
-    document.getElementById('backToListBtn').addEventListener('click', backToList);
-    document.getElementById('pauseBtn').addEventListener('click', togglePause);
-    document.getElementById('outageBtn').addEventListener('click', toggleOutage);
-    document.getElementById('ecoModeToggle').addEventListener('change', toggleEcoMode);
-    document.getElementById('aerationToggle').addEventListener('change', toggleAeration);
-    document.getElementById('aerationPowerRange').addEventListener('input', function(e){ setAerationPower(e.target.value); });
-    document.getElementById('manualSiphonBtn').addEventListener('click', manualSiphon);
-    document.getElementById('simLowDOBtn').addEventListener('click', simulateLowDO);
-    document.getElementById('clearAlertsBtn').addEventListener('click', clearAlerts);
-    document.getElementById('resetDemoBtn').addEventListener('click', resetDemo);
-    document.getElementById('addPondBtn').addEventListener('click', function(){
-      showToast('Bản demo: liên hệ đội kỹ thuật để lắp thêm ao mới.');
-    });
-    document.getElementById('doInfoBtn').addEventListener('click', openDoInfo);
-    document.getElementById('doInfoCloseBtn').addEventListener('click', closeDoInfo);
-    document.getElementById('doInfoOverlay').addEventListener('click', function(e){
-      if(e.target === e.currentTarget) closeDoInfo();
-    });
-    document.addEventListener('click', function(e){
-      if(!e.target.closest('.pond-module')){
-        document.querySelectorAll('.pond-module.tooltip-active').forEach(function(m){ m.classList.remove('tooltip-active'); });
-      }
-    });
-    document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape') closeDoInfo();
-    });
-    document.getElementById('calcCurrentCost').addEventListener('input', updateCalculator);
-    document.getElementById('calcSavingsPercent').addEventListener('input', updateCalculator);
-    ['capexPondArea','capexNumPonds','capexAreaPerUnit','capexUnitPrice'].forEach(function(id){
-      document.getElementById(id).addEventListener('input', updateCapex);
-    });
-    document.getElementById('capexNumPonds').value = state.ponds.length;
-
-    render();
-    setInterval(tick, 2000);
-  });
-})();
-</script>
+    })();
+  </script>
 </body>
+
 </html>

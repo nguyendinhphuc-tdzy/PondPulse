@@ -340,6 +340,8 @@
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
   /* ---------- bottom nav ---------- */
+  .eco-badge{ display:inline-flex; align-items:center; background:var(--brand-light); color:var(--brand-dark); font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px; line-height:1; vertical-align:middle; margin-left:6px; letter-spacing:0.02em; border:1px solid rgba(87,214,141,0.4); }
+  .eco-badge-small{ font-size:8px; padding:2px 4px; border-radius:4px; margin-left:4px; }
   .bottom-nav{ flex:0 0 auto; display:flex; background:#fff; border-top:1px solid var(--card-border); padding:8px 4px calc(8px + env(safe-area-inset-bottom)); position:relative; z-index:5; user-select:none; -webkit-user-select:none; }
   .nav-btn{ flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; padding:6px 2px; color:var(--ink-soft); font-size:11px; font-weight:600; cursor:pointer; position:relative; letter-spacing:-0.01em; transition:color .2s; }
   .nav-btn svg{ width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; transition:stroke .2s, transform .2s; }
@@ -693,14 +695,14 @@
           <div class="power-card">
             <div class="switch-row">
               <div>
-                <h4 style="margin:0;font-size:14px;">🌙 Chế độ tiết kiệm điện</h4>
-                <span style="font-size:12px;color:var(--ink-soft);">Ưu tiên tải quan trọng khi chạy bằng pin</span>
+                <h4 style="margin:0;font-size:14px;display:flex;align-items:center;">Chế độ tiết kiệm điện - ECO</h4>
+                <span style="font-size:12px;color:var(--ink-soft);">Ưu tiên thiết bị sống còn, tiết kiệm pin</span>
               </div>
               <label class="switch"><input type="checkbox" id="ecoModeToggle"><span class="slider-toggle"></span></label>
             </div>
-            <p class="field-hint">Tự động bật khi mất điện lưới, có thể bật/tắt thủ công. Khi bật: xi‑phông tự động tạm dừng + tần suất gửi dữ liệu giảm — để dồn điện năng cho <b>sục khí</b>, tải quan trọng nhất (cá cần oxy để sống), nên <b>không bao giờ</b> bị giảm công suất.</p>
+            <p class="field-hint">Tự động bật khi mất điện lưới, có thể bật/tắt thủ công.<br>Khi bật:<br>1. <b>Xi-phông</b> tạm dừng để tiết kiệm điện bơm.<br>2. <b>Cảm biến</b> giảm tần suất gửi dữ liệu.<br>3. <b>Ngưỡng an toàn</b> không thay đổi, vẫn giám sát 24/24.<br>4. <b>Sục khí (Quan trọng)</b> không bao giờ bị giảm công suất để đảm bảo oxy.</p>
             <div class="freq-row"><span>Tần suất gửi dữ liệu</span><b id="dataFreqText">mỗi 5 phút</b></div>
-            <div class="eco-hint" id="ecoHint">✅ Đang tiết kiệm điện — thời gian pin dự phòng được kéo dài hơn.</div>
+            <div class="eco-hint" id="ecoHint">✅ Đang tiết kiệm điện — Sẵn sàng tối ưu năng lượng.</div>
           </div>
         </div>
 
@@ -1035,7 +1037,7 @@
         pond.sludge = round(6 + Math.random() * 5, 1);
         pushLog(pond, 'siphon', 'Xi‑phông tự động kích hoạt: bơm bùn đáy hồ ra khoang chứa ngoài hồ.');
       } else if(!pond.sludgeFullAlerted){
-        pushAlert(pond, 'warn', 'Bùn đáy đã đầy — xi‑phông tạm dừng', 'Đang ở Chế độ tiết kiệm điện nên xi‑phông tự động không kích hoạt. Bấm "Kích hoạt xi‑phông thủ công" nếu cần.');
+        pushAlert(pond, 'warn', 'Bùn đáy đã đầy — xi‑phông tạm dừng', 'Đang ở Chế độ tiết kiệm điện (ECO) nên xi‑phông tự động không kích hoạt. Bấm "Kích hoạt xi‑phông thủ công" nếu cần.');
         pond.sludgeFullAlerted = true;
       }
     } else if(pond.sludge < 70){
@@ -1176,7 +1178,7 @@
           + '<span class="mini-badge">NH₃ <b>' + s.nh3.toFixed(2) + '</b></span>'
         + '</div>'
         + '<div class="pond-card-footer">'
-          + '<span>' + powerIcon + ' ' + Math.round(pond.power.battery) + '%' + (pond.power.source === 'battery' ? ' (đang dùng pin)' : '') + '</span>'
+          + '<span>' + powerIcon + ' ' + Math.round(pond.power.battery) + '%' + (pond.power.source === 'battery' ? ' (đang dùng pin)' : '') + (pond.ecoMode ? '<span class="eco-badge eco-badge-small">ECO</span>' : '') + '</span>'
           + (alertCount > 0 ? '<span style="color:var(--coral);font-weight:700;">🔔 ' + alertCount + '</span>' : '<span style="color:var(--brand-dark);font-weight:600;">Ổn định</span>')
         + '</div>'
       + '</div>';
@@ -1243,9 +1245,9 @@
   function getModuleTooltip(pond, id){
     switch(id){
       case 'aeration': return 'Sục khí vi bọt<br>Công suất: '+pond.aeration.power+'%<br>'+(pond.aeration.on?'⚡ Đang chạy':'⏸ Đã tắt');
-      case 'sensors': return 'Cảm biến RS485 Modbus<br>DO: '+pond.sensors.do_.toFixed(1)+' mg/L<br>pH: '+pond.sensors.ph.toFixed(1)+'<br>T°: '+pond.sensors.temp.toFixed(1)+'°C';
+      case 'sensors': return 'Cảm biến RS485 Modbus<br>DO: '+pond.sensors.do_.toFixed(1)+' mg/L<br>pH: '+pond.sensors.ph.toFixed(1)+'<br>T°: '+pond.sensors.temp.toFixed(1)+'°C<br>'+(pond.ecoMode?'Tần suất gửi: 15p (ECO)':'Tần suất gửi: 5p');
       case 'filter': return 'Lọc sinh học MBBR<br>NH₃: '+pond.sensors.nh3.toFixed(2)+' mg/L<br>Giá thể Hel-X Bio Chip';
-      case 'siphon': return 'Xi-phông tự động<br>Bùn: '+Math.round(pond.sludge)+'%<br>'+(pond.ecoMode?'⏸ Tạm dừng (eco)':'Kích hoạt khi ≥92%');
+      case 'siphon': return 'Xi-phông tự động<br>Bùn: '+Math.round(pond.sludge)+'%<br>'+(pond.ecoMode?'⏸ Tạm dừng (ECO)':'Kích hoạt khi ≥92%');
       default: return '';
     }
   }
@@ -1390,7 +1392,18 @@
 
     document.getElementById('ecoModeToggle').checked = pond.ecoMode;
     document.getElementById('dataFreqText').textContent = pond.ecoMode ? 'mỗi 15 phút (đã giảm)' : 'mỗi 5 phút';
-    document.getElementById('ecoHint').style.display = (pond.ecoMode && p.source === 'battery') ? 'block' : 'none';
+    
+    var ecoHint = document.getElementById('ecoHint');
+    if(pond.ecoMode){
+      ecoHint.style.display = 'block';
+      if(p.source === 'battery'){
+        ecoHint.textContent = '✅ Đang tiết kiệm điện — thời gian pin dự phòng được kéo dài hơn.';
+      } else {
+        ecoHint.textContent = '✅ Đang tiết kiệm điện (Bật thủ công) — Sẵn sàng tối ưu năng lượng nếu mất điện.';
+      }
+    } else {
+      ecoHint.style.display = 'none';
+    }
   }
 
   function renderPondControl(pond){
@@ -1411,7 +1424,7 @@
   function renderPondDetail(){
     var pond = currentPond();
     if(!pond) return;
-    document.getElementById('pondDetailName').textContent = pond.name;
+    document.getElementById('pondDetailName').innerHTML = escapeHTML(pond.name) + (pond.ecoMode ? '<span class="eco-badge">ECO</span>' : '');
     document.getElementById('pondDetailMeta').textContent = pond.location + ' • ' + pond.area + ' m²';
     ['overview','power','control'].forEach(function(t){
       document.getElementById('pondTabBtn-'+t).classList.toggle('active', state.pondTab === t);

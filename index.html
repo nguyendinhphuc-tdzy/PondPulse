@@ -1249,9 +1249,19 @@
       line-height: 1.5;
     }
 
-    .alert-item.interactive { cursor: pointer; transition: background .2s, border-color .2s; }
-    .alert-item.interactive:hover { background: #fdfdfd; border-color: rgba(14, 74, 94, 0.2); }
-    .alert-item.interactive:active { background: #f5f5f5; }
+    .alert-item.interactive {
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+
+    .alert-item.interactive:hover {
+      background: #fdfdfd;
+      border-color: rgba(14, 74, 94, 0.2);
+    }
+
+    .alert-item.interactive:active {
+      background: #f5f5f5;
+    }
 
     .control-recommendation {
       background: var(--brand-light);
@@ -1294,6 +1304,7 @@
       gap: 8px;
       margin-bottom: 16px;
     }
+
     .analytics-card {
       background: #fff;
       border: 1px solid var(--card-border);
@@ -1304,16 +1315,19 @@
       flex-direction: column;
       gap: 4px;
     }
+
     .analytics-val {
       font-size: 18px;
       font-weight: 800;
       color: var(--brand-dark);
     }
+
     .analytics-label {
       font-size: 11px;
       color: var(--ink-soft);
       line-height: 1.3;
     }
+
     .action-list {
       margin: 0;
       padding-left: 20px;
@@ -1321,9 +1335,11 @@
       line-height: 1.5;
       color: var(--ink);
     }
+
     .action-list li {
       margin-bottom: 8px;
     }
+
     .log-filter {
       margin-bottom: 12px;
       display: flex;
@@ -1331,6 +1347,7 @@
       gap: 8px;
       font-size: 13px;
     }
+
     .log-filter select {
       padding: 4px 8px;
       border-radius: 4px;
@@ -1344,8 +1361,9 @@
       border-radius: 8px;
       margin-bottom: 12px;
       overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
+
     details.system-accordion summary {
       padding: 14px 16px;
       font-size: 15px;
@@ -1358,28 +1376,34 @@
       align-items: center;
       transition: background 0.2s;
     }
+
     details.system-accordion summary::-webkit-details-marker {
       display: none;
     }
+
     details.system-accordion summary:after {
       content: '+';
       font-size: 20px;
       line-height: 1;
       color: var(--ink-soft);
     }
+
     details.system-accordion[open] summary:after {
       content: '−';
     }
+
     details.system-accordion summary:hover {
       background: rgba(14, 74, 94, 0.03);
     }
+
     details.system-accordion .accordion-content {
       padding: 0 16px 16px 16px;
       border-top: 1px solid var(--card-border);
       margin-top: 0;
       padding-top: 14px;
     }
-    details.system-accordion .power-card, 
+
+    details.system-accordion .power-card,
     details.system-accordion .limit-card {
       border: none;
       padding: 0;
@@ -2287,7 +2311,8 @@
                     id="aerationPowerText">70%</span></label>
                 <input type="range" id="aerationPowerRange" min="0" max="100" value="70">
               </div>
-              <div class="control-recommendation">💡 <b>Đề xuất:</b> Nên duy trì công suất 60-70% vào ban ngày (có tảo quang hợp). Tăng lên 100% vào ban đêm, gần sáng, hoặc khi DO &lt; 4.0 mg/L.</div>
+              <div class="control-recommendation">💡 <b>Đề xuất:</b> Nên duy trì công suất 60-70% vào ban ngày (có tảo
+                quang hợp). Tăng lên 100% vào ban đêm, gần sáng, hoặc khi DO &lt; 4.0 mg/L.</div>
             </div>
 
             <div class="control-card">
@@ -2304,7 +2329,8 @@
                 kịp thời là cách kiểm soát H₂S gián tiếp.</p>
               <button class="btn btn-outline" id="manualSiphonBtn" style="margin-top:12px;">🧹 Kích hoạt xi‑phông thủ
                 công</button>
-              <div class="control-recommendation">💡 <b>Đề xuất:</b> Hệ thống tự động kích hoạt khi bùn đạt 92%. Nếu đang dùng pin dự phòng, hạn chế kích hoạt thủ công để kéo dài thời lượng pin cho Sục khí.</div>
+              <div class="control-recommendation">💡 <b>Đề xuất:</b> Hệ thống tự động kích hoạt khi bùn đạt 92%. Nếu
+                đang dùng pin dự phòng, hạn chế kích hoạt thủ công để kéo dài thời lượng pin cho Sục khí.</div>
             </div>
 
             <div class="control-card">
@@ -2331,8 +2357,10 @@
         <div class="panel-eyebrow">Tất cả các ao</div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h2 class="panel-title">Báo cáo phân tích</h2>
-          <button class="btn btn-outline btn-small" onclick="window.openLogDetail()" title="Xem toàn bộ nhật ký" style="padding: 4px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px;">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="btn btn-outline btn-small" onclick="window.openLogDetail()" title="Xem toàn bộ nhật ký"
+            style="padding: 4px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
             </svg>
@@ -2340,7 +2368,7 @@
           </button>
         </div>
         <p class="panel-subtitle">Tổng hợp tình trạng vận hành và đề xuất tối ưu hệ thống trong 7 ngày qua.</p>
-        
+
         <div class="analytics-summary">
           <div class="analytics-card">
             <span class="analytics-val">98.5%</span>
@@ -2358,15 +2386,20 @@
 
         <div class="control-card">
           <h4 style="margin:0 0 8px;font-size:14px;color:var(--brand-dark);">Tình trạng hiện tại</h4>
-          <p style="font-size:13px;line-height:1.5;margin:0;">Hệ thống đang hoạt động tương đối ổn định. Tuy nhiên, <b>Ao 2</b> thường xuyên gặp tình trạng tụt DO vào khoảng 4:00 - 5:00 sáng. Bùn đáy tích tụ nhanh hơn 15% so với tuần trước.</p>
+          <p style="font-size:13px;line-height:1.5;margin:0;">Hệ thống đang hoạt động tương đối ổn định. Tuy nhiên,
+            <b>Ao 2</b> thường xuyên gặp tình trạng tụt DO vào khoảng 4:00 - 5:00 sáng. Bùn đáy tích tụ nhanh hơn 15% so
+            với tuần trước.</p>
         </div>
 
         <div class="control-card">
           <h4 style="margin:0 0 8px;font-size:14px;color:var(--brand-dark);">Hành động đề xuất</h4>
           <ul class="action-list">
-            <li><b>Điều chỉnh sục khí Ao 2:</b> Cài đặt sục khí tự động tăng lên 100% từ 3:00 đến 6:00 sáng để bù đắp lượng oxy thiếu hụt.</li>
-            <li><b>Kiểm tra pin dự phòng:</b> Đã có 3 lần mất điện lưới trong tuần, pin dự phòng xả sâu 2 lần. Cần kiểm tra lại dung lượng thực tế.</li>
-            <li><b>Giảm lượng thức ăn:</b> Bùn đáy tích tụ nhanh cho thấy thức ăn dư thừa. Đề xuất giảm 10% lượng thức ăn trong 3 ngày tới.</li>
+            <li><b>Điều chỉnh sục khí Ao 2:</b> Cài đặt sục khí tự động tăng lên 100% từ 3:00 đến 6:00 sáng để bù đắp
+              lượng oxy thiếu hụt.</li>
+            <li><b>Kiểm tra pin dự phòng:</b> Đã có 3 lần mất điện lưới trong tuần, pin dự phòng xả sâu 2 lần. Cần kiểm
+              tra lại dung lượng thực tế.</li>
+            <li><b>Giảm lượng thức ăn:</b> Bùn đáy tích tụ nhanh cho thấy thức ăn dư thừa. Đề xuất giảm 10% lượng thức
+              ăn trong 3 ngày tới.</li>
           </ul>
         </div>
       </section>
@@ -2380,9 +2413,10 @@
           <summary>Kiến trúc kết nối dữ liệu</summary>
           <div class="accordion-content">
             <div class="power-card">
-              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Đường đi thật của 1 chỉ số đo
+              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Đường đi thật của 1 chỉ số
+                đo
                 được, từ đáy ao lên màn hình điện thoại.</p>
-  
+
               <div class="pipeline-step">
                 <div class="pipeline-step-top"><span class="step-num">1</span>
                   <h4>4 thiết bị dưới đáy ao</h4>
@@ -2410,8 +2444,9 @@
                 </div>
                 <span>Gateway gửi qua WiFi để đồng bộ dữ liệu, hiển thị và điều khiển từ xa</span>
               </div>
-  
-              <p class="field-hint" style="margin-top:12px;">*Lọc sinh học là vật liệu thụ động (giá thể vi sinh), không có
+
+              <p class="field-hint" style="margin-top:12px;">*Lọc sinh học là vật liệu thụ động (giá thể vi sinh), không
+                có
                 điện tử nên không nằm trên bus — chỉ 3/4 thiết bị thật sự kết nối vào module ESP32.</p>
             </div>
           </div>
@@ -2421,7 +2456,8 @@
           <summary>So sánh hệ thống</summary>
           <div class="accordion-content">
             <div class="power-card">
-              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0;">Trạm Đa Năng gộp 4 thiết bị rời thành 1
+              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0;">Trạm Đa Năng gộp 4 thiết bị rời
+                thành 1
                 khối, giảm điểm hỏng và chi phí lắp đặt.</p>
               <table class="compare-table" style="margin-top: 12px;">
                 <tr>
@@ -2458,7 +2494,8 @@
           <summary>Bài toán kinh tế: Vận hành</summary>
           <div class="accordion-content">
             <div class="power-card">
-              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Ước tính minh họa dựa trên mức giảm chi
+              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Ước tính minh họa dựa trên
+                mức giảm chi
                 phí vận hành 40–50% khi chuyển từ quạt nước sang sục khí vi bọt (nguồn: nextfarm.vn).</p>
               <div class="calc-row">
                 <label for="calcCurrentCost">Chi phí điện hiện tại / tháng (VNĐ)</label>
@@ -2481,7 +2518,8 @@
           <summary>Bài toán kinh tế: Đầu tư (CAPEX)</summary>
           <div class="accordion-content">
             <div class="power-card">
-              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Áp dụng cho 1 ao hoặc nhiều ao (mỗi ao
+              <p class="hint" style="font-size:11px;color:var(--ink-soft);margin:0 0 12px;">Áp dụng cho 1 ao hoặc nhiều
+                ao (mỗi ao
                 lắp riêng số khối cần thiết).</p>
               <div class="calc-row">
                 <label for="capexPondArea">Diện tích mỗi ao (m²)</label>
@@ -2515,11 +2553,15 @@
           <div class="accordion-content">
             <div class="limit-card">
               <ul style="margin:0; padding-left:20px; font-size:13px; line-height:1.5;">
-                <li style="margin-bottom:6px;">Ao lớn (&gt;1.000–2.000m²) có thể cần lắp nhiều khối thay vì một khối duy nhất.</li>
-                <li style="margin-bottom:6px;">Xi‑phông tự động là phần cơ khí dễ hỏng nhất nếu bùn quá đặc gây tắc nghẽn.</li>
-                <li style="margin-bottom:6px;">Pin dự phòng sạc‑lưới chỉ đủ vài giờ — không giải quyết mất điện kéo dài nhiều ngày (ví dụ bão). Cần
+                <li style="margin-bottom:6px;">Ao lớn (&gt;1.000–2.000m²) có thể cần lắp nhiều khối thay vì một khối duy
+                  nhất.</li>
+                <li style="margin-bottom:6px;">Xi‑phông tự động là phần cơ khí dễ hỏng nhất nếu bùn quá đặc gây tắc
+                  nghẽn.</li>
+                <li style="margin-bottom:6px;">Pin dự phòng sạc‑lưới chỉ đủ vài giờ — không giải quyết mất điện kéo dài
+                  nhiều ngày (ví dụ bão). Cần
                   phương án máy phát điện dùng chung cấp cụm hộ.</li>
-                <li style="margin-bottom:6px;">Cần thử nghiệm thực địa ít nhất 1–2 vụ nuôi trước khi khẳng định hiệu quả kinh tế thực tế.</li>
+                <li style="margin-bottom:6px;">Cần thử nghiệm thực địa ít nhất 1–2 vụ nuôi trước khi khẳng định hiệu quả
+                  kinh tế thực tế.</li>
               </ul>
             </div>
           </div>
@@ -2547,7 +2589,8 @@
       <div class="info-popup" role="dialog" aria-labelledby="logDetailTitle" aria-modal="true">
         <div class="info-popup-head">
           <h4 id="logDetailTitle">Nhật ký vận hành thô</h4>
-          <button class="info-close" id="logDetailCloseBtn" type="button" aria-label="Đóng" onclick="window.closeLogDetail()">×</button>
+          <button class="info-close" id="logDetailCloseBtn" type="button" aria-label="Đóng"
+            onclick="window.closeLogDetail()">×</button>
         </div>
         <div class="log-filter">
           <label>Chọn thời gian:</label>
@@ -2662,7 +2705,7 @@
         var now = new Date();
         var types = ['power', 'siphon', 'control', 'system'];
         var ponds = ['Ao 1', 'Ao 2', 'Ao 3'];
-        
+
         for (var i = 7; i >= 1; i--) {
           var numLogs = Math.floor(Math.random() * 5) + 2;
           for (var j = 0; j < numLogs; j++) {
@@ -2676,7 +2719,7 @@
             else if (t === 'siphon') msg = 'Xi-phông tự động kích hoạt do lượng bùn tích tụ.';
             else if (t === 'control') msg = 'Điều chỉnh công suất sục khí.';
             else msg = 'Hệ thống tự động đồng bộ dữ liệu.';
-            
+
             logs.push({ id: uid(), time: timeStr, dateStr: dateStr, dateObj: d, type: t, text: msg, pondName: p });
           }
         }
@@ -2741,16 +2784,16 @@
         if (statusRank[current] > statusRank[prev]) {
           var level = current === 'danger' ? 'danger' : 'warn';
           var impact = '', action = '';
-          if(key === 'do_') {
-              if(current === 'danger') { impact = 'Cá thiếu oxy nghiêm trọng, nổi đầu, bỏ ăn, rủi ro chết hàng loạt.'; action = 'Tăng công suất sục khí tối đa ngay lập tức. Cấp cứu bằng oxy hạt (oxy viên) nếu cần.'; }
-              else if(current === 'warn') { impact = 'Cá bắt đầu ngột ngạt, giảm ăn, stress.'; action = 'Kiểm tra và bật sục khí hoặc tăng công suất sục khí.'; }
+          if (key === 'do_') {
+            if (current === 'danger') { impact = 'Cá thiếu oxy nghiêm trọng, nổi đầu, bỏ ăn, rủi ro chết hàng loạt.'; action = 'Tăng công suất sục khí tối đa ngay lập tức. Cấp cứu bằng oxy hạt (oxy viên) nếu cần.'; }
+            else if (current === 'warn') { impact = 'Cá bắt đầu ngột ngạt, giảm ăn, stress.'; action = 'Kiểm tra và bật sục khí hoặc tăng công suất sục khí.'; }
           } else if (key === 'ph') {
-              impact = 'Môi trường nước thay đổi, cá dễ sốc, tuột nhớt và giảm sức đề kháng.'; action = 'Kiểm tra mật độ tảo, bón vôi nông nghiệp hoặc khoáng để ổn định môi trường.';
+            impact = 'Môi trường nước thay đổi, cá dễ sốc, tuột nhớt và giảm sức đề kháng.'; action = 'Kiểm tra mật độ tảo, bón vôi nông nghiệp hoặc khoáng để ổn định môi trường.';
           } else if (key === 'temp') {
-              impact = 'Nhiệt độ ngoài ngưỡng tối ưu, cá giảm ăn, dễ phát sinh dịch bệnh.'; action = 'Kiểm tra mực nước, hệ thống lưới che nắng hoặc điều chỉnh lượng thức ăn.';
+            impact = 'Nhiệt độ ngoài ngưỡng tối ưu, cá giảm ăn, dễ phát sinh dịch bệnh.'; action = 'Kiểm tra mực nước, hệ thống lưới che nắng hoặc điều chỉnh lượng thức ăn.';
           } else if (key === 'nh3') {
-              if(current === 'danger') { impact = 'Khí độc ở mức nguy hiểm, cá ngộ độc máu, phồng mang.'; action = 'Bật xi-phông khẩn cấp, tạt vi sinh xử lý đáy, ngừng cho ăn hoàn toàn.'; }
-              else if(current === 'warn') { impact = 'Môi trường nước đang ô nhiễm hữu cơ.'; action = 'Giảm lượng thức ăn, bổ sung vi sinh xử lý nước.'; }
+            if (current === 'danger') { impact = 'Khí độc ở mức nguy hiểm, cá ngộ độc máu, phồng mang.'; action = 'Bật xi-phông khẩn cấp, tạt vi sinh xử lý đáy, ngừng cho ăn hoàn toàn.'; }
+            else if (current === 'warn') { impact = 'Môi trường nước đang ô nhiễm hữu cơ.'; action = 'Giảm lượng thức ăn, bổ sung vi sinh xử lý nước.'; }
           }
           pushAlert(pond, level, label + ' — ' + statusLabel[current], 'Giá trị hiện tại: ' + valueDisplay + '. Cần kiểm tra và xử lý.', impact, action, 'control');
         } else if (current === 'safe' && prev === 'danger') {
@@ -2910,20 +2953,20 @@
       }
 
       function openAlertDetail(id) {
-        var a = state.alerts.find(function(x) { return x.id === id; });
-        if(!a) return;
+        var a = state.alerts.find(function (x) { return x.id === id; });
+        if (!a) return;
         var impactHtml = a.impact ? '<div class="alert-ext alert-impact"><b>Ảnh hưởng:</b> ' + escapeHTML(a.impact) + '</div>' : '';
         var actionHtml = a.action ? '<div class="alert-ext alert-action"><b>Hành động:</b> ' + escapeHTML(a.action) + '</div>' : '';
-        var navBtn = (a.actionTab === 'control') ? '<button class="btn btn-outline" style="width:100%;margin-top:14px;" onclick="window.navToPondControl(\''+a.pondId+'\')">Đi đến bảng Điều khiển ' + escapeHTML(a.pondName) + '</button>' : '';
-        
+        var navBtn = (a.actionTab === 'control') ? '<button class="btn btn-outline" style="width:100%;margin-top:14px;" onclick="window.navToPondControl(\'' + a.pondId + '\')">Đi đến bảng Điều khiển ' + escapeHTML(a.pondName) + '</button>' : '';
+
         var html = '<div class="alert-item alert-' + a.level + '" style="border:none;padding:0;box-shadow:none;">'
-              + '<div class="alert-top"><span style="font-weight:700;">' + escapeHTML(a.title) + '</span><span class="alert-time">' + a.time + '</span></div>'
-              + '<div class="alert-msg">' + escapeHTML(a.msg) + '</div>'
-              + impactHtml
-              + actionHtml
-              + '</div>'
-              + navBtn;
-              
+          + '<div class="alert-top"><span style="font-weight:700;">' + escapeHTML(a.title) + '</span><span class="alert-time">' + a.time + '</span></div>'
+          + '<div class="alert-msg">' + escapeHTML(a.msg) + '</div>'
+          + impactHtml
+          + actionHtml
+          + '</div>'
+          + navBtn;
+
         document.getElementById('alertDetailContent').innerHTML = html;
         var overlay = document.getElementById('alertDetailOverlay');
         overlay.classList.add('show');
@@ -2936,7 +2979,7 @@
         overlay.setAttribute('aria-hidden', 'true');
       }
 
-      window.navToPondControl = function(pondId) {
+      window.navToPondControl = function (pondId) {
         closeAlertDetail();
         selectPond(pondId);
         setPondTab('control');
@@ -3183,9 +3226,9 @@
         if (pond.ecoMode) {
           ecoHint.style.display = 'block';
           if (p.source === 'battery') {
-            ecoHint.textContent = '✅ Đang tiết kiệm điện — thời gian pin dự phòng được kéo dài hơn.';
+            ecoHint.textContent = 'Đang tiết kiệm điện — thời gian pin dự phòng được kéo dài hơn.';
           } else {
-            ecoHint.textContent = '✅ Đang tiết kiệm điện (Bật thủ công) — Sẵn sàng tối ưu năng lượng nếu mất điện.';
+            ecoHint.textContent = ' Đang tiết kiệm điện (Bật thủ công) — Sẵn sàng tối ưu năng lượng nếu mất điện.';
           }
         } else {
           ecoHint.style.display = 'none';
@@ -3255,7 +3298,7 @@
         // Có thể update các thông số ở thẻ summary tại đây nếu muốn. Hiện tại giao diện tĩnh.
       }
 
-      window.openLogDetail = function() {
+      window.openLogDetail = function () {
         var overlay = document.getElementById('logDetailOverlay');
         overlay.classList.add('show');
         overlay.setAttribute('aria-hidden', 'false');
@@ -3263,22 +3306,22 @@
         window.filterLogs('week');
       };
 
-      window.closeLogDetail = function() {
+      window.closeLogDetail = function () {
         var overlay = document.getElementById('logDetailOverlay');
         overlay.classList.remove('show');
         overlay.setAttribute('aria-hidden', 'true');
       };
 
-      window.filterLogs = function(range) {
+      window.filterLogs = function (range) {
         var now = new Date();
-        var filtered = state.log.filter(function(l) {
+        var filtered = state.log.filter(function (l) {
           if (!l.dateObj) return true;
           var diff = now.getTime() - new Date(l.dateObj).getTime();
           if (range === 'today') return diff <= 86400000;
           if (range === '3days') return diff <= 86400000 * 3;
           return true; // week
         });
-        
+
         var icons = { power: '🔌', siphon: '🧹', control: '🎛️', system: '⚙️' };
         document.getElementById('logList').innerHTML = filtered.map(function (l) {
           var icon = icons[l.type] || '•';
